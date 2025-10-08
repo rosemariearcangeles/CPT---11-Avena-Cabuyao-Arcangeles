@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Adaptive Quiz Engine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <h1>Quiz Engine</h1>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Quizzes</a></li>
+      <li><a href="#">Profile</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Categories</h2>
+      <ul>
+        <li><a href="#" onclick="loadQuiz('math')">Math</a></li>
+        <li><a href="#" onclick="loadQuiz('science')">Science</a></li>
+        <li><a href="#" onclick="loadQuiz('history')">History</a></li>
+      </ul>
+    </aside>
+    <main class="main-content">
+      <form id="quiz-form">
+        <h2 id="quiz-title">Select a category to start</h2>
+        <div id="quiz-questions"></div>
+        <button type="submit" id="submit-btn" style="display:none;">Submit</button>
+      </form>
+      <div id="quiz-result"></div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
