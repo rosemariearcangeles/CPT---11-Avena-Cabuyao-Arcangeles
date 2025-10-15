@@ -34,6 +34,58 @@ const quizzes = {
       options: ["1945", "1939", "1918", "1965"],
       answer: "1945"
     }
+  ],
+  english: [
+    {
+      question: "Which word is a noun?",
+      options: ["Run", "Beautiful", "Cat", "Quickly"],
+      answer: "Cat"
+    },
+    { 
+      question: "What is the plural form of book?",
+      options: ["Bookes", "Books", "Bookies", "Book"],
+      answer: "Books"
+    },
+    {
+      question: "Which word is an adjective?",
+      options: ["Sing", "Tall", "Slowly", "Dance"],
+      answer: "Tall"
+    },
+    {
+      question: "What is the opposite of happy?",
+      options: ["Sad", "Excited", "Good", "Tired"],
+      answer: "Sad"
+    },
+    {
+      question: "Choose the sentence that is correctly written.",
+      options: ["she is my friend.", "She is my friend.", "she is My friend.", "She is My friend."],
+      answer: "She is my friend."
+    },
+    {
+      question: "Which sentence tells about the past?",
+      options: ["I am eating lunch.", "I eat lunch everyday.", "I will eat lunch later.", "I ate lunch an hour ago."],
+      answer: "I ate lunch an hour ago."
+    },
+    {
+      question: "Which word rhymes with cake?",
+      options: ["Cat", "Lake", "Car", "Book"],
+      answer: "Lake"
+    },
+    {
+      question: "Choose the correct word:The dog _______ in the yard.",
+      options: ["run", "running", "runs", "runned"],
+      answer: "runs"
+    },
+    {
+      question: "What punctuation mark ends this sentence: Where are you going",
+      options: [".", "?", "!", ","],
+      answer: "?"
+    },
+    {
+      question: "What is the correct order of these words to make a sentence?the / reading / girl / is / book",
+      options: ["book is the girl reading", "is girl book the reading", "the girl is reading book", "the girl is reading the book"],
+      answer: "the girl is reading the book"
+    },
   ]
 };
 
