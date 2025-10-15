@@ -86,7 +86,24 @@ const quizzes = {
       options: ["book is the girl reading", "is girl book the reading", "the girl is reading book", "the girl is reading the book"],
       answer: "the girl is reading the book"
     },
-  ]
+  ],
+  "physical education": [
+    {
+      question: "What muscle is the most activated when doing planks?",
+      options: ["Back muscles", "Arm muscles", "Core muscles", "Glutes"],
+      answer: "Core muscles"
+    },
+    {
+      question: "What skills you need to excel at for sprinting races?",
+      options: ["Breathing", "Flexibility", "Explosiveness", "Coordination"],
+      answer: "Explosiveness"
+    },
+    {
+      question: "What exercise requires you to hang on a bar and reel yourself upwards? ",
+      options: ["Push-ups", "Squats", "Planks", "Pull-ups"],
+      answer: "Pull-ups"
+    }
+  ],
 };
 
 let currentQuiz = [];
