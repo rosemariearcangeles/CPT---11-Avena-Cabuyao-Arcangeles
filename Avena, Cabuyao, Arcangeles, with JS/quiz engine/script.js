@@ -104,6 +104,23 @@ const quizzes = {
       answer: "Pull-ups"
     }
   ],
+  filipino: [
+    {
+      question: "Sino ang Pambansang Bayani ng Pilipinas?",
+      options: ["Lapu-lapu", "Ferdinand Marcos Sr.", "Jose Rizal", "Padre Damaso"],
+      answer: "Jose Rizal"
+    },
+    {
+      question: "Ano ang tagalog ng salitang 'Green'?",
+      options: ["Pula", "Kahel", "Luntian", "Berde"],
+      answer: "Luntian"
+    },
+    {
+      question: "Alin dito ang salitang pangngalan",
+      options: ["Tumatakbo", "Malawak", "Aso", "Lakad"],
+      answer: "Aso"
+    }
+  ]
 };
 
 let currentQuiz = [];
