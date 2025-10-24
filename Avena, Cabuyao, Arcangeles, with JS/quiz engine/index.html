@@ -3,37 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Adaptive Quiz Engine</title>
+  <title>Online Exam Platform</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <nav class="navbar">
-    <h1>Quiz Engine</h1>
+    <div class="logo">
+      <img src="logo.png" alt="Logo" class="logo-img">
+      <h1>Online Exam</h1>
+    </div>
     <ul>
       <li><a href="#">Home</a></li>
-      <li><a href="#">Quizzes</a></li>
-      <li><a href="#">Profile</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Service</a></li>
+      <li><a href="#">Contact Us</a></li>
+      <li><a href="#">FAQ</a></li>
+      <li><a href="#" class="login-btn">Login</a></li>
+      <li><a href="#" class="try-btn">Try for free</a></li>
     </ul>
   </nav>
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Welcome to Online Quiz Engine</h1>
+      <p>Transform your learning experience with our interactive online quiz system. Easy to use, comprehensive, and reliable.</p>
+      <button class="get-started">Get Started</button>
+    </div>
+    <div class="hero-image">
+      <img src="exam-illustration.png" alt="Online Exam Illustration">
+    </div>
+  </div>
+  
   <div class="container">
     <aside class="sidebar">
-      <h2>Categories</h2>
-      <ul>
-        <li><a href="#" onclick="loadQuiz('math')">Math</a></li>
-        <li><a href="#" onclick="loadQuiz('science')">Science</a></li>
-        <li><a href="#" onclick="loadQuiz('history')">History</a></li>
-        <li><a href="#" onclick="loadQuiz('english')">English</a></li>
-        <li><a href="#" onclick="loadQuiz('physical education')">Physical Education</a></li>
-        <li><a href="#" onclick="loadQuiz('filipino')">Filipino</a></li>
-      </ul>
+      <h2>Exam Categories</h2>
+      <div class="category-cards">
+        <div class="category-card" onclick="loadQuiz('math')">
+          <i class="category-icon math-icon"></i>
+          <span>Mathematics</span>
+        </div>
+        <div class="category-card" onclick="loadQuiz('science')">
+          <i class="category-icon science-icon"></i>
+          <span>Science</span>
+        </div>
+        <div class="category-card" onclick="loadQuiz('history')">
+          <i class="category-icon history-icon"></i>
+          <span>History</span>
+        </div>
+        <div class="category-card" onclick="loadQuiz('english')">
+          <i class="category-icon english-icon"></i>
+          <span>English</span>
+        </div>
+        <div class="category-card" onclick="loadQuiz('physical education')">
+          <i class="category-icon pe-icon"></i>
+          <span>Physical Education</span>
+        </div>
+        <div class="category-card" onclick="loadQuiz('filipino')">
+          <i class="category-icon filipino-icon"></i>
+          <span>Filipino</span>
+        </div>
+      </div>
     </aside>
     <main class="main-content">
-      <form id="quiz-form">
-        <h2 id="quiz-title">Select a category to start</h2>
-        <div id="quiz-questions"></div>
-        <button type="submit" id="submit-btn" style="display:none;">Submit</button>
-      </form>
-      <div id="quiz-result"></div>
+      <div class="exam-container">
+        <form id="quiz-form">
+          <h2 id="quiz-title">Select a category to start your exam</h2>
+          <div id="quiz-questions" class="question-grid"></div>
+          <button type="submit" id="submit-btn" class="submit-button" style="display:none;">Submit Exam</button>
+        </form>
+        <div id="quiz-result" class="result-card"></div>
+      </div>
     </main>
   </div>
 
