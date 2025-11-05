@@ -34,8 +34,54 @@
   </div>
   
   <div class="container">
+    <main class="main-content">
+      <!-- Main Upload Section -->
+      <div class="upload-section">
+        <h1>Generate Quiz from Learning Material</h1>
+        <p class="upload-description">Upload your text content and we'll automatically generate quiz questions for you.</p>
+        
+        <div class="upload-card">
+          <div class="file-upload">
+            <label for="material-file" class="file-label">
+              <span class="upload-icon">📄</span>
+              <span>Choose a text file</span>
+              <input type="file" id="material-file" accept=".txt">
+            </label>
+          </div>
+          
+          <div class="generation-options">
+            <div class="option-group">
+              <label for="num-questions">Number of questions:</label>
+              <input type="number" id="num-questions" value="5" min="1" max="20">
+            </div>
+            <div class="option-group">
+              <label>
+                <input type="checkbox" id="include-blank" checked> 
+                Use fill-in-the-blank style
+              </label>
+            </div>
+            <button id="generate-btn" class="primary-button">Generate Questions</button>
+          </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="generated-preview" class="preview-section"></div>
+        <button id="import-btn" class="import-button" style="display: none;">Start Quiz</button>
+      </div>
+
+      <!-- Quiz Section -->
+      <div class="exam-container" style="display: none;" id="quiz-section">
+        <form id="quiz-form">
+          <h2 id="quiz-title">Quiz from Your Material</h2>
+          <div id="quiz-questions" class="question-grid"></div>
+          <button type="submit" id="submit-btn" class="submit-button">Submit Answers</button>
+        </form>
+        <div id="quiz-result" class="result-card"></div>
+      </div>
+    </main>
+
     <aside class="sidebar">
-      <h2>Exam Categories</h2>
+      <h2>Sample Quizzes</h2>
       <div class="category-cards">
         <div class="category-card" onclick="loadQuiz('math')">
           <i class="category-icon math-icon"></i>
@@ -61,6 +107,40 @@
           <i class="category-icon filipino-icon"></i>
           <span>Filipino</span>
         </div>
+      </div>
+      
+      <hr />
+      <h3>Prototype: Upload Learning Material</h3>
+      <div id="uploader-panel">
+        <input type="file" id="material-file" accept=".txt" />
+        <div style="margin-top:8px;">
+          <label for="num-questions">Questions:</label>
+          <input id="num-questions" type="number" value="5" min="1" max="20" style="width:60px; margin-left:8px;" />
+        </div>
+        <div style="margin-top:8px;">
+          <label><input type="checkbox" id="include-blank" checked /> Use fill-in-the-blank in prompts</label>
+        </div>
+        <button id="generate-btn" style="margin-top:8px;">Generate Questions</button>
+
+        <div id="generated-preview" style="margin-top:12px; max-height:220px; overflow:auto; font-size:0.95rem;"></div>
+        <button id="import-btn" style="display:none; margin-top:8px;">Import to Quiz</button>
+      </div>
+      
+      <hr />
+      <h3>Prototype: Upload Learning Material</h3>
+      <div id="uploader-panel">
+        <input type="file" id="material-file" accept=".txt" />
+        <div style="margin-top:8px;">
+          <label for="num-questions">Questions:</label>
+          <input id="num-questions" type="number" value="5" min="1" max="20" style="width:60px; margin-left:8px;" />
+        </div>
+        <div style="margin-top:8px;">
+          <label><input type="checkbox" id="include-blank" checked /> Use fill-in-the-blank in prompts</label>
+        </div>
+        <button id="generate-btn" style="margin-top:8px;">Generate Questions</button>
+
+        <div id="generated-preview" style="margin-top:12px; max-height:220px; overflow:auto; font-size:0.95rem;"></div>
+        <button id="import-btn" style="display:none; margin-top:8px;">Import to Quiz</button>
       </div>
     </aside>
     <main class="main-content">

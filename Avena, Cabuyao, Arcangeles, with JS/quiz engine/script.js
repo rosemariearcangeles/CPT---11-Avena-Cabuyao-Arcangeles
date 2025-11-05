@@ -1,3 +1,6 @@
+let uploadedText = '';
+let generatedQuestions = [];
+
 const quizzes = {
   math: [
     {
@@ -185,3 +188,169 @@ function showResult() {
     document.getElementById('quiz-result').innerHTML += `<button onclick="loadQuiz('${currentCategory}')">Try Again</button>`;
   }
 }
+
+// File upload and question generation handling
+// Helper functions for question generation
+function generateQuestionsFromText(text, numQuestions = 5, includeBlank = true) {
+  if (!text || text.trim().length === 0) return [];
+  
+  // Basic sentence splitting
+  const sentences = text.split(/[.!?][\s\n]+/).map(s => s.trim()).filter(s => s.length > 20);
+  const candidates = sentences.slice(0, Math.max(numQuestions, sentences.length));
+  
+  // Simple word extraction
+  const words = text.toLowerCase()
+    .replace(/[\n\r]/g, ' ')
+    .split(/[^a-z]+/)
+    .filter(w => w.length > 3);
+  
+  const questions = [];
+  for (let i = 0; i < Math.min(numQuestions, candidates.length); i++) {
+    const sent = candidates[i];
+    // Find the longest word as keyword (simple approach)
+    const keyword = sent.split(/\s+/)
+      .map(w => w.replace(/[^a-zA-Z]/g, ''))
+      .filter(w => w.length > 3)
+      .sort((a, b) => b.length - a.length)[0];
+    
+    if (!keyword) continue;
+    
+    const blankSentence = includeBlank 
+      ? sent.replace(new RegExp(keyword, 'i'), '_____') 
+      : sent;
+    
+    // Generate distractors from other words
+    const otherWords = words.filter(w => w !== keyword.toLowerCase());
+    const distractors = otherWords
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    
+    questions.push({
+      question: `Fill in: ${blankSentence}`,
+      options: shuffleArray([keyword, ...distractors]),
+      answer: keyword
+    });
+  }
+  
+  return questions;
+}
+
+function renderGeneratedPreview(list) {
+  const container = document.getElementById('generated-preview');
+  const importBtn = document.getElementById('import-btn');
+  container.innerHTML = '';
+  
+  if (!list || list.length === 0) {
+    container.innerHTML = `
+      <div class="preview-message">
+        <p>No questions could be generated. Try uploading different text with more complete sentences.</p>
+      </div>
+    `;
+    importBtn.style.display = 'none';
+    return;
+  }
+  
+  list.forEach((q, idx) => {
+    const div = document.createElement('div');
+    div.className = 'question-preview';
+    div.innerHTML = `
+      <h3>Question ${idx + 1}</h3>
+      <p class="question-text">${q.question}</p>
+      <div class="options-list">
+        ${q.options.map(opt => `
+          <div class="option-item">
+            <span class="option-marker">•</span>
+            ${opt}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  
+  // Show import button with counter
+  importBtn.style.display = 'block';
+  importBtn.textContent = `Start Quiz (${list.length} questions)`;
+  
+  // Scroll preview into view
+  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function shuffleArray(arr) {
+  const array = [...arr];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+document.getElementById('generate-btn').addEventListener('click', () => {
+  const fileInput = document.getElementById('material-file');
+  const generateBtn = document.getElementById('generate-btn');
+  const num = parseInt(document.getElementById('num-questions').value || '5', 10);
+  const includeBlank = document.getElementById('include-blank').checked;
+
+  // Basic validation
+  if (fileInput.files.length === 0) {
+    alert('Please choose a .txt file with learning material.');
+    return;
+  }
+
+  const file = fileInput.files[0];
+  // Add file size check (1MB limit)
+  if (file.size > 1024 * 1024) {
+    alert('File is too large. Please choose a file under 1MB.');
+    return;
+  }
+
+  // Show loading state
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generating...';
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const text = String(e.target.result || '');
+      if (!text.trim()) {
+        throw new Error('File appears to be empty.');
+      }
+      uploadedText = text;
+      generatedQuestions = generateQuestionsFromText(uploadedText, num, includeBlank);
+      renderGeneratedPreview(generatedQuestions);
+    } catch (error) {
+      alert(error.message || 'Failed to process file. Please try again.');
+      document.getElementById('generated-preview').innerHTML = '';
+    } finally {
+      // Reset button state
+      generateBtn.disabled = false;
+      generateBtn.textContent = 'Generate Questions';
+    }
+  };
+
+  reader.onerror = () => {
+    alert('Failed to read file. Please try again.');
+    generateBtn.disabled = false;
+    generateBtn.textContent = 'Generate Questions';
+  };
+
+  reader.readAsText(file);
+});
+
+// Handle importing generated questions into the quiz
+document.getElementById('import-btn').addEventListener('click', () => {
+  if (!generatedQuestions || generatedQuestions.length === 0) return;
+  
+  currentQuiz = generatedQuestions;
+  currentCategory = 'Generated Quiz';
+  userAnswers = [];
+  
+  document.getElementById('quiz-title').textContent = `Quiz: ${currentCategory}`;
+  renderQuestions();
+  document.getElementById('submit-btn').style.display = 'block';
+  document.getElementById('quiz-result').innerHTML = '';
+  
+  // Clear preview and hide import button
+  document.getElementById('generated-preview').innerHTML = '';
+  document.getElementById('import-btn').style.display = 'none';
+});
