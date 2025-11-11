@@ -140,6 +140,22 @@ function loadQuiz(category) {
   document.getElementById('quiz-result').innerHTML = '';
 }
 
+// Back to upload handler (non-destructive, safe)
+const backBtn = document.getElementById('back-btn');
+if (backBtn) {
+  backBtn.addEventListener('click', () => {
+    const quizSection = document.getElementById('quiz-section');
+    const uploadSection = document.querySelector('.upload-section');
+    if (quizSection) quizSection.style.display = 'none';
+    if (uploadSection) uploadSection.style.display = 'block';
+    // clear result and hide submit
+    const resultEl = document.getElementById('quiz-result');
+    if (resultEl) resultEl.innerHTML = '';
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) submitBtn.style.display = 'none';
+  });
+}
+
 function renderQuestions() {
   const quizQuestions = document.getElementById('quiz-questions');
   quizQuestions.innerHTML = '';
