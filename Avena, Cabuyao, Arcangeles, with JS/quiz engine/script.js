@@ -1,20 +1,24 @@
-// Utility for getting element by ID
-function $id(id) {
-  return document.getElementById(id);
-}
+// =====================
+// Utility
+// =====================
+const $id = id => document.getElementById(id);
 
-// Global variables
+// =====================
+// Global Variables
+// =====================
 let uploadedText = '';
 let generatedQuestions = [];
 let currentQuiz = [];
 let currentCategory = '';
 let userAnswers = [];
 
-// Predefined quizzes
+// =====================
+// Predefined Quizzes
+// =====================
 const quizzes = {
   math: [
-    { question: "What is 2 + 2?", options: ["3", "4", "5", "6"], answer: "4" },
-    { question: "What is 5 x 3?", options: ["8", "15", "10", "20"], answer: "15" }
+    { question: "What is 2 + 2?", options: ["3", "4", "5", "6"], answer: "4", icon: '<svg width="24" height="24" fill="currentColor"><path d="M12 2L15 8H9L12 2z"/></svg>' },
+    { question: "What is 5 x 3?", options: ["8", "15", "10", "20"], answer: "15", icon: '<svg width="24" height="24" fill="currentColor"><path d="M12 2L15 8H9L12 2z"/></svg>' }
   ],
   science: [
     { question: "What planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], answer: "Mars" },
@@ -36,7 +40,9 @@ const quizzes = {
   ]
 };
 
-// Load quiz by category
+// =====================
+// Load Quiz
+// =====================
 function loadQuiz(category) {
   if (!quizzes[category]) return alert(`Category "${category}" not found.`);
 
@@ -44,7 +50,7 @@ function loadQuiz(category) {
   currentCategory = category;
   userAnswers = [];
 
-  $id('quiz-title').textContent = `Quiz: ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+  $id('quiz-title').innerHTML = `Quiz: <span class="category-name">${category.charAt(0).toUpperCase() + category.slice(1)}</span>`;
   $id('quiz-section').style.display = 'block';
   $id('upload-section-main').style.display = 'none';
   $id('submit-btn').style.display = 'block';
@@ -53,7 +59,9 @@ function loadQuiz(category) {
   renderQuestions();
 }
 
-// Back to upload section
+// =====================
+// Back Button
+// =====================
 $id('back-btn').addEventListener('click', () => {
   $id('quiz-section').style.display = 'none';
   $id('upload-section-main').style.display = 'block';
@@ -61,17 +69,20 @@ $id('back-btn').addEventListener('click', () => {
   $id('submit-btn').style.display = 'none';
 });
 
-// Render quiz questions
+// =====================
+// Render Questions
+// =====================
 function renderQuestions() {
   const quizQuestions = $id('quiz-questions');
   quizQuestions.innerHTML = '';
+
   currentQuiz.forEach((q, idx) => {
     const block = document.createElement('div');
-    block.className = 'question-block';
+    block.className = 'question-block fade-in';
     block.innerHTML = `
-      <p><strong>Q${idx + 1}:</strong> ${q.question}</p>
+      <p class="question-text"><strong>Q${idx + 1}:</strong> ${q.question}</p>
       ${q.options.map(opt => `
-        <label>
+        <label class="option-label">
           <input type="radio" name="q${idx}" value="${opt}" required> ${opt}
         </label>
       `).join('')}
@@ -80,7 +91,9 @@ function renderQuestions() {
   });
 }
 
-// Handle quiz submission
+// =====================
+// Quiz Submission
+// =====================
 $id('quiz-form').addEventListener('submit', e => {
   e.preventDefault();
   userAnswers = currentQuiz.map((_, idx) => {
@@ -90,44 +103,58 @@ $id('quiz-form').addEventListener('submit', e => {
   showResult();
 });
 
-// Show quiz results
+// =====================
+// Show Results
+// =====================
 function showResult() {
   let score = 0;
+  const total = currentQuiz.length;
   let feedback = '';
 
   currentQuiz.forEach((q, idx) => {
-    if (userAnswers[idx] === q.answer) {
-      score++;
-      feedback += `<p>✓ Q${idx + 1}: Correct!</p>`;
-    } else {
-      feedback += `<p>✗ Q${idx + 1}: Incorrect. Correct: <strong>${q.answer}</strong></p>`;
-    }
+    const correct = userAnswers[idx] === q.answer;
+    if (correct) score++;
+    feedback += `
+      <div class="result-item ${correct ? 'correct' : 'incorrect'}">
+        ${correct ? '✅' : '❌'} <strong>Q${idx + 1}:</strong> ${q.question} 
+        ${!correct ? `<span class="correct-answer">(Correct: ${q.answer})</span>` : ''}
+      </div>
+    `;
   });
 
-  const percentage = Math.round((score / currentQuiz.length) * 100);
+  const percentage = Math.round((score / total) * 100);
   $id('quiz-result').innerHTML = `
-    <h3>Your Score: ${score} / ${currentQuiz.length} (${percentage}%)</h3>
-    ${feedback}
-    ${score < currentQuiz.length ? `<button id="try-again-btn">🔄 Try Again</button>` : `<p style="color:green; font-weight:bold;">🎉 Perfect Score!</p>`}
+    <h3 class="score">Your Score: ${score} / ${total} (${percentage}%)</h3>
+    <div class="feedback">${feedback}</div>
+    ${score < total ? `<button id="try-again-btn" class="secondary-button">🔄 Try Again</button>` : `<p class="perfect-score">🎉 Perfect Score!</p>`}
   `;
 
-  $id('try-again-btn')?.addEventListener('click', () => {
-    renderQuestions();
-    $id('quiz-result').innerHTML = '';
-    userAnswers = [];
-  });
+  const tryBtn = $id('try-again-btn');
+  if (tryBtn) {
+    tryBtn.addEventListener('click', () => {
+      renderQuestions();
+      $id('quiz-result').innerHTML = '';
+      userAnswers = [];
+    }, { once: true });
+  }
 }
 
-// Generate questions from uploaded text
+// =====================
+// Generate Questions from Text
+// =====================
 function generateQuestionsFromText(text, numQuestions = 5, includeBlank = true) {
   if (!text.trim()) return [];
   const sentences = text.split(/[.!?]\s+/).map(s => s.trim()).filter(s => s.length > 20);
   const words = Array.from(new Set(text.toLowerCase().split(/[^a-z]+/).filter(w => w.length > 3)));
   const questions = [];
+
   for (let i = 0; i < Math.min(numQuestions, sentences.length); i++) {
     const sent = sentences[i];
-    const keyword = sent.split(/\s+/).sort((a,b) => b.length - a.length)[0];
+    const keyword = sent.split(/\s+/)
+                        .filter(w => !['the','this','that','with','from','have'].includes(w.toLowerCase()))
+                        .sort((a,b) => b.length - a.length)[0];
     if (!keyword) continue;
+
     const blankSentence = includeBlank ? sent.replace(new RegExp(keyword, 'i'), '_____') : sent;
     const distractors = shuffleArray(words.filter(w => w !== keyword.toLowerCase())).slice(0,3);
     questions.push({ question: `Fill in: ${blankSentence}`, options: shuffleArray([keyword, ...distractors]), answer: keyword });
@@ -135,7 +162,9 @@ function generateQuestionsFromText(text, numQuestions = 5, includeBlank = true) 
   return questions;
 }
 
-// Shuffle utility
+// =====================
+// Shuffle Utility
+// =====================
 function shuffleArray(arr) {
   const array = [...arr];
   for (let i=array.length-1; i>0; i--) {
@@ -145,32 +174,45 @@ function shuffleArray(arr) {
   return array;
 }
 
-// Render generated preview
+// =====================
+// Render Generated Preview
+// =====================
 function renderGeneratedPreview(list) {
   const container = $id('generated-preview-main');
   const importBtn = $id('import-btn-main');
   container.innerHTML = '';
+
   if (!list.length) {
     container.innerHTML = `<p>No questions generated.</p>`;
-    importBtn.style.display = 'none';
+    importBtn.classList.add('hidden');
     return;
   }
+
   list.forEach((q, idx) => {
     const div = document.createElement('div');
-    div.className = 'question-preview';
-    div.innerHTML = `<h3>Q${idx+1}</h3><p>${q.question}</p><div>${q.options.join(', ')}</div>`;
+    div.className = 'question-preview card-glass fade-in';
+    div.innerHTML = `
+      <h3>Q${idx+1}</h3>
+      <p>${q.question}</p>
+      <div class="options-preview">${q.options.join(', ')}</div>
+    `;
     container.appendChild(div);
   });
-  importBtn.style.display = 'block';
+
   importBtn.textContent = `Start Quiz (${list.length})`;
+  importBtn.classList.remove('hidden');
 }
 
-// Generate button event
+// =====================
+// Generate Button
+// =====================
 $id('generate-btn-main').addEventListener('click', () => {
   const fileInput = $id('material-file-main');
   const num = parseInt($id('num-questions-main').value, 10);
   const includeBlank = $id('include-blank-main').checked;
+
   if (!fileInput.files.length) return alert('Choose a .txt file');
+
   const reader = new FileReader();
   reader.onload = e => {
     uploadedText = e.target.result;
@@ -180,22 +222,39 @@ $id('generate-btn-main').addEventListener('click', () => {
   reader.readAsText(fileInput.files[0]);
 });
 
-// Import button event
+// =====================
+// Import Button
+// =====================
 $id('import-btn-main').addEventListener('click', () => {
   if (!generatedQuestions.length) return;
+
   currentQuiz = generatedQuestions;
   currentCategory = 'Generated Quiz';
   userAnswers = [];
+
   $id('quiz-title').textContent = `Quiz: ${currentCategory}`;
   renderQuestions();
+
   $id('quiz-section').style.display = 'block';
   $id('upload-section-main').style.display = 'none';
   $id('submit-btn').style.display = 'block';
   $id('generated-preview-main').innerHTML = '';
-  $id('import-btn-main').style.display = 'none';
+  $id('import-btn-main').classList.add('hidden');
 });
 
-// Login modal
-function openLogin() { $id('loginModal').style.display = 'block'; }
-function closeLogin() { $id('loginModal').style.display = 'none'; }
-window.onclick = e => { if (e.target === $id('loginModal')) closeLogin(); };
+// =====================
+// Login Modal (Smooth Fade)
+// =====================
+function openLogin() {
+  const modal = $id('loginModal');
+  modal.classList.add('show');
+}
+
+function closeLogin() {
+  const modal = $id('loginModal');
+  modal.classList.remove('show');
+}
+
+window.onclick = e => {
+  if (e.target === $id('loginModal')) closeLogin();
+};
