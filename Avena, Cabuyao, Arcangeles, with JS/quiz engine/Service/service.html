@@ -3,42 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Online Exam Platform</title>
-  <link rel="stylesheet" href="servicestyle.css" />
+  <title>Service - Online Quiz Engine</title>
+  <link rel="stylesheet" href="../style.css" />
 </head>
-
 <body>
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
-      <img src="logo.png" alt="Logo" class="logo-img">
-      <h1>Online Exam</h1>
+      <img src="../logo.png" alt="Logo" class="logo-img">
+      <h1>Online Quiz Engine</h1>
     </div>
     <ul>
       <li><a href="../index.html">Home</a></li>
       <li><a href="../About/about.html">About</a></li>
-      <li><a href="service.html">Service</a></li>
+      <li><a href="service.html" class="active">Service</a></li>
       <li><a href="../Contact/contact.html">Contact Us</a></li>
       <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-      <li><a href="#" class="login-btn">Login</a></li>
+      <li><a href="#" class="login-btn" onclick="openLogin()">Login</a></li>
       <li><a href="#" class="try-btn">Try for free</a></li>
     </ul>
   </nav>
+
+  <!-- Hero Section -->
   <div class="hero">
     <div class="hero-content">
-      <h1>Services</h1>
-      <p>Custom quizzes and seamless grading</p>
-      <button class="read-more">Read more</button>
+      <h1>Our Services</h1>
+      <p>We provide an interactive online quiz engine for students, educators, and self-learners. Generate quizzes, practice questions, and improve learning outcomes efficiently.</p>
     </div>
     <div class="hero-image">
-      <img src="exam-illustration.png" alt="Online Exam Illustration">
+      <img src="service-illustration.png" alt="Service Illustration">
     </div>
   </div>
-  
 
+  <!-- Services Section -->
+  <div class="container">
+    <div class="category-cards" style="grid-template-columns: repeat(auto-fit,minmax(200px,1fr));">
+      <div class="category-card">
+        <h3>Quiz Generation</h3>
+        <p>Upload materials and automatically generate quizzes in seconds.</p>
+      </div>
+      <div class="category-card">
+        <h3>Interactive Learning</h3>
+        <p>Practice quizzes with instant feedback to enhance retention.</p>
+      </div>
+      <div class="category-card">
+        <h3>Performance Tracking</h3>
+        <p>Track scores and monitor learning progress over time.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLogin()">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form>
+        <label>Username</label>
+        <input type="text" required>
+        <label>Password</label>
+        <input type="password" required>
+        <button type="submit" class="login">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
   <footer class="foot">
-    <p>@ Adaptive Quiz Engine 2025.</p>
+    <p>&copy; Adaptive Quiz Engine 2025.</p>
   </footer>
 
-  <script src="Service/servicescript.js"></script>
+  <script src="../script.js"></script>
 </body>
 </html>

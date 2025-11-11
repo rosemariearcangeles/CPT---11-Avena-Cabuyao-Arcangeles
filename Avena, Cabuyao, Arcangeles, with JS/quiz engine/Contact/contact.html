@@ -3,42 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Online Exam Platform</title>
-  <link rel="stylesheet" href="contactstyle.css" />
+  <title>Contact Us - Online Quiz Engine</title>
+  <link rel="stylesheet" href="../style.css" />
 </head>
-
 <body>
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
-      <img src="logo.png" alt="Logo" class="logo-img">
-      <h1>Online Exam</h1>
+      <img src="../logo.png" alt="Logo" class="logo-img">
+      <h1>Online Quiz Engine</h1>
     </div>
     <ul>
       <li><a href="../index.html">Home</a></li>
       <li><a href="../About/about.html">About</a></li>
       <li><a href="../Service/service.html">Service</a></li>
-      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="contact.html" class="active">Contact Us</a></li>
       <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-      <li><a href="#" class="login-btn">Login</a></li>
+      <li><a href="#" class="login-btn" onclick="openLogin()">Login</a></li>
       <li><a href="#" class="try-btn">Try for free</a></li>
     </ul>
   </nav>
+
+  <!-- Hero Section -->
   <div class="hero">
     <div class="hero-content">
       <h1>Contact Us</h1>
-      <p>If you have any questions for us, any reviews, and complaints that you would like to share feel free to send one we will appreciate it.</p>
-      <button class="send">Send</button>
+      <p>Have questions or feedback? Reach out to us and we'll get back to you as soon as possible.</p>
     </div>
     <div class="hero-image">
-      <img src="exam-illustration.png" alt="Online Exam Illustration">
+      <img src="contact-illustration.png" alt="Contact Illustration">
     </div>
   </div>
-  
 
+  <!-- Contact Section -->
+  <div class="container contact-container">
+    <!-- Contact Form -->
+    <div class="main-content contact-form">
+      <h2>Send Us a Message</h2>
+      <form id="contact-form">
+        <div class="option-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="option-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="option-group">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" required>
+        </div>
+        <div class="option-group">
+          <label for="message">Message</label>
+          <textarea id="message" rows="6" required></textarea>
+        </div>
+        <button type="submit" class="primary-button">Send Message</button>
+      </form>
+    </div>
+
+    <!-- Contact Info Panel -->
+    <aside class="sidebar contact-info">
+      <h3>Contact Info</h3>
+      <p><strong>Email:</strong> support@quizengine.com</p>
+      <p><strong>Phone:</strong> +63 912 345 6789</p>
+      <p><strong>Address:</strong> 123 Learning St, Quezon City, Philippines</p>
+    </aside>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLogin()">&times;</span>
+      <h2>Login to Your Account</h2>
+      <form>
+        <label>Username</label>
+        <input type="text" required>
+        <label>Password</label>
+        <input type="password" required>
+        <button type="submit" class="login">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
   <footer class="foot">
-    <p>@ Adaptive Quiz Engine 2025.</p>
+    <p>&copy; Adaptive Quiz Engine 2025.</p>
   </footer>
 
-  <script src="Contact/contactscript.js"></script>
+  <script src="../script.js"></script>
 </body>
 </html>
