@@ -13,12 +13,12 @@
       <h1>Online Exam</h1>
     </div>
     <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Service</a></li>
-      <li><a href="#">Contact Us</a></li>
-      <li><a href="#">FAQ</a></li>
-      <li><a href="#" class="login-btn">Login</a></li>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="About/about.html">About</a></li>
+      <li><a href="Service/service.html">Service</a></li>
+      <li><a href="Contact/contact.html">Contact Us</a></li>
+      <li><a href="FAQ/FAQ.html">FAQ</a></li>
+      <li><a href="#" class="login-btn" onclick="openLogin()">Login</a></li>
       <li><a href="#" class="try-btn">Try for free</a></li>
     </ul>
   </nav>
@@ -154,6 +154,25 @@
       </div>
     </main>
   </div>
+
+<!--added this for the login modal -->
+
+  <div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeLogin()">&times;</span>
+    <h2>Login to Your Account</h2>
+    <form>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="login">Login</button>
+    </form>
+  </div>
+</div>
+
 
   <footer class="foot">
     <p>@ Adaptive Quiz Engine 2025.</p>

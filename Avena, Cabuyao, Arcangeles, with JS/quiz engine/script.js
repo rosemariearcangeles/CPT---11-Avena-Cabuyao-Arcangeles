@@ -354,3 +354,19 @@ document.getElementById('import-btn').addEventListener('click', () => {
   document.getElementById('generated-preview').innerHTML = '';
   document.getElementById('import-btn').style.display = 'none';
 });
+
+// added this for login modal function
+function openLogin() {
+  document.getElementById("loginModal").style.display = "block";
+}
+
+function closeLogin() {
+  document.getElementById("loginModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById("loginModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+}
