@@ -14,7 +14,7 @@
   --glass: rgba(255,255,255,0.6);
 }
 
-body {
+npmbody {
   margin: 0;
   font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--background-color);
