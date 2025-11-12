@@ -5,6 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Online Quiz Engine</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Button Styling */
+    .btn-primary {
+      background: linear-gradient(90deg, #4b6cb7, #182848);
+      color: white;
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+    }
+    .btn-primary:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    /* Fullscreen quiz section */
+    #quiz-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f4f4f4;
+      overflow-y: auto;
+      padding: 2rem;
+      display: none;
+      z-index: 100;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .quiz-options label {
+      font-weight: bold;
+    }
+
+    .question-block {
+      margin-bottom: 1.2rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .option-label {
+      display: block;
+      margin: 0.3rem 0;
+      cursor: pointer;
+    }
+
+    #generated-preview-main .question-preview {
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
 
@@ -30,7 +94,7 @@
     <div class="hero-content">
       <h1>Transform Your Learning Experience</h1>
       <p>Interactive online quizzes that are easy, comprehensive, and reliable. Practice, learn, and master any subject efficiently.</p>
-      <button class="get-started" onclick="scrollToQuiz()">Get Started</button>
+      <button class="get-started btn-primary" onclick="scrollToQuiz()">Get Started</button>
     </div>
     <div class="hero-image">
       <div class="placeholder-img"></div>
@@ -55,16 +119,8 @@
       <h3>Upload Learning Material</h3>
       <div id="uploader-panel">
         <input type="file" id="material-file-main" accept=".txt" />
-        <div>
-          <label for="num-questions-main">Questions:</label>
-          <input id="num-questions-main" type="number" value="5" min="1" max="20"/>
-        </div>
-        <div>
-          <label><input type="checkbox" id="include-blank-main" checked /> Use fill-in-the-blank</label>
-        </div>
-        <button id="generate-btn-main">Generate Questions</button>
         <div id="generated-preview-main"></div>
-        <button id="import-btn-main" style="display:none;">Import to Quiz</button>
+        <button id="import-btn-main" class="btn-primary" style="display:none;">Import to Quiz</button>
       </div>
     </aside>
 
@@ -74,20 +130,37 @@
         <h1>Generate Quiz from Learning Material</h1>
         <p class="upload-description">Upload your text content and automatically generate quiz questions.</p>
 
-        <!-- 🔽 Drag and Drop Upload Area -->
+        <!-- Drag and Drop Upload Area -->
         <div id="drag-drop-zone" class="drag-drop-zone">
           <p>📄 Drag & Drop your .txt file here, or <span id="browse-btn">browse</span></p>
           <input type="file" id="file-input" accept=".txt" hidden>
         </div>
         <div id="file-name" class="file-name"></div>
+
+        <!-- Quiz Options Panel -->
+        <div id="quiz-options" class="quiz-options" style="display:none; margin-top:1rem;">
+          <label for="num-questions">Number of Questions:</label>
+          <input type="number" id="num-questions" min="1" max="20" value="5">
+
+          <label for="quiz-type">Quiz Type:</label>
+          <select id="quiz-type">
+            <option value="multiple">Multiple Choice</option>
+            <option value="fill-blank">Fill-in-the-Blank</option>
+            <option value="true-false">True/False</option>
+            <option value="mixed">Mixed</option>
+          </select>
+
+          <button id="generate-quiz-ai" class="btn-primary">Generate Quiz</button>
+        </div>
       </div>
 
-      <div class="exam-container" id="quiz-section" style="display:none;">
+      <!-- Fullscreen Quiz Section -->
+      <div class="exam-container" id="quiz-section">
         <form id="quiz-form">
           <h2 id="quiz-title">Select a category to start your exam</h2>
-          <button type="button" id="back-btn" class="secondary-button">← Back to Upload</button>
+          <button type="button" id="back-btn" class="secondary-button btn-primary">← Back to Upload</button>
           <div id="quiz-questions" class="question-grid"></div>
-          <button type="submit" id="submit-btn" class="submit-button" style="display:none;">Submit Exam</button>
+          <button type="submit" id="submit-btn" class="submit-button btn-primary" style="display:none;">Submit Exam</button>
         </form>
         <div id="quiz-result" class="result-card"></div>
       </div>
@@ -104,7 +177,7 @@
         <input type="text" id="username" required>
         <label for="password">Password</label>
         <input type="password" id="password" required>
-        <button type="submit" class="login">Login</button>
+        <button type="submit" class="login btn-primary">Login</button>
       </form>
     </div>
   </div>
@@ -120,7 +193,6 @@
       document.getElementById('upload-section-main').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Drag and drop logic
     const dragDropZone = document.getElementById('drag-drop-zone');
     const fileInput = document.getElementById('file-input');
     const browseBtn = document.getElementById('browse-btn');
@@ -143,12 +215,20 @@
       const file = e.dataTransfer.files[0];
       fileInput.files = e.dataTransfer.files;
       fileName.textContent = `✅ ${file.name} uploaded successfully.`;
+      showQuizOptions();
     });
 
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
-      if (file) fileName.textContent = `✅ ${file.name} selected.`;
+      if (file) {
+        fileName.textContent = `✅ ${file.name} selected.`;
+        showQuizOptions();
+      }
     });
+
+    function showQuizOptions() {
+      document.getElementById('quiz-options').style.display = 'flex';
+    }
   </script>
 </body>
 </html>
