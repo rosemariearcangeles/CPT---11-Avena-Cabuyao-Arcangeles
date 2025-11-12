@@ -33,7 +33,6 @@
       <button class="get-started" onclick="scrollToQuiz()">Get Started</button>
     </div>
     <div class="hero-image">
-      <!-- Placeholder image -->
       <div class="placeholder-img"></div>
     </div>
   </section>
@@ -74,6 +73,13 @@
       <div class="upload-section" id="upload-section-main">
         <h1>Generate Quiz from Learning Material</h1>
         <p class="upload-description">Upload your text content and automatically generate quiz questions.</p>
+
+        <!-- 🔽 Drag and Drop Upload Area -->
+        <div id="drag-drop-zone" class="drag-drop-zone">
+          <p>📄 Drag & Drop your .txt file here, or <span id="browse-btn">browse</span></p>
+          <input type="file" id="file-input" accept=".txt" hidden>
+        </div>
+        <div id="file-name" class="file-name"></div>
       </div>
 
       <div class="exam-container" id="quiz-section" style="display:none;">
@@ -113,6 +119,36 @@
     function scrollToQuiz() {
       document.getElementById('upload-section-main').scrollIntoView({ behavior: 'smooth' });
     }
+
+    // Drag and drop logic
+    const dragDropZone = document.getElementById('drag-drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const browseBtn = document.getElementById('browse-btn');
+    const fileName = document.getElementById('file-name');
+
+    browseBtn.addEventListener('click', () => fileInput.click());
+
+    dragDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dragDropZone.classList.add('dragover');
+    });
+
+    dragDropZone.addEventListener('dragleave', () => {
+      dragDropZone.classList.remove('dragover');
+    });
+
+    dragDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragDropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      fileInput.files = e.dataTransfer.files;
+      fileName.textContent = `✅ ${file.name} uploaded successfully.`;
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) fileName.textContent = `✅ ${file.name} selected.`;
+    });
   </script>
 </body>
 </html>
