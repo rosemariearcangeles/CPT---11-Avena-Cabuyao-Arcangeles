@@ -491,3 +491,36 @@ button:hover {
   font-weight: 600;
   color: #2b2b2b;
 }
+/* CAROUSEL SERVICES */
+.carousel {
+  overflow: hidden;
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+}
+
+.carousel-track {
+  display: flex;
+  width: max-content;
+  animation: scroll 30s linear infinite;
+}
+
+.category-card {
+  min-width: 300px;
+  margin: 10px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Seamless ticker effect */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
