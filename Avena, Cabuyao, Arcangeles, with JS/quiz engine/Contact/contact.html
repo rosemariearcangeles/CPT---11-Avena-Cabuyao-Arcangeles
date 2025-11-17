@@ -39,27 +39,43 @@
   <div class="container contact-container">
     <!-- Contact Form -->
     <div class="main-content contact-form">
-      <h2>Send Us a Message</h2>
-      <form id="contact-form">
-        <div class="option-group">
-          <label for="name">Name</label>
-          <input type="text" id="name" required>
-        </div>
-        <div class="option-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" required>
-        </div>
-        <div class="option-group">
-          <label for="subject">Subject</label>
-          <input type="text" id="subject" required>
-        </div>
-        <div class="option-group">
-          <label for="message">Message</label>
-          <textarea id="message" rows="6" required></textarea>
-        </div>
-        <button type="submit" class="primary-button">Send Message</button>
-      </form>
+  <h2>Send Us a Message</h2>
+
+  <form id="contact-form">
+
+    <div class="input-row">
+      <div class="option-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Enter your full name" required>
+      </div>
     </div>
+
+    <div class="input-row">
+      <div class="option-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="yourname@example.com" required>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <div class="option-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" placeholder="What is your message about?" required>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <div class="option-group">
+        <label for="message">Message</label>
+        <textarea id="message" rows="6" placeholder="Write your message here..." required></textarea>
+      </div>
+    </div>
+
+    <button type="submit" class="primary-button full-width">Send Message</button>
+
+  </form>
+</div>
+
 
     <!-- Contact Info Panel -->
     <aside class="sidebar contact-info">
@@ -67,6 +83,11 @@
       <p><strong>Email:</strong> support@quizengine.com</p>
       <p><strong>Phone:</strong> +63 912 345 6789</p>
       <p><strong>Address:</strong> 123 Learning St, Quezon City, Philippines</p>
+      <div class="contact-map">
+  <h4>Our Location</h4>
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3304.4199767093337!2d120.88310047435712!3d14.834761885679812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33965300193807dd%3A0x6be18dfc717fce89!2sMommy&#39;s%20Gyat!5e1!3m2!1sen!2sph!4v1763375291176!5m2!1sen!2sph" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
     </aside>
   </div>
 
