@@ -524,3 +524,44 @@ button:hover {
     transform: translateX(-50%);
   }
 }
+/* TEAM HOVER BIO PANEL */
+.team-wrapper {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Bio box */
+.team-info-box {
+  width: 500px;        /* FIXED WIDTH */
+  height: 420px;       /* FIXED HEIGHT */
+  overflow-y: auto;    /* Prevent stretching */
+  padding: 20px;
+  background: #ffffffd0;
+  border-radius: 10px;
+  text-align: center;
+  position: sticky;     /* stays visible while scrolling */
+  top: 100px;           /* adjust for navbar */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+.team-info-box img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Hover effect */
+.team-member {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.team-member:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}

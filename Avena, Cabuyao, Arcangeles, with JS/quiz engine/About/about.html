@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About - Online Quiz Engine</title>
   <link rel="stylesheet" href="../style.css" />
 </head>
+
 <body>
   <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
-      <img src="../logo.png" alt="Logo" class="logo-img">
+      <img src="../logo.png" alt="Logo" class="logo-img" />
       <h1>Online Quiz Engine</h1>
     </div>
     <ul>
@@ -25,63 +27,106 @@
   </nav>
 
   <!-- Hero Section -->
-  <div class="hero">
+  <section class="hero">
     <div class="hero-content">
       <h1>About Us</h1>
-      <p>We are a team of 3 student programmers. This Online Quiz Engine is our finals project for web development, designed to make learning intuitive and adaptive.</p>
+      <p>
+        We are a team of 3 student programmers. This Online Quiz Engine is our finals project for web development,
+        designed to make learning intuitive and adaptive.
+      </p>
       <button class="get-started" onclick="scrollToTeam()">Meet the Team</button>
     </div>
+
     <div class="hero-image">
-      <img src="exam-illustration.png" alt="Illustration">
+      <img src="exam-illustration.png" alt="Illustration" />
     </div>
-  </div>
+  </section>
 
   <!-- Team Section -->
-  <div class="container" id="team-section">
+  <section class="container" id="team-section">
     <h2 class="section-title">Our Team</h2>
-    <div class="category-cards team-cards">
-      <div class="category-card">
-        <h3>AVENA AKO GUMAGAWAAAAAAAAAA NAJAKAKAKBALAIWIWWIWI</h3>
-        <p>Lead Developer</p>
+
+    <div class="team-wrapper">
+
+      <div class="category-cards team-cards">
+
+        <div class="category-card team-member" data-name="AVENA" data-role="Lead Developer"
+          data-img="..\About\cat-stare-art.gif"
+          data-bio="Also known as 'GodMode' Avena, he's responsible for backend logic, quiz functionalities, and other animations.">
+          <h3>AVENA</h3>
+          <p>"Lead Developer"</p>
+        </div>
+
+        <div class="category-card team-member" data-name="CABUYAO" data-role="Frontend Designer"
+          data-img="..\About\funny-rat-pictures-gw34k3ehb53muhnu-3534292634.jpg"
+          data-bio="This person only knows two things in his life: HTML & CSS, designs user-friendly interfaces and functionalities.">
+          <h3>CABUYAO</h3>
+          <p>"Frontend Designer"</p>
+        </div>
+
+        <div class="category-card team-member" data-name="ARCANGELES" data-role="Website Planner"
+          data-img="..\About\th (2).webp" data-bio="Plans the website structure and overall website flow, she's the brains behind this project.">
+          <h3>ARCANGELES</h3>
+          <p>"Website Planner"</p>
+        </div>
+
       </div>
-      <div class="category-card">
-        <h3>CABUYAO</h3>
-        <p>Frontend Designer</p>
+
+      <!-- ADDED RIGHT SIDE: bio box -->
+      <div class="team-info-box">
+        <img id="infoImg" src="website logo.png" alt="Profile">
+        <h3 id="infoName">Meet the Team</h3>
+        <p id="infoRole">Get to know the developers of this website and their role in hand.</p>
+        <p id="infoBio"></p>
       </div>
-      <div class="category-card">
-        <h3>ARCANGELES</h3>
-        <p>Website Planner</p>
-      </div>
+
     </div>
-    <p class="team-note">We aim to make learning fun, efficient, and accessible even without AI integration.</p>
-  </div>
+
+    <p class="team-note">
+      We aim to make learning fun, efficient, and accessible even without AI integration.
+    </p>
+  </section>
 
   <!-- Login Modal -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeLogin()">&times;</span>
       <h2>Login to Your Account</h2>
+
       <form>
         <label>Username</label>
-        <input type="text" required>
+        <input type="text" required />
+
         <label>Password</label>
-        <input type="password" required>
+        <input type="password" required />
+
         <button type="submit" class="login">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
   <footer class="foot">
     <p>&copy; Adaptive Quiz Engine 2025.</p>
   </footer>
 
   <script src="../script.js"></script>
+
   <script>
     function scrollToTeam() {
-      const section = document.getElementById('team-section');
-      if (section) section.scrollIntoView({ behavior: 'smooth' });
+      const section = document.getElementById("team-section");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
     }
+    document.querySelectorAll('.team-member').forEach(member => {
+      member.addEventListener('mouseenter', () => {
+        document.getElementById("infoName").textContent = member.dataset.name;
+        document.getElementById("infoRole").textContent = member.dataset.role;
+        document.getElementById("infoImg").src = member.dataset.img;
+        document.getElementById("infoBio").textContent = member.dataset.bio;
+      });
+    });
   </script>
 </body>
+
 </html>
