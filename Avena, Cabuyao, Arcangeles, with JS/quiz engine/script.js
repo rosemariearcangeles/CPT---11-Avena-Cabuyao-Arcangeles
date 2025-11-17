@@ -305,15 +305,3 @@ function renderGeneratedPreview(list) {
   importBtn.textContent = `Start Quiz (${list.length})`;
   importBtn.style.display = 'block';
 }
-document.addEventListener("DOMContentLoaded", () => {
-  const track = document.querySelector('.carousel-track');
-  if (track) {
-    // Duplicate cards so there’s always content flowing in
-    track.innerHTML += track.innerHTML;
-  }
-});
-document.querySelectorAll('.category-card').forEach(card => {
-      card.addEventListener('click', () => {
-        card.classList.toggle('active');
-      });
-    });
