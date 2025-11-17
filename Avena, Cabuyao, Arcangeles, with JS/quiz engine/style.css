@@ -491,7 +491,9 @@ button:hover {
   font-weight: 600;
   color: #2b2b2b;
 }
-/* CAROUSEL SERVICES */
+/* ==============
+CAROUSEL SERVICES 
+=================*/
 .carousel {
   overflow: hidden;
   width: 100%;
@@ -524,11 +526,13 @@ button:hover {
     transform: translateX(-50%);
   }
 }
-/* TEAM HOVER BIO PANEL */
+/* ==================
+TEAM HOVER BIO PANEL 
+=====================*/
 .team-wrapper {
   display: flex;
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 1rem;
+  margin-top: 1rem;
   flex-wrap: wrap;
 }
 
@@ -565,7 +569,9 @@ button:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
-/* Contact Form */
+/* =============
+Contact Form 
+================*/
 .contact-form {
   background: var(--card-bg);
   padding: 2rem;
