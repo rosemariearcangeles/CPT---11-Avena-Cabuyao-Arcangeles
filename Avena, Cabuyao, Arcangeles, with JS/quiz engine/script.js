@@ -312,3 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
     track.innerHTML += track.innerHTML;
   }
 });
+document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('active');
+      });
+    });

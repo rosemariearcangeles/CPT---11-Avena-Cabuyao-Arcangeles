@@ -630,3 +630,77 @@ button:hover {
 .contact-map iframe {
   border-radius: var(--radius);
 }
+
+    /* Container */
+    .container {
+      padding: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* FAQ Grid */
+    .faq-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px; /* space between cards */
+      justify-content: center;
+    }
+
+    /* Flip Card Wrapper */
+    .category-card {
+      background: transparent;
+      width: 280px;
+      height: 160px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    /* Flip Card Inner */
+    .category-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    /* Flip on active */
+    .category-card.active .category-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    /* Front and Back sides */
+    .category-card-front,
+    .category-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      padding: 20px;
+      box-sizing: border-box;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    /* Front side */
+    .category-card-front h3 {
+      font-weight: 700;
+      color: #222;
+      margin: 0;
+    }
+
+    /* Back side */
+    .category-card-back {
+      background: #6c63ff;
+      color: white;
+      transform: rotateY(180deg);
+      font-size: 14px;
+      line-height: 1.4;
+    }

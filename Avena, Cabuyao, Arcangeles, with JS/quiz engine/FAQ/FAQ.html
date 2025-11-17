@@ -37,33 +37,41 @@
 
   <!-- FAQ Section -->
   <div class="container">
-    <div class="carousel">
-      <div class="carousel-track">
-        <div class="category-card">
-        <h3>How do I create a quiz?</h3>
-        <p>Upload a text file with learning material and click generate questions.</p>
-      </div>
+    <div class="faq-list">
       <div class="category-card">
-        <h3>Can I track my scores?</h3>
-        <p>Yes, results are displayed immediately after submitting a quiz.</p>
+        <div class="category-card-inner">
+          <div class="category-card-front">
+            <h3>How do I create a quiz?</h3>
+          </div>
+          <div class="category-card-back">
+            <p>Upload a text file with learning material and click generate questions.</p>
+          </div>
+        </div>
       </div>
+
       <div class="category-card">
-        <h3>Is it free?</h3>
-        <p>Yes, basic quiz generation and practice are free to use.</p>
+        <div class="category-card-inner">
+          <div class="category-card-front">
+            <h3>Can I track my scores?</h3>
+          </div>
+          <div class="category-card-back">
+            <p>Yes, results are displayed immediately after submitting a quiz.</p>
+          </div>
+        </div>
       </div>
-        <div class="category-card">
-        <h3>How do I create a quiz?</h3>
-        <p>Upload a text file with learning material and click generate questions.</p>
-      </div>
+
       <div class="category-card">
-        <h3>Can I track my scores?</h3>
-        <p>Yes, results are displayed immediately after submitting a quiz.</p>
+        <div class="category-card-inner">
+          <div class="category-card-front">
+            <h3>Is it free?</h3>
+          </div>
+          <div class="category-card-back">
+            <p>Yes, basic quiz generation and practice are free to use.</p>
+          </div>
+        </div>
       </div>
-      <div class="category-card">
-        <h3>Is it free?</h3>
-        <p>Yes, basic quiz generation and practice are free to use.</p>
-      </div>
-      </div>
+
+      <!-- You can add more cards here -->
     </div>
   </div>
 
@@ -87,6 +95,15 @@
     <p>&copy; Adaptive Quiz Engine 2025.</p>
   </footer>
 
-  <script src="../script.js"></script>
+  <script>
+    // Flip card toggle on click
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('active');
+      });
+    });
+
+    // Optional: Your existing login open/close functions go here if needed
+  </script>
 </body>
 </html>
