@@ -63,11 +63,15 @@ body {
   text-decoration: none;
   font-weight: 600;
   color: var(--text-color);
-  transition: color var(--transition-speed);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  transition: all var(--transition-speed);
+
 }
 
 .navbar a:hover {
   color: var(--primary-color);
+  background: rgba(0, 119, 204, 0.1);
 }
 
 .login-btn, .try-btn {
@@ -92,7 +96,6 @@ body {
 .try-btn {
   background: var(--primary-color);
   color: white;
-  background: var(--gradient-btn);
 }
 
 .try-btn:hover {
@@ -538,31 +541,55 @@ TEAM HOVER BIO PANEL
 
 /* Bio box */
 .team-info-box {
-  width: 500px;        /* FIXED WIDTH */
-  height: 420px;       /* FIXED HEIGHT */
+  width: 870px;        /* FIXED WIDTH */
+  height: 400px;     /* FIXED HEIGHT */
   overflow-y: auto;    /* Prevent stretching */
   padding: 20px;
-  background: #ffffffd0;
-  border-radius: 10px;
+  background-color: #f9f9f9;
+  border-radius: 12x;
   text-align: center;
   position: sticky;     /* stays visible while scrolling */
   top: 100px;           /* adjust for navbar */
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.team-info-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
 
 .team-info-box img {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #4b25b4;
+}
+
+.team-info-box h3 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.team-info-box p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
   margin-bottom: 10px;
 }
 
 /* Hover effect */
 .team-member {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .team-member:hover {
