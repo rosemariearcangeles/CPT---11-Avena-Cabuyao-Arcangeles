@@ -42,8 +42,6 @@ const quizzes = {
   ]
 };
 
-//hahahahhahahahahhahaha
-
 // =====================
 // Load Quiz from Category
 // =====================
@@ -273,6 +271,14 @@ function closeLogin() { $id('loginModal').classList.remove('show'); }
 window.onclick = e => { if (e.target === $id('loginModal')) closeLogin(); };
 
 // =====================
+// Get Started Button Scroll Fix
+// =====================
+$id('get-started').addEventListener('click', () => {
+  const targetSection = $id('upload-section-main'); // scroll to this section
+  targetSection.scrollIntoView({ behavior: 'smooth' });
+});
+
+// =====================
 // Helpers
 // =====================
 function capitalize(str) {
@@ -307,3 +313,67 @@ function renderGeneratedPreview(list) {
   importBtn.textContent = `Start Quiz (${list.length})`;
   importBtn.style.display = 'block';
 }
+
+// =====================
+// Hero background carousel
+// =====================
+const heroSection = document.getElementById('hero-section');
+const dots = document.querySelectorAll('#hero-dots .dot');
+
+const slides = [
+  { type: 'color', value: '#4b6cb7' },
+  { type: 'image', value: 'images/mm.jpeg' },
+  { type: 'image', value: 'images/nn.jpg' },
+  { type: 'image', value: 'images/oo.jpg' }
+];
+
+let currentSlide = 0;
+
+function showSlide(index) {
+  const slide = slides[index];
+  if (slide.type === 'color') {
+    heroSection.style.background = slide.value;
+    heroSection.style.backgroundSize = 'cover';
+    heroSection.style.backgroundPosition = 'center';
+  } else if (slide.type === 'image') {
+    heroSection.style.background = `url(${slide.value}) no-repeat center center`;
+    heroSection.style.backgroundSize = 'cover';
+  }
+  dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+}
+
+let startX = 0;
+let endX = 0;
+
+heroSection.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+});
+
+heroSection.addEventListener('touchend', (e) => {
+  endX = e.changedTouches[0].clientX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  if (startX - endX > 50) {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+  } else if (endX - startX > 50) {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+  }
+}
+
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => {
+    currentSlide = i;
+    showSlide(currentSlide);
+  });
+});
+
+showSlide(currentSlide);
+
+setInterval(() => {
+  currentSlide = (currentSlide + 1) % slides.length;
+  showSlide(currentSlide);
+}, 5000);

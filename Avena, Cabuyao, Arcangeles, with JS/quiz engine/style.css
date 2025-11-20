@@ -12,6 +12,8 @@
   --radius: 12px;
   --transition-speed: 0.3s;
   --gradient-btn: linear-gradient(135deg, #5A67D8, #805AD5);
+  --muted: #718096;
+  --secondary-color: #4C51BF;
 }
 
 /* Reset */
@@ -546,7 +548,7 @@ TEAM HOVER BIO PANEL
   overflow-y: auto;    /* Prevent stretching */
   padding: 20px;
   background-color: #f9f9f9;
-  border-radius: 12x;
+  border-radius: 12px;
   text-align: center;
   position: sticky;     /* stays visible while scrolling */
   top: 100px;           /* adjust for navbar */
@@ -739,4 +741,50 @@ Contact Form
     height: 160px;
   }
 }
+/* Hero carousel styling */
+#hero-section {
+  position: relative;
+  height: 60vh;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4b6cb7; /* initial blue background */
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  transition: background 0.5s ease-in-out;
+}
 
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+}
+
+.hero-dots .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.hero-dots .dot.active {
+  background: white;
+}

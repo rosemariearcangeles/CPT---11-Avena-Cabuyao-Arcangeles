@@ -90,16 +90,24 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Transform Your Learning Experience</h1>
-      <p>Interactive online quizzes that are easy, comprehensive, and reliable. Practice, learn, and master any subject efficiently.</p>
-      <button class="get-started btn-primary" onclick="scrollToQuiz()">Get Started</button>
-    </div>
-    <div class="hero-image">
-      <div class="placeholder-img"></div>
-    </div>
-  </section>
+<section class="hero" id="hero-section">
+  <div class="hero-overlay"></div> <!-- overlay to darken images if needed -->
+  <div class="hero-content">
+    <h1>Transform Your Learning Experience</h1>
+    <p>Interactive online quizzes that are easy, comprehensive, and reliable. Practice, learn, and master any subject efficiently.</p>
+   <button id="get-started" class="btn-primary">Get Started</button>
+
+  </div>
+
+  <!-- Dots -->
+  <div class="hero-dots" id="hero-dots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+</section>
+
 
   <!-- Main Container -->
   <div class="container">
