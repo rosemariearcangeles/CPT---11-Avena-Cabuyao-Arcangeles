@@ -1,1 +1,343 @@
+// =====================
+// Utility
+// =====================
+const $id = (id) => document.getElementById(id);
+
+// =====================
+// Global Variables
+// =====================
+let currentQuiz = [];
+let userAnswers = [];
+let currentQuestionIndex = 0;
+
+// =====================
+// Load Quiz from localStorage
+// =====================
+function loadQuiz() {
+  try {
+    const quizData = localStorage.getItem('currentQuiz');
+    if (!quizData) {
+      alert('No quiz data found. Please generate a quiz first.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    currentQuiz = JSON.parse(quizData);
+    if (!currentQuiz || !currentQuiz.length) {
+      alert('No questions found in quiz data.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    userAnswers = new Array(currentQuiz.length).fill(null);
+
+    // Simulate loading progress
+    simulateLoadingProgress(() => {
+      const loadingEl = $id("quiz-loading");
+      const formEl = $id("quiz-form");
+      if (loadingEl) loadingEl.style.display = "none";
+      if (formEl) formEl.style.display = "block";
+
+      const totalEl = $id("total-questions");
+      const totalEl2 = $id("total-questions-2");
+      if (totalEl) totalEl.textContent = currentQuiz.length;
+      if (totalEl2) totalEl2.textContent = currentQuiz.length;
+
+      renderAllQuestions();
+      showCurrentQuestion();
+      updateProgress();
+    });
+  } catch (err) {
+    console.error('Error loading quiz:', err);
+    alert('Error loading quiz. Please try again.');
+    window.location.href = 'index.html';
+  }
+}
+
+// =====================
+// Simulate Loading Progress
+// =====================
+function simulateLoadingProgress(callback) {
+  const progressFill = $id("progress-fill");
+  let progress = 0;
+  const steps = [
+    { percent: 25, delay: 500 }, // Loading data
+    { percent: 50, delay: 1000 }, // Parsing questions
+    { percent: 75, delay: 1500 }, // Rendering UI
+    { percent: 100, delay: 2000 } // Finalizing
+  ];
+
+  steps.forEach((step, index) => {
+    setTimeout(() => {
+      progress = step.percent;
+      if (progressFill) {
+        progressFill.style.width = progress + "%";
+      }
+      if (index === steps.length - 1) {
+        setTimeout(callback, 500); // Small delay before hiding loading
+      }
+    }, step.delay);
+  });
+}
+
+// =====================
+// Escape HTML
+// =====================
+function escapeHtml(str) {
+  if (typeof str !== "string") return str;
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// =====================
+// Render All Questions Statically
+// =====================
+function renderAllQuestions() {
+  const container = $id("quiz-questions");
+  if (!container) return;
+
+  let html = '';
+  currentQuiz.forEach((q, qIndex) => {
+    html += `<div class="question-slide" id="question-${qIndex}" style="display: none;">
+      <div class="question-card">
+        <div class="question-text">${escapeHtml(q.question)}</div>
+        <div class="options-grid">`;
+
+    q.options.forEach((opt, optIndex) => {
+      const letter = String.fromCharCode(65 + optIndex);
+      html += `<div class="option-item">
+        <input type="radio" id="q${qIndex}opt${optIndex}" name="q${qIndex}" value="${optIndex}" required>
+        <label for="q${qIndex}opt${optIndex}" class="option-label">
+          <span class="option-letter">${letter}</span>
+          ${escapeHtml(opt)}
+        </label>
+      </div>`;
+    });
+
+    html += `</div></div></div>`;
+  });
+
+  container.innerHTML = html;
+
+  // Restore saved answers
+  currentQuiz.forEach((_, qIndex) => {
+    const savedAnswer = userAnswers[qIndex];
+    if (savedAnswer !== null && savedAnswer !== undefined) {
+      const radio = document.querySelector(`input[name="q${qIndex}"][value="${savedAnswer}"]`);
+      if (radio) radio.checked = true;
+    }
+  });
+}
+
+// =====================
+// Show Current Question (Toggle Visibility)
+// =====================
+function showCurrentQuestion() {
+  const slides = document.querySelectorAll('.question-slide');
+  slides.forEach((slide, index) => {
+    slide.style.display = index === currentQuestionIndex ? 'block' : 'none';
+  });
+
+  const headerQ = $id("question-text");
+  if (headerQ && currentQuiz[currentQuestionIndex]) {
+    headerQ.textContent = currentQuiz[currentQuestionIndex].question;
+  }
+
+  updateNavigationButtons();
+}
+
+// =====================
+// Update Progress Bar
+// =====================
+function updateProgress() {
+  const progressCircle = $id("progress-circle-fill");
+  if (progressCircle) {
+    const circumference = 283; // 2 * pi * 45
+    const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * circumference;
+    progressCircle.style.strokeDashoffset = circumference - progress;
+  }
+
+  const progressPercent = $id("progress-percentage");
+  if (progressPercent) {
+    const pct = Math.round(((currentQuestionIndex + 1) / currentQuiz.length) * 100);
+    progressPercent.textContent = pct + "%";
+  }
+
+  const currentQEl = $id("current-question");
+  if (currentQEl) currentQEl.textContent = currentQuestionIndex + 1;
+
+  const remainingEl = $id("remaining");
+  if (remainingEl) remainingEl.textContent = Math.max(0, currentQuiz.length - (currentQuestionIndex + 1));
+}
+
+// =====================
+// Update Navigation Buttons
+// =====================
+function updateNavigationButtons() {
+  const prevBtn = $id("prev-btn");
+  const nextBtn = $id("next-btn");
+  const submitBtn = $id("submit-btn");
+
+  if (prevBtn) prevBtn.disabled = currentQuestionIndex === 0;
+  if (nextBtn) nextBtn.style.display = currentQuestionIndex === currentQuiz.length - 1 ? "none" : "inline-flex";
+  if (submitBtn) submitBtn.style.display = currentQuestionIndex === currentQuiz.length - 1 ? "inline-flex" : "none";
+}
+
+// =====================
+// Navigation Handlers
+// =====================
+function nextQuestion() {
+  const selected = document.querySelector('input[name="q' + currentQuestionIndex + '"]:checked');
+  userAnswers[currentQuestionIndex] = selected ? selected.value : null;
+
+  if (currentQuestionIndex < currentQuiz.length - 1) {
+    currentQuestionIndex++;
+    showCurrentQuestion();
+    updateProgress();
+  }
+}
+
+function prevQuestion() {
+  const selected = document.querySelector('input[name="q' + currentQuestionIndex + '"]:checked');
+  userAnswers[currentQuestionIndex] = selected ? selected.value : null;
+
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    showCurrentQuestion();
+    updateProgress();
+  }
+}
+
+// =====================
+// Submit Quiz
+// =====================
+const quizForm = $id("quiz-form");
+if (quizForm) {
+  quizForm.addEventListener("submit", e => {
+    e.preventDefault();
+    // Save the current question's answer before submitting
+    const selected = document.querySelector('input[name="q' + currentQuestionIndex + '"]:checked');
+    userAnswers[currentQuestionIndex] = selected ? selected.value : null;
+    showResult();
+  });
+}
+
+// =====================
+// Show Results (keep back button)
+// =====================
+function showResult() {
+  let score = 0;
+  let html = "";
+
+  currentQuiz.forEach((q, i) => {
+    const userAnswerIndex = userAnswers[i];
+    let correctIndex = null;
+    if (typeof q.answer === 'number' || /^\d+$/.test(String(q.answer))) {
+      correctIndex = Number(q.answer);
+    } else {
+      correctIndex = q.options.indexOf(q.answer);
+    }
+
+    const correct = userAnswerIndex !== null && Number(userAnswerIndex) === correctIndex;
+    if (correct) score++;
+
+    const userAnswerText = userAnswerIndex !== null ? q.options[Number(userAnswerIndex)] : 'No answer';
+    const correctAnswerText = q.options[correctIndex];
+
+    html += '<div class="result-item ' + (correct ? "correct" : "incorrect") + '">' +
+      (correct ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="green" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>') + ' Q' + (i + 1) + ': ' + escapeHtml(q.question) +
+      '<div class="user-answer">Your answer: ' + escapeHtml(userAnswerText) + '</div>' +
+      (correct ? "" : '<div class="correct-answer">Correct: ' + escapeHtml(correctAnswerText) + '</div>') +
+      '</div>';
+  });
+
+  const quizFormEl = $id("quiz-form");
+  if (quizFormEl) quizFormEl.style.display = "none";
+
+  const quizResultEl = $id("quiz-result");
+  if (!quizResultEl) {
+    alert('Quiz finished. Your score: ' + score + '/' + currentQuiz.length);
+    return;
+  }
+
+  quizResultEl.style.display = "block";
+
+  const scoreText = $id("score-text");
+  if (scoreText) scoreText.textContent = `Your Score: ${score}/${currentQuiz.length}`;
+
+  const scorePercent = $id("score-percentage");
+  if (scorePercent) {
+    const pct = Math.round((score / currentQuiz.length) * 100);
+    scorePercent.textContent = pct + "%";
+  }
+
+  const breakdown = $id("results-breakdown");
+  if (breakdown) {
+    breakdown.innerHTML = html;
+  } else {
+    const fallback = document.createElement("div");
+    fallback.innerHTML = '<h3>Your Score: ' + score + '/' + currentQuiz.length + '</h3>' + html;
+    quizResultEl.insertBefore(fallback, quizResultEl.firstChild);
+  }
+
+  const back = $id("back-btn");
+  if (back) back.onclick = () => window.location.href = "index.html";
+}
+
+// =====================
+// Navigation Button Event Listeners
+// =====================
+const prevBtn = $id("prev-btn");
+const nextBtn = $id("next-btn");
+
+if (prevBtn) {
+  prevBtn.addEventListener("click", prevQuestion);
+}
+
+if (nextBtn) {
+  nextBtn.addEventListener("click", nextQuestion);
+}
+
+// =====================
+// Parse Quiz from Text
+// =====================
+function parseQuizFromText(text) {
+  const questions = [];
+  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+  let currentQuestion = null;
+  let options = [];
+  let answer = null;
+
+  for (const line of lines) {
+    if (line.startsWith('Question:')) {
+      if (currentQuestion) {
+        questions.push({ question: currentQuestion, options, answer });
+      }
+      currentQuestion = line.substring(9).trim();
+      options = [];
+      answer = null;
+    } else if (line.match(/^[A-D]\)/)) {
+      const optionText = line.substring(2).trim();
+      options.push(optionText);
+    } else if (line.startsWith('Answer:')) {
+      answer = line.substring(7).trim();
+    }
+  }
+
+  if (currentQuestion) {
+    questions.push({ question: currentQuestion, options, answer });
+  }
+
+  return questions;
+}
+
+// =====================
+// Initialize
+// =====================
+document.addEventListener('DOMContentLoaded', loadQuiz);
 
