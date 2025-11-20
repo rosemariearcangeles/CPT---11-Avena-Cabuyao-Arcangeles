@@ -12,17 +12,20 @@
   <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
-      <img src="../logo.png" alt="Logo" class="logo-img" />
       <h1>Online Quiz Engine</h1>
     </div>
-    <ul>
+
+    <ul class="nav-links">
       <li><a href="../index.html">Home</a></li>
       <li><a href="about.html" class="active">About</a></li>
       <li><a href="../Service/service.html">Service</a></li>
       <li><a href="../Contact/contact.html">Contact Us</a></li>
       <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-      <li><a href="#" class="login-btn" onclick="openLogin()">Login</a></li>
-      <li><a href="#" class="try-btn">Try for free</a></li>
+
+      <!-- CONSISTENT LOGIN BUTTON -->
+      <li>
+        <button class="login-btn" onclick="openLogin()">Login</button>
+      </li>
     </ul>
   </nav>
 
@@ -37,9 +40,7 @@
       <button class="get-started" onclick="scrollToTeam()">Meet the Team</button>
     </div>
 
-    <div class="hero-image">
-      <img src="exam-illustration.png" alt="Illustration" />
-    </div>
+
   </section>
 
   <!-- Team Section -->
@@ -50,31 +51,38 @@
 
       <div class="category-cards team-cards">
 
-        <div class="category-card team-member" data-name="AVENA" data-role="Lead Developer"
-          data-img="..\About\cat-stare-art.gif"
+        <div class="category-card team-member"
+          data-name="AVENA"
+          data-role="Lead Developer"
+          data-img="../About/cat-stare-art.gif"
           data-bio="Also known as 'GodMode' Avena, he's responsible for backend logic, quiz functionalities, and other animations.">
           <h3>AVENA</h3>
           <p>"Lead Developer"</p>
         </div>
 
-        <div class="category-card team-member" data-name="CABUYAO" data-role="Frontend Designer"
-          data-img="..\About\funny-rat-pictures-gw34k3ehb53muhnu-3534292634.jpg"
+        <div class="category-card team-member"
+          data-name="CABUYAO"
+          data-role="Frontend Designer"
+          data-img="../About/funny-rat-pictures-gw34k3ehb53muhnu-3534292634.jpg"
           data-bio="This person only knows two things in his life: HTML & CSS, designs user-friendly interfaces and functionalities.">
           <h3>CABUYAO</h3>
           <p>"Frontend Designer"</p>
         </div>
 
-        <div class="category-card team-member" data-name="ARCANGELES" data-role="Website Planner"
-          data-img="..\About\th (2).webp" data-bio="Plans the website structure and overall website flow, she's the brains behind this project.">
+        <div class="category-card team-member"
+          data-name="ARCANGELES"
+          data-role="Website Planner"
+          data-img="../About/th (2).webp"
+          data-bio="Plans the website structure and overall website flow, she's the brains behind this project.">
           <h3>ARCANGELES</h3>
           <p>"Website Planner"</p>
         </div>
 
       </div>
 
-      <!-- ADDED RIGHT SIDE: bio box -->
+      <!-- Bio box -->
       <div class="team-info-box">
-        <img id="infoImg" src="website logo.png" alt="Profile">
+        <img id="infoImg" src="" alt="Profile">
         <h3 id="infoName">Meet the Team</h3>
         <p id="infoRole">Get to know the developers of this website and their role in hand.</p>
         <p id="infoBio"></p>
@@ -105,19 +113,42 @@
     </div>
   </div>
 
+  <!-- Footer -->
   <footer class="foot">
-    <p>&copy; Adaptive Quiz Engine 2025.</p>
+    <div class="footer-content">
+
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="../Service/service.html">Services</a></li>
+          <li><a href="../FAQ/FAQ.html">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <p>Email: support@quizengine.com</p>
+        <p>Phone: +1 (123) 456-7890</p>
+      </div>
+
+      <!-- REMOVED Follow Us section completely -->
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; Adaptive Quiz Engine 2025. All rights reserved.</p>
+    </div>
   </footer>
 
   <script src="../script.js"></script>
 
   <script>
     function scrollToTeam() {
-      const section = document.getElementById("team-section");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
+      document.getElementById("team-section").scrollIntoView({ behavior: "smooth" });
     }
+
     document.querySelectorAll('.team-member').forEach(member => {
       member.addEventListener('mouseenter', () => {
         document.getElementById("infoName").textContent = member.dataset.name;
