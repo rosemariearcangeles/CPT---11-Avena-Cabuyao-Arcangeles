@@ -1,156 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Online Quiz Engine</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Button Styling */
-    .btn-primary {
-      background: linear-gradient(90deg, #4b6cb7, #182848);
-      color: white;
-      padding: 0.7rem 1.2rem;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.2s ease;
-      margin-top: 0.5rem;
-    }
-    .btn-primary:hover {
-      transform: scale(1.05);
-      opacity: 0.9;
-    }
-
-    /* Fullscreen quiz section */
-    #quiz-section {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #f4f4f4;
-      overflow-y: auto;
-      padding: 2rem;
-      display: none;
-      z-index: 100;
-    }
-
-    .quiz-options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .quiz-options label {
-      font-weight: bold;
-    }
-
-    .question-block {
-      margin-bottom: 1.2rem;
-      padding: 1rem;
-      border-radius: 8px;
-      background: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .option-label {
-      display: block;
-      margin: 0.3rem 0;
-      cursor: pointer;
-    }
-
-    #generated-preview-main .question-preview {
-      padding: 0.8rem;
-      margin-bottom: 0.5rem;
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-  </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="logo">
-      <img src="logo.png" alt="Logo" class="logo-img">
+  <!-- NAVBAR -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="logo" aria-hidden="false">
       <h1>Online Quiz Engine</h1>
     </div>
-    <ul>
+
+    <ul class="nav-links">
       <li><a href="index.html" class="active">Home</a></li>
       <li><a href="About/about.html">About</a></li>
       <li><a href="Service/service.html">Service</a></li>
       <li><a href="Contact/contact.html">Contact Us</a></li>
       <li><a href="FAQ/FAQ.html">FAQ</a></li>
-      <li><a href="#" class="login-btn" onclick="openLogin()">Login</a></li>
-      <li><a href="#" class="try-btn">Try for free</a></li>
+      <li>
+        <button class="login-btn" onclick="openLogin()" aria-haspopup="dialog">Login</button>
+      </li>
     </ul>
   </nav>
 
-  <!-- Hero Section -->
-<section class="hero" id="hero-section">
-  <div class="hero-overlay"></div> <!-- overlay to darken images if needed -->
-  <div class="hero-content">
-    <h1>Transform Your Learning Experience</h1>
-    <p>Interactive online quizzes that are easy, comprehensive, and reliable. Practice, learn, and master any subject efficiently.</p>
-   <button id="get-started" class="btn-primary">Get Started</button>
+  <!-- HERO -->
+  <section id="hero-section" class="hero" aria-label="Homepage hero">
+    <div id="hero-slides" class="hero-slides" aria-hidden="true"></div>
+    <div class="hero-overlay" aria-hidden="true"></div>
 
-  </div>
+    <div class="hero-content" role="region" aria-label="Hero content">
+      <h1>Transform Your Learning Experience</h1>
+      <p>Interactive online quizzes that are easy, comprehensive, and reliable. Practice, learn, and master any subject efficiently.</p>
+    </div>
 
-  <!-- Dots -->
-  <div class="hero-dots" id="hero-dots">
-    <span class="dot active"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
-  </div>
-</section>
+    <div id="hero-dots" class="hero-dots" role="tablist" aria-label="Slide controls"></div>
+  </section>
 
-
-  <!-- Main Container -->
+  <!-- MAIN CONTENT -->
   <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h2>Sample Quizzes</h2>
-      <div class="category-cards">
-        <div class="category-card" onclick="loadQuiz('math')">Mathematics</div>
-        <div class="category-card" onclick="loadQuiz('science')">Science</div>
-        <div class="category-card" onclick="loadQuiz('history')">History</div>
-        <div class="category-card" onclick="loadQuiz('english')">English</div>
-        <div class="category-card" onclick="loadQuiz('physical education')">Physical Education</div>
-        <div class="category-card" onclick="loadQuiz('filipino')">Filipino</div>
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-labelledby="generation-heading">
+      <h2 id="generation-heading">Generation Settings</h2>
+
+      <!-- HIDDEN ORIGINAL SELECT -->
+      <select id="generation-mode" aria-label="Generation mode" hidden>
+        <option value="local">Local Generation</option>
+        <option value="ai">AI Generation (requires configuration)</option>
+      </select>
+
+      <!-- GENERATION MODE CARDS (NEW) -->
+      <div id="generation-mode-container">
+        <!-- Local selected by default -->
+        <div class="generation-card gen-clean-option selected" data-mode="local" role="button" tabindex="0" aria-pressed="true" aria-label="Local Generation">
+          <h3>Local Generation</h3>
+          <p>Generate quizzes instantly using your browser. No API required.</p>
+        </div>
+
+        <div class="generation-card gen-clean-option" data-mode="ai" role="button" tabindex="0" aria-pressed="false" aria-label="AI Generation">
+          <h3>AI Generation</h3>
+          <p>Use an AI provider for higher-quality quiz generation.</p>
+        </div>
       </div>
 
-      <hr />
-      <h3>Upload Learning Material</h3>
-      <div id="uploader-panel">
-        <input type="file" id="material-file-main" accept=".txt" />
-        <div id="generated-preview-main"></div>
-        <button id="import-btn-main" class="btn-primary" style="display:none;">Import to Quiz</button>
+      <!-- PRESET BUTTONS -->
+      <div class="category-cards">
+        <div class="category-card">
+          <div class="card-title">Presets</div>
+          <div class="preset-buttons">
+            <button id="preset-fast" class="btn btn-outline btn-sm">Quick (5)</button>
+            <button id="preset-full" class="btn btn-outline btn-sm">Full (20)</button>
+          </div>
+        </div>
       </div>
+
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="upload-section" id="upload-section-main">
-        <h1>Generate Quiz from Learning Material</h1>
-        <p class="upload-description">Upload your text content and automatically generate quiz questions.</p>
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content" id="main">
 
-        <!-- Drag and Drop Upload Area -->
-        <div id="drag-drop-zone" class="drag-drop-zone">
-          <p>📄 Drag & Drop your .txt file here, or <span id="browse-btn">browse</span></p>
+      <!-- UPLOAD SECTION -->
+      <section class="upload-section" aria-labelledby="upload-heading">
+        <h1 id="upload-heading">Generate Quiz from Learning Material</h1>
+        <p class="upload-description">Upload a plain text file and automatically generate quiz questions.</p>
+
+        <div id="drag-drop-zone" class="drag-drop-zone" role="button" aria-label="Upload learning material" tabindex="0">
+          <svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM13 3.5L18.5 9H14a1 1 0 0 1-1-1V3.5zM12 12v4.59l1.29-1.3 1.42 1.42L12 19.34l-2.71-2.71 1.42-1.42L11 16.59V12h1z"/>
+          </svg>
+
+          <p class="upload-title">Drag & drop a .txt file here</p>
+
+          <p class="upload-hint">
+            or 
+            <button id="browse-btn" class="btn btn-outline btn-sm">Browse</button>
+          </p>
+
           <input type="file" id="file-input" accept=".txt" hidden>
         </div>
-        <div id="file-name" class="file-name"></div>
 
-        <!-- Quiz Options Panel -->
-        <div id="quiz-options" class="quiz-options" style="display:none; margin-top:1rem;">
-          <label for="num-questions">Number of Questions:</label>
-          <input type="number" id="num-questions" min="1" max="20" value="5">
+        <div id="file-name" class="file-name" aria-live="polite"></div>
 
-          <label for="quiz-type">Quiz Type:</label>
+        <div id="quiz-options" class="quiz-options" aria-hidden="true" style="display:none;">
+          <label for="num-questions">Number of Questions</label>
+          <input id="num-questions" type="number" min="1" max="50" value="5">
+
+          <label for="quiz-type">Quiz Type</label>
           <select id="quiz-type">
             <option value="multiple">Multiple Choice</option>
             <option value="fill-blank">Fill-in-the-Blank</option>
@@ -158,85 +116,72 @@
             <option value="mixed">Mixed</option>
           </select>
 
-          <button id="generate-quiz-ai" class="btn-primary">Generate Quiz</button>
+          <div class="option-actions">
+            <button id="generate-quiz-ai" class="btn btn-primary">Generate Quiz</button>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Fullscreen Quiz Section -->
-      <div class="exam-container" id="quiz-section">
-        <form id="quiz-form">
-          <h2 id="quiz-title">Select a category to start your exam</h2>
-          <button type="button" id="back-btn" class="secondary-button btn-primary">← Back to Upload</button>
-          <div id="quiz-questions" class="question-grid"></div>
-          <button type="submit" id="submit-btn" class="submit-button btn-primary" style="display:none;">Submit Exam</button>
-        </form>
-        <div id="quiz-result" class="result-card"></div>
-      </div>
+      <!-- CAROUSEL -->
+      <section class="services-carousel">
+        <div class="carousel">
+          <div class="carousel-track" id="carousel-track">
+            <div class="category-card">Fast generation</div>
+            <div class="category-card">Customizable quizzes</div>
+            <div class="category-card">AI-assisted (optional)</div>
+            <div class="category-card">Analytics & results</div>
+            <div class="category-card">Fast generation</div>
+            <div class="category-card">Customizable quizzes</div>
+            <div class="category-card">AI-assisted (optional)</div>
+            <div class="category-card">Analytics & results</div>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modal" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <span class="close" onclick="closeLogin()">&times;</span>
+      <button class="close" onclick="closeLogin()">&times;</button>
       <h2>Login to Your Account</h2>
-      <form>
+
+      <form onsubmit="event.preventDefault()">
         <label for="username">Username</label>
         <input type="text" id="username" required>
+
         <label for="password">Password</label>
         <input type="password" id="password" required>
-        <button type="submit" class="login btn-primary">Login</button>
+
+        <button class="login" type="submit">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer class="foot">
-    <p>&copy; Adaptive Quiz Engine 2025.</p>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="About/about.html">About</a></li>
+          <li><a href="Service/service.html">Services</a></li>
+          <li><a href="FAQ/FAQ.html">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <p>Email: support@quizengine.com</p>
+        <p>Phone: +1 (123) 456-7890</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">© Adaptive Quiz Engine 2025</div>
   </footer>
 
   <script src="script.js"></script>
-  <script>
-    function scrollToQuiz() {
-      document.getElementById('upload-section-main').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    const dragDropZone = document.getElementById('drag-drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const browseBtn = document.getElementById('browse-btn');
-    const fileName = document.getElementById('file-name');
-
-    browseBtn.addEventListener('click', () => fileInput.click());
-
-    dragDropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dragDropZone.classList.add('dragover');
-    });
-
-    dragDropZone.addEventListener('dragleave', () => {
-      dragDropZone.classList.remove('dragover');
-    });
-
-    dragDropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dragDropZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      fileInput.files = e.dataTransfer.files;
-      fileName.textContent = `✅ ${file.name} uploaded successfully.`;
-      showQuizOptions();
-    });
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      if (file) {
-        fileName.textContent = `✅ ${file.name} selected.`;
-        showQuizOptions();
-      }
-    });
-
-    function showQuizOptions() {
-      document.getElementById('quiz-options').style.display = 'flex';
-    }
-  </script>
 </body>
 </html>
