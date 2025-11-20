@@ -1157,13 +1157,14 @@ body {
   color: #2b2b2b;
 }
 /* ==============
-CAROUSEL SERVICES 
+CAROUSEL SERVICES
 =================*/
 .carousel {
   overflow: hidden;
   width: 100%;
   max-width: 900px;
   margin: auto;
+  animation: fadeInUp 1.5s ease-out;
 }
 
 .carousel-track {
@@ -1413,7 +1414,7 @@ Contact Form
   color: white;
   text-align: center;
   overflow: hidden;
-  transition: background 0.5s ease-in-out;
+  transition: background 0.5s ease-in-out, background-image 0.5s ease-in-out;
 }
 
 .hero-overlay {
