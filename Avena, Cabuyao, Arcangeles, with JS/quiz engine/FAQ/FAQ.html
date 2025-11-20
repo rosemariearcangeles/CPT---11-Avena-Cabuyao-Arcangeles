@@ -1,98 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FAQ - Online Quiz Engine</title>
-  <link rel="stylesheet" href="../style.css" />
-</head>
-<body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="logo">
-      <img src="../logo.png" alt="Logo" class="logo-img">
-      <h1>Online Quiz Engine</h1>
-    </div>
-    <ul>
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="../About/about.html">About</a></li>
-      <li><a href="../Service/service.html">Service</a></li>
-      <li><a href="../Contact/contact.html">Contact Us</a></li>
-      <li><a href="FAQ.html" class="active">FAQ</a></li>
-      <li><a href="#" class="login-btn" onclick="openLogin()">Login</a></li>
-      <li><a href="#" class="try-btn">Try for free</a></li>
-    </ul>
-  </nav>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FAQ - Online Quiz Engine</title>
+    <link rel="stylesheet" href="../style.css" />
+    </head>
+    <body>
 
-  <!-- Hero Section -->
-  <div class="hero">
-    <div class="hero-content">
-      <h1>Frequently Asked Questions</h1>
-      <p>Find answers to common questions about our platform and services.</p>
-    </div>
-    <div class="hero-image">
-      <img src="faq-illustration.png" alt="FAQ Illustration">
-    </div>
-  </div>
-
-  <!-- FAQ Section -->
-  <div class="flip-card">
-    <div class="faq-list">
-      <div class="category-card">
-        <div class="category-card-inner">
-          <div class="category-card-front">
-            <h3>How do I create a quiz?</h3>
-          </div>
-          <div class="category-card-back">
-            <p>Upload a text file with learning material and click generate questions.</p>
-          </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+        <h1>Online Quiz Engine</h1>
         </div>
-      </div>
 
-      <div class="category-card">
-        <div class="category-card-inner">
-          <div class="category-card-front">
-            <h3>Can I track my scores?</h3>
-          </div>
-          <div class="category-card-back">
-            <p>Yes, results are displayed immediately after submitting a quiz.</p>
-          </div>
+        <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../About/about.html">About</a></li>
+        <li><a href="../Service/service.html">Service</a></li>
+        <li><a href="../Contact/contact.html">Contact Us</a></li>
+        <li><a href="FAQ.html" class="active">FAQ</a></li>
+
+        <!-- CONSISTENT LOGIN BUTTON -->
+        <li><button class="login-btn" onclick="openLogin()">Login</button></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+        <h1>Frequently Asked Questions</h1>
+        <p>Find answers to common questions about our platform and services.</p>
         </div>
-      </div>
 
-      <div class="category-card">
-        <div class="category-card-inner">
-          <div class="category-card-front">
-            <h3>Is it free?</h3>
-          </div>
-          <div class="category-card-back">
-            <p>Yes, basic quiz generation and practice are free to use.</p>
-          </div>
+        <!-- REMOVED the placeholder FAQ illustration -->
+        <div class="hero-image"></div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="flip-card">
+        <div class="faq-list">
+
+        <div class="category-card">
+            <div class="category-card-inner">
+            <div class="category-card-front">
+                <h3>How do I create a quiz?</h3>
+            </div>
+            <div class="category-card-back">
+                <p>Upload a text file with learning material and click generate questions.</p>
+            </div>
+            </div>
         </div>
-      </div>
+
+        <div class="category-card">
+            <div class="category-card-inner">
+            <div class="category-card-front">
+                <h3>Can I track my scores?</h3>
+            </div>
+            <div class="category-card-back">
+                <p>Yes, results are displayed immediately after submitting a quiz.</p>
+            </div>
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-card-inner">
+            <div class="category-card-front">
+                <h3>Is it free?</h3>
+            </div>
+            <div class="category-card-back">
+                <p>Yes, basic quiz generation and practice are free to use.</p>
+            </div>
+            </div>
+        </div>
+
+        </div>
     </div>
-  </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeLogin()">&times;</span>
-      <h2>Login to Your Account</h2>
-      <form>
-        <label>Username</label>
-        <input type="text" required>
-        <label>Password</label>
-        <input type="password" required>
-        <button type="submit" class="login">Login</button>
-      </form>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+        <span class="close" onclick="closeLogin()">&times;</span>
+        <h2>Login to Your Account</h2>
+        <form>
+            <label>Username</label>
+            <input type="text" required>
+
+            <label>Password</label>
+            <input type="password" required>
+
+            <button type="submit" class="login">Login</button>
+        </form>
+        </div>
     </div>
-  </div>
 
-  <!-- Footer -->
-  <footer class="foot">
-    <p>&copy; Adaptive Quiz Engine 2025.</p>
-  </footer>
+    <!-- Footer -->
+    <footer class="foot">
+        <div class="footer-content">
 
-  <script src="../script.js"></script>
-</body>
-</html>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../About/about.html">About</a></li>
+            <li><a href="../Service/service.html">Services</a></li>
+            <li><a href="FAQ.html">FAQ</a></li>
+            <li><a href="../Contact/contact.html">Contact Us</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <p>Email: support@quizengine.com</p>
+            <p>Phone: +1 (123) 456-7890</p>
+        </div>
+
+        <!-- REMOVED Follow Us section + emojis -->
+
+        </div>
+
+        <div class="footer-bottom">
+        <p>&copy; Adaptive Quiz Engine 2025. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    </body>
+    </html>
