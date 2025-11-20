@@ -1,1 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz - Online Quiz Engine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="exam-container">
+
+    <div class="quiz-card">
+
+      <div class="quiz-header">
+        <div>
+          <h2 class="quiz-title">Quiz Challenge</h2>
+          <p class="quiz-subtitle">Answer the questions to test your knowledge.</p>
+        </div>
+        <div class="quiz-meta">
+          <div>Powered by Online Quiz Engine</div>
+          <div>Total Questions: <span id="total-questions">0</span></div>
+        </div>
+      </div>
+
+      <div class="quiz-main-grid">
+
+        <div class="quiz-left">
+
+          <div id="quiz-loading" class="quiz-loading">
+            <svg class="loading-spinner" width="50" height="50" viewBox="0 0 50 50">
+              <circle cx="25" cy="25" r="20" stroke="#007bff" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            <p class="muted">Loading quiz...</p>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+          </div>
+
+          <form id="quiz-form" class="quiz-form" novalidate>
+            <div class="question-block">
+
+              <p id="question-text" class="question-text">Question appears here</p>
+
+              <div id="quiz-questions" class="quiz-questions"></div>
+
+              <div class="quiz-nav">
+                <button id="prev-btn" type="button" class="nav-btn nav-btn-secondary" disabled>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                  </svg>
+                  Previous
+                </button>
+                <button id="next-btn" type="button" class="nav-btn nav-btn-primary">
+                  Next
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </button>
+                <button id="submit-btn" type="submit" class="nav-btn submit-button" style="display:none;">Submit</button>
+              </div>
+
+            </div>
+          </form>
+
+          <div id="quiz-result" class="quiz-result" style="display:none;">
+            <div class="result-card">
+
+              <div class="score-header">
+                <div id="score-circle" class="score-circle">
+                  <span id="score-percentage">0%</span>
+                </div>
+                <div>
+                  <h3 id="score-text">Your Score</h3>
+                </div>
+              </div>
+
+              <div id="results-breakdown" class="results-breakdown"></div>
+
+              <div class="result-actions">
+                <button id="back-btn" class="nav-btn nav-btn-secondary">Back to Home</button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <aside class="side-panel">
+
+          <h3 class="side-heading">Progress</h3>
+          <div class="progress-circle-container">
+            <svg class="progress-circle" width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" stroke="#e0e0e0" stroke-width="10" fill="none"/>
+              <circle cx="50" cy="50" r="45" stroke="#007bff" stroke-width="10" fill="none" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" id="progress-circle-fill"/>
+            </svg>
+            <div class="progress-text">
+              <span id="progress-percentage">0%</span>
+            </div>
+          </div>
+          <p class="muted">Question <span id="current-question">1</span> / <span id="total-questions-2">0</span></p>
+
+          <hr class="divider" />
+
+          <h3 class="side-heading">Quiz Info</h3>
+          <p class="muted">Difficulty: <strong id="difficulty">Medium</strong></p>
+          <p class="muted">Subject: <strong id="subject">General</strong></p>
+          <p class="muted">Remaining: <strong id="remaining">--</strong></p>
+
+        </aside>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="quiz-script.js"></script>
+
+</body>
+</html>
 
