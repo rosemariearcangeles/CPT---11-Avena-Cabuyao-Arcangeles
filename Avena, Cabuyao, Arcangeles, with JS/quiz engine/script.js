@@ -799,9 +799,72 @@
   window.handleLogin = handleLogin;
   window.handleRegister = handleRegister;
 
-  // Add event listeners for login and register buttons, and close buttons
-  // Moved inside init() function to ensure proper attachment after DOM ready
+  // Function to update UI based on login status
+  async function updateLoginUI() {
+    const navLoginBtn = document.getElementById('nav-login-btn');
+    const navRegisterBtn = document.getElementById('nav-register-btn');
+    const navUsernameDisplay = document.getElementById('nav-username-display');
+    const navUsernameSpan = document.getElementById('nav-username');
+    const navLogoutBtn = document.getElementById('nav-logout-btn');
 
-  // Removed this block from here
+    try {
+      const response = await fetch('session_check.php');
+      const data = await response.json();
+
+      if (data.loggedIn) {
+        // Hide login and register buttons
+        if(navLoginBtn) navLoginBtn.style.display = 'none';
+        if(navRegisterBtn) navRegisterBtn.style.display = 'none';
+
+        // Show username and logout button
+        if(navUsernameSpan) navUsernameSpan.textContent = data.username || '';
+        if(navUsernameDisplay) navUsernameDisplay.style.display = 'inline';
+        if(navLogoutBtn) navLogoutBtn.style.display = 'inline';
+      } else {
+        // Show login and register buttons
+        if(navLoginBtn) navLoginBtn.style.display = 'inline';
+        if(navRegisterBtn) navRegisterBtn.style.display = 'inline';
+
+        // Hide username and logout button
+        if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
+        if(navLogoutBtn) navLogoutBtn.style.display = 'none';
+      }
+    } catch (error) {
+      console.error('Failed to fetch login status:', error);
+      // Fallback to show login/register buttons
+      if(navLoginBtn) navLoginBtn.style.display = 'inline';
+      if(navRegisterBtn) navRegisterBtn.style.display = 'inline';
+      if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
+      if(navLogoutBtn) navLogoutBtn.style.display = 'none';
+    }
+  }
+
+  // Handle logout button click event
+  async function handleLogout() {
+    try {
+      const response = await fetch('logout.php', { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        await updateLoginUI();
+        showToast('Logged out successfully.');
+      } else {
+        showToast('Logout failed.', false);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      showToast('An error occurred during logout.', false);
+    }
+  }
+
+  // Add event listener to logout button
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLogoutBtn = document.getElementById('nav-logout-btn');
+    if (navLogoutBtn) {
+      navLogoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // Also update login UI on page load
+    updateLoginUI();
+  });
 
 })();

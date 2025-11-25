@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 
 $conn = new mysqli("localhost", "root", "", "quiz_engine");
@@ -39,11 +40,20 @@ if ($stmt->num_rows > 0) {
     exit;
 }
 
-// Insert user
-$hashed = password_hash($password, PASSWORD_DEFAULT);
-$stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-$stmt->bind_param("sss", $username, $email, $hashed);
-$stmt->execute();
+  // Insert user
+  $hashed = password_hash($password, PASSWORD_DEFAULT);
+  $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+  $stmt->bind_param("sss", $username, $email, $hashed);
+  if (!$stmt->execute()) {
+    echo json_encode(['success'=>false, 'message'=>'Database insert failed: ' . $stmt->error]);
+    exit;
+  }
 
-echo json_encode(['success'=>true,'message'=>'Registration successful', 'username'=>$username]);
+  // Fetch newly inserted user id
+  $user_id = $conn->insert_id;
+  // Set session variables to log in user immediately
+  $_SESSION['user_id'] = $user_id;
+  $_SESSION['username'] = $username;
+
+  echo json_encode(['success'=>true,'message'=>'Registration successful', 'username'=>$username]);
 ?>

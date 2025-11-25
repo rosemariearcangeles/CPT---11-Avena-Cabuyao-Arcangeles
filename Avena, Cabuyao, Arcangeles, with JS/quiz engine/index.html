@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -21,10 +21,16 @@
       <li><a href="Contact/contact.html">Contact Us</a></li>
       <li><a href="FAQ/FAQ.html">FAQ</a></li>
       <li>
-        <button class="login-btn" aria-haspopup="dialog">Login</button>
+        <button class="login-btn" aria-haspopup="dialog" id="nav-login-btn">Login</button>
       </li>
       <li>
-        <button class="register-btn" aria-haspopup="dialog">Register</button>
+        <button class="register-btn" aria-haspopup="dialog" id="nav-register-btn">Register</button>
+      </li>
+      <li style="display:none;" id="nav-username-display">
+        Logged in as <span id="nav-username"></span>
+      </li>
+      <li style="display:none;">
+        <button id="nav-logout-btn">Logout</button>
       </li>
     </ul>
   </nav>
@@ -168,7 +174,7 @@
       <button class="close close-register">&times;</button>
       <h2>Register a New Account</h2>
 
-      <form id="registerForm" onsubmit="handleRegister(event)">
+<form id="registerForm">
         <label for="register-username">Username</label>
         <input type="text" id="register-username" required>
 
