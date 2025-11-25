@@ -21,7 +21,10 @@
       <li><a href="Contact/contact.html">Contact Us</a></li>
       <li><a href="FAQ/FAQ.html">FAQ</a></li>
       <li>
-        <button class="login-btn" onclick="openLogin()" aria-haspopup="dialog">Login</button>
+        <button class="login-btn" aria-haspopup="dialog">Login</button>
+      </li>
+      <li>
+        <button class="register-btn" aria-haspopup="dialog">Register</button>
       </li>
     </ul>
   </nav>
@@ -144,17 +147,41 @@
   <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <button class="close" onclick="closeLogin()">&times;</button>
+      <button class="close close-login">&times;</button>
       <h2>Login to Your Account</h2>
 
-      <form onsubmit="event.preventDefault()">
-        <label for="username">Username</label>
-        <input type="text" id="username" required>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" required>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" required>
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required>
 
         <button class="login" type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;">
+    <div class="modal-content">
+      <button class="close close-register">&times;</button>
+      <h2>Register a New Account</h2>
+
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <label for="register-username">Username</label>
+        <input type="text" id="register-username" required>
+
+        <label for="register-email">Email</label>
+        <input type="email" id="register-email" required>
+
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" required>
+
+        <label for="register-confirm-password">Confirm Password</label>
+        <input type="password" id="register-confirm-password" required>
+
+        <button class="register" type="submit">Register</button>
       </form>
     </div>
   </div>

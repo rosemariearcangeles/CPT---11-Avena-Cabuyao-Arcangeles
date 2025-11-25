@@ -1,4 +1,4 @@
-// script.js - restored carousel + upload + generation wiring
+  // script.js - restored carousel + upload + generation wiring
 (() => {
   const $id = id => document.getElementById(id);
 
@@ -464,8 +464,8 @@
     const slides = [
       { type: 'color', value: 'linear-gradient(135deg,#5A67D8,#805AD5)', ready: true },
       { type: 'image', value: 'images/mm.jpeg', ready: false },
-      { type: 'image', value: 'images/nn.jpeg', ready: false },
-      { type: 'image', value: 'images/oo.jpeg', ready: false }
+      { type: 'image', value: 'images/nn.jpg', ready: false },
+      { type: 'image', value: 'images/oo.jpg', ready: false }
     ];
 
     // preload images
@@ -591,4 +591,114 @@
     generateLocalQuestions,
     processFile
   };
+
+  // Added functions for login/register modal handling
+  function openLogin() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+      modal.style.display = 'block';
+      modal.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  function closeLogin() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function openRegister() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+      modal.style.display = 'block';
+      modal.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  function closeRegister() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  // Handle login form submission updated to send POST request to login.php
+  async function handleLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    if (!username || !password) {
+      alert('Please enter both username and password.');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('password', password);
+      const response = await fetch('login.php', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert(`Login successful. Welcome, ${result.username}!`);
+        closeLogin();
+      } else {
+        alert(`Login failed: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('An error occurred during login.');
+    }
+  }
+
+  // Handle register form submission updated to send POST to register.php
+  async function handleRegister(event) {
+    event.preventDefault();
+    const username = document.getElementById('register-username').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm-password').value;
+    if (!username || !email || !password || !confirmPassword) {
+      alert('Please fill out all fields.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert('Passwords do not match.');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('confirmPassword', confirmPassword);
+      const response = await fetch('register.php', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert(`Registration successful. Welcome, ${result.username}!`);
+        closeRegister();
+      } else {
+        alert(`Registration failed: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('An error occurred during registration.');
+    }
+  }
+
+  // Expose modal login/register functions globally for use in HTML inline events
+  window.openLogin = openLogin;
+  window.closeLogin = closeLogin;
+  window.openRegister = openRegister;
+  window.closeRegister = closeRegister;
+  window.handleLogin = handleLogin;
+  window.handleRegister = handleRegister;
+
 })();
