@@ -1629,3 +1629,105 @@ Contact Form
   background-color: #F44336; /* Red for error */
   border-left: 6px solid #D32F2F;
 }
+
+/* Profile dashboard navbar styles */
+.profile-dashboard {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: var(--primary-color);
+  user-select: none;
+  margin-left: 10px;
+}
+
+.profile-pic {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 6px;
+  border: 2px solid var(--primary-color);
+  background-color: var(--background-color);
+}
+
+#profile-username {
+  margin-right: 4px;
+  font-weight: 600;
+}
+
+.dropdown-icon {
+  fill: var(--primary-color);
+  transition: transform 0.3s ease;
+}
+
+.profile-dashboard button[aria-expanded="true"] .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.profile-menu {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--shadow-heavy);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--shadow-heavy);
+  min-width: 140px;
+  z-index: 1000;
+  display: none;
+}
+
+.profile-menu[aria-hidden="false"] {
+  display: block;
+}
+
+.profile-menu li {
+  list-style: none;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.profile-menu li:hover,
+.profile-menu li:focus {
+  background-color: var(--primary-color-alt);
+  color: white;
+  outline: none;
+}
+
+.profile-menu li a,
+.profile-menu li button {
+  color: var(--primary-color);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.profile-menu li button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Override default navbar styles for consistency */
+.navbar .nav-links > li.profile-dashboard {
+  margin-left: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .profile-username {
+    display: none;
+  }
+
+  .profile-pic {
+    margin-right: 0;
+  }
+}

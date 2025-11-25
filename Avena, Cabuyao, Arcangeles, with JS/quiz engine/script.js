@@ -697,12 +697,14 @@
         body: formData,
       });
       const result = await response.json();
-      if (result.success) {
-        showToast(`Login successful. Welcome, ${result.username}!`);
-        closeLogin();
-      } else {
-        showToast(`Login failed: ${result.message}`, false);
-      }
+    if (result.success) {
+      showToast(`Login successful. Welcome, ${result.username}!`);
+      closeLogin();
+      // Update UI to reflect logged in status
+      await updateLoginUI();
+    } else {
+      showToast(`Login failed: ${result.message}`, false);
+    }
     } catch (error) {
       console.error('Login error:', error);
       showToast('An error occurred during login.', false);
@@ -799,12 +801,22 @@
   window.handleLogin = handleLogin;
   window.handleRegister = handleRegister;
 
+
   // Function to update UI based on login status
   async function updateLoginUI() {
     const navLoginBtn = document.getElementById('nav-login-btn');
     const navRegisterBtn = document.getElementById('nav-register-btn');
+
+    // Old username display elements - hide
     const navUsernameDisplay = document.getElementById('nav-username-display');
     const navUsernameSpan = document.getElementById('nav-username');
+
+    // New profile dashboard elements
+    const profileDashboard = document.getElementById('nav-profile-dashboard');
+    const profileUsername = document.getElementById('profile-username');
+    const profileMenu = document.getElementById('profile-menu');
+
+    // Logout button inside profile dashboard
     const navLogoutBtn = document.getElementById('nav-logout-btn');
 
     try {
@@ -816,17 +828,33 @@
         if(navLoginBtn) navLoginBtn.style.display = 'none';
         if(navRegisterBtn) navRegisterBtn.style.display = 'none';
 
-        // Show username and logout button
-        if(navUsernameSpan) navUsernameSpan.textContent = data.username || '';
-        if(navUsernameDisplay) navUsernameDisplay.style.display = 'inline';
-        if(navLogoutBtn) navLogoutBtn.style.display = 'inline';
+        // Hide old username display area
+        if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
+
+        // Show profile dashboard
+        if(profileDashboard) profileDashboard.style.display = 'inline-flex';
+        if(profileUsername) profileUsername.textContent = data.username || '';
+
+        // Hide old logout button if any (not needed)
+        if(navLogoutBtn) navLogoutBtn.style.display = 'none';
+
+        // Reset profile menu accessibility state
+        if(profileMenu) {
+          profileMenu.setAttribute('aria-hidden', 'true');
+          profileMenu.style.display = 'none';
+        }
       } else {
         // Show login and register buttons
         if(navLoginBtn) navLoginBtn.style.display = 'inline';
         if(navRegisterBtn) navRegisterBtn.style.display = 'inline';
 
-        // Hide username and logout button
+        // Show old username display (none)
         if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
+
+        // Hide profile dashboard
+        if(profileDashboard) profileDashboard.style.display = 'none';
+
+        // Show old logout button none
         if(navLogoutBtn) navLogoutBtn.style.display = 'none';
       }
     } catch (error) {
@@ -836,6 +864,7 @@
       if(navRegisterBtn) navRegisterBtn.style.display = 'inline';
       if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
       if(navLogoutBtn) navLogoutBtn.style.display = 'none';
+      if(profileDashboard) profileDashboard.style.display = 'none';
     }
   }
 
@@ -861,6 +890,42 @@
     const navLogoutBtn = document.getElementById('nav-logout-btn');
     if (navLogoutBtn) {
       navLogoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // Setup toggle for profile button dropdown menu
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+
+    if (profileBtn && profileMenu) {
+      profileBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const expanded = profileBtn.getAttribute('aria-expanded') === 'true';
+        profileBtn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        const isHidden = profileMenu.getAttribute('aria-hidden') === 'true';
+        profileMenu.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+        profileMenu.style.display = isHidden ? 'block' : 'none';
+      });
+
+      // Close menu on clicking outside
+      document.addEventListener('click', (e) => {
+        if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+          profileBtn.setAttribute('aria-expanded', 'false');
+          profileMenu.setAttribute('aria-hidden', 'true');
+          profileMenu.style.display = 'none';
+        }
+      });
+
+      // Keyboard navigation for menu items
+      profileMenu.querySelectorAll('li').forEach(item => {
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            profileBtn.focus();
+            profileBtn.setAttribute('aria-expanded', 'false');
+            profileMenu.setAttribute('aria-hidden', 'true');
+            profileMenu.style.display = 'none';
+          }
+        });
+      });
     }
 
     // Also update login UI on page load
