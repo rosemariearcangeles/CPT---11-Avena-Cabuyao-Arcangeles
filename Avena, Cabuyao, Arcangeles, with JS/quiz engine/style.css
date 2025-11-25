@@ -1157,14 +1157,13 @@ body {
   color: #2b2b2b;
 }
 /* ==============
-CAROUSEL SERVICES
+CAROUSEL SERVICES 
 =================*/
 .carousel {
   overflow: hidden;
   width: 100%;
   max-width: 900px;
   margin: auto;
-  animation: fadeInUp 1.5s ease-out;
 }
 
 .carousel-track {
@@ -1414,7 +1413,7 @@ Contact Form
   color: white;
   text-align: center;
   overflow: hidden;
-  transition: background 0.5s ease-in-out, background-image 0.5s ease-in-out;
+  transition: background 0.5s ease-in-out;
 }
 
 .hero-overlay {
@@ -1586,9 +1585,47 @@ Contact Form
 }
 
 /* Responsive for quiz modal */
+
 @media (max-width: 768px) {
   .quiz-modal-content {
     padding: 1rem;
     width: 95%;
   }
+}
+
+/* Toast notification styles */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 250px;
+  max-width: 300px;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10000;
+  pointer-events: auto;
+  user-select: none;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-success {
+  background-color: #4CAF50; /* Green for success */
+  border-left: 6px solid #388E3C;
+}
+
+.toast-error {
+  background-color: #F44336; /* Red for error */
+  border-left: 6px solid #D32F2F;
 }

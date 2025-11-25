@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -23,6 +23,7 @@
 
       <!-- CONSISTENT LOGIN BUTTON -->
       <li><button class="login-btn" onclick="openLogin()">Login</button></li>
+      <li><button class="register-btn" onclick="openRegister()">Register</button></li>
     </ul>
   </nav>
 
@@ -115,6 +116,30 @@
         <input type="password" required>
 
         <button type="submit" class="login">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal Added -->
+  <div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;">
+    <div class="modal-content">
+      <button class="close close-register" onclick="closeRegister()" aria-label="Close Register Modal">&times;</button>
+      <h2>Register a New Account</h2>
+
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <label for="register-username">Username</label>
+        <input type="text" id="register-username" required>
+
+        <label for="register-email">Email</label>
+        <input type="email" id="register-email" required>
+
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" required>
+
+        <label for="register-confirm-password">Confirm Password</label>
+        <input type="password" id="register-confirm-password" required>
+
+        <button class="register" type="submit">Register</button>
       </form>
     </div>
   </div>

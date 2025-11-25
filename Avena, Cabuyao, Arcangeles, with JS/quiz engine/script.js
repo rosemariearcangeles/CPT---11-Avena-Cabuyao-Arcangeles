@@ -255,6 +255,45 @@
     heroDotsEl = $id('hero-dots');
     heroSectionEl = $id('hero-section');
 
+    // Add event listeners for login and register buttons, and close buttons
+    const loginBtn = document.querySelector('.login-btn');
+    const registerBtn = document.querySelector('.register-btn');
+    const closeLoginBtn = document.querySelector('.close-login');
+    const closeRegisterBtn = document.querySelector('.close-register');
+
+    if (loginBtn) {
+      loginBtn.addEventListener('click', openLogin);
+    }
+    if (registerBtn) {
+      registerBtn.addEventListener('click', openRegister);
+    }
+    if (closeLoginBtn) {
+      closeLoginBtn.addEventListener('click', closeLogin);
+    }
+    if (closeRegisterBtn) {
+      closeRegisterBtn.addEventListener('click', closeRegister);
+    }
+
+    // Optional: Close modals when clicking outside modal content
+    window.addEventListener('click', (event) => {
+      const loginModal = document.getElementById('loginModal');
+      const registerModal = document.getElementById('registerModal');
+      if (loginModal && event.target === loginModal) {
+        closeLogin();
+      }
+      if (registerModal && event.target === registerModal) {
+        closeRegister();
+      }
+    });
+
+    // Optional: Close modals on Escape key press
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeLogin();
+        closeRegister();
+      }
+    });
+
     // mode select (keep in sync with generation cards if present)
     if (modeSelect) {
       mode = modeSelect.value || "local";
@@ -579,20 +618,6 @@
     window.resumeHero = startTimer;
   }
 
-  // SERVICES carousel pause on hover
-  function initServicesCarousel() {
-    const carouselTrack = document.querySelector('.carousel-track');
-    if (!carouselTrack) return;
-
-    carouselTrack.addEventListener('mouseenter', () => {
-      carouselTrack.style.animationPlayState = 'paused';
-    });
-
-    carouselTrack.addEventListener('mouseleave', () => {
-      carouselTrack.style.animationPlayState = 'running';
-    });
-  }
-
   // Init when DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -610,7 +635,7 @@
   function openLogin() {
     const modal = document.getElementById('loginModal');
     if (modal) {
-      modal.style.display = 'block';
+      modal.classList.add('show');
       modal.setAttribute('aria-hidden', 'false');
     }
   }
@@ -618,7 +643,7 @@
   function closeLogin() {
     const modal = document.getElementById('loginModal');
     if (modal) {
-      modal.style.display = 'none';
+      modal.classList.remove('show');
       modal.setAttribute('aria-hidden', 'true');
     }
   }
@@ -626,7 +651,7 @@
   function openRegister() {
     const modal = document.getElementById('registerModal');
     if (modal) {
-      modal.style.display = 'block';
+      modal.classList.add('show');
       modal.setAttribute('aria-hidden', 'false');
     }
   }
@@ -634,9 +659,24 @@
   function closeRegister() {
     const modal = document.getElementById('registerModal');
     if (modal) {
-      modal.style.display = 'none';
+      modal.classList.remove('show');
       modal.setAttribute('aria-hidden', 'true');
     }
+  }
+
+  // Toast notification helper
+  function showToast(message, isSuccess = true) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${isSuccess ? 'toast-success' : 'toast-error'}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('visible');
+    }, 100);
+    setTimeout(() => {
+      toast.classList.remove('visible');
+      setTimeout(() => document.body.removeChild(toast), 300);
+    }, 4000);
   }
 
   // Handle login form submission updated to send POST request to login.php
@@ -645,7 +685,7 @@
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value.trim();
     if (!username || !password) {
-      alert('Please enter both username and password.');
+      showToast('Please enter both username and password.', false);
       return;
     }
     try {
@@ -658,30 +698,33 @@
       });
       const result = await response.json();
       if (result.success) {
-        alert(`Login successful. Welcome, ${result.username}!`);
+        showToast(`Login successful. Welcome, ${result.username}!`);
         closeLogin();
       } else {
-        alert(`Login failed: ${result.message}`);
+        showToast(`Login failed: ${result.message}`, false);
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('An error occurred during login.');
+      showToast('An error occurred during login.', false);
     }
   }
 
   // Handle register form submission updated to send POST to register.php
   async function handleRegister(event) {
     event.preventDefault();
+    console.log("handleRegister called");
     const username = document.getElementById('register-username').value.trim();
     const email = document.getElementById('register-email').value.trim();
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('register-confirm-password').value;
     if (!username || !email || !password || !confirmPassword) {
-      alert('Please fill out all fields.');
+      showToast('Please fill out all fields.', false);
+      console.log("Registration failed: Please fill out all fields.");
       return;
     }
     if (password !== confirmPassword) {
-      alert('Passwords do not match.');
+      showToast('Passwords do not match.', false);
+      console.log("Registration failed: Passwords do not match.");
       return;
     }
     try {
@@ -696,14 +739,55 @@
       });
       const result = await response.json();
       if (result.success) {
-        alert(`Registration successful. Welcome, ${result.username}!`);
+        showToast(`Registration successful. Welcome, ${result.username}!`);
         closeRegister();
+        console.log("Registration successful for user: ", result.username);
       } else {
-        alert(`Registration failed: ${result.message}`);
+        showToast(`Registration failed: ${result.message}`, false);
+        console.log("Registration failed: ", result.message);
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('An error occurred during registration.');
+      showToast('An error occurred during registration.', false);
+    }
+  }
+
+  // Add explicit event listener for registerForm submit event to call handleRegister
+  document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+      registerForm.addEventListener('submit', handleRegister);
+    }
+
+    // Also ensure register button opens modal properly
+    const registerBtn = document.querySelector('.register-btn');
+    if (registerBtn) {
+      registerBtn.addEventListener('click', openRegister);
+    }
+
+    // And close button works
+    const closeRegisterBtn = document.querySelector('.close-register');
+    if (closeRegisterBtn) {
+      closeRegisterBtn.addEventListener('click', closeRegister);
+    }
+  });
+
+  // Adjust openRegister and closeRegister to handle display style properly
+  function openRegister() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+      modal.style.display = 'block';
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  function closeRegister() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
     }
   }
 
@@ -714,5 +798,10 @@
   window.closeRegister = closeRegister;
   window.handleLogin = handleLogin;
   window.handleRegister = handleRegister;
+
+  // Add event listeners for login and register buttons, and close buttons
+  // Moved inside init() function to ensure proper attachment after DOM ready
+
+  // Removed this block from here
 
 })();

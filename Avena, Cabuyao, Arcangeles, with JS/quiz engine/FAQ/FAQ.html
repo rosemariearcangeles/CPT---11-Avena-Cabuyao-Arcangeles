@@ -23,6 +23,7 @@
 
         <!-- CONSISTENT LOGIN BUTTON -->
         <li><button class="login-btn" onclick="openLogin()">Login</button></li>
+        <li><button class="register-btn" onclick="openRegister()">Register</button></li>
         </ul>
     </nav>
 
@@ -80,16 +81,39 @@
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
-        <span class="close" onclick="closeLogin()">&times;</span>
+        <span class="close close-login" >&times;</span>
         <h2>Login to Your Account</h2>
-        <form>
-            <label>Username</label>
-            <input type="text" required>
+        <form onsubmit="handleLogin(event)">
+            <label for="login-username">Username</label>
+            <input id="login-username" type="text" required>
 
-            <label>Password</label>
-            <input type="password" required>
+            <label for="login-password">Password</label>
+            <input id="login-password" type="password" required>
 
             <button type="submit" class="login">Login</button>
+        </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+        <span class="close close-register">&times;</span>
+        <h2>Register a New Account</h2>
+        <form onsubmit="handleRegister(event)">
+            <label for="register-username">Username</label>
+            <input id="register-username" type="text" required>
+
+            <label for="register-email">Email</label>
+            <input id="register-email" type="email" required>
+
+            <label for="register-password">Password</label>
+            <input id="register-password" type="password" required>
+
+            <label for="register-confirm-password">Confirm Password</label>
+            <input id="register-confirm-password" type="password" required>
+
+            <button type="submit" class="register">Register</button>
         </form>
         </div>
     </div>

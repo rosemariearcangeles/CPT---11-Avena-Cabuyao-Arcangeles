@@ -10,8 +10,8 @@
 
 <body>
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="logo">
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="logo" aria-hidden="false">
       <h1>Online Quiz Engine</h1>
     </div>
 
@@ -21,13 +21,32 @@
       <li><a href="../Service/service.html">Service</a></li>
       <li><a href="../Contact/contact.html">Contact Us</a></li>
       <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-
-      <!-- CONSISTENT LOGIN BUTTON -->
       <li>
-        <button class="login-btn" onclick="openLogin()">Login</button>
+        <button class="login-btn" aria-haspopup="dialog">Login</button>
+      </li>
+      <li>
+        <button class="register-btn" aria-haspopup="dialog">Register</button>
       </li>
     </ul>
   </nav>
+
+  <!-- Register Button in Navbar -->
+  <script>
+    // Add register button dynamically if missing in navbar
+    window.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelector('nav ul.nav-links');
+      if (navLinks && !document.querySelector('.register-btn')) {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'register-btn';
+        btn.textContent = 'Register';
+        btn.setAttribute('aria-haspopup', 'dialog');
+        btn.addEventListener('click', () => window.openRegister());
+        li.appendChild(btn);
+        navLinks.appendChild(li);
+      }
+    });
+  </script>
 
   <!-- Hero Section -->
   <section class="hero">
@@ -109,6 +128,30 @@
         <input type="password" required />
 
         <button type="submit" class="login">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal Added -->
+  <div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;">
+    <div class="modal-content">
+      <button class="close close-register" onclick="closeRegister()" aria-label="Close Register Modal">&times;</button>
+      <h2>Register a New Account</h2>
+
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <label for="register-username">Username</label>
+        <input type="text" id="register-username" required>
+
+        <label for="register-email">Email</label>
+        <input type="email" id="register-email" required>
+
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" required>
+
+        <label for="register-confirm-password">Confirm Password</label>
+        <input type="password" id="register-confirm-password" required>
+
+        <button class="register" type="submit">Register</button>
       </form>
     </div>
   </div>

@@ -1,59 +1,49 @@
 <?php
 header('Content-Type: application/json');
 
-// Load users from JSON file
-$usersFile = 'users.json';
-if (!file_exists($usersFile)) {
-    file_put_contents($usersFile, json_encode([]));
+$conn = new mysqli("localhost", "root", "", "quiz_engine");
+
+if ($conn->connect_error) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
 }
-$usersJson = file_get_contents($usersFile);
-$users = json_decode($usersJson, true);
 
-// Get POST data
-$username = isset($_POST['username']) ? trim($_POST['username']) : '';
-$email = isset($_POST['email']) ? trim($_POST['email']) : '';
-$password = isset($_POST['password']) ? $_POST['password'] : '';
-$confirmPassword = isset($_POST['confirmPassword']) ? $_POST['confirmPassword'] : '';
+$username = trim($_POST['username']);
+$email = trim($_POST['email']);
+$password = $_POST['password'];
+$confirm = $_POST['confirmPassword'];
 
-if (!$username || !$email || !$password || !$confirmPassword) {
-    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
+if (!$username || !$email || !$password || !$confirm) {
+    echo json_encode(['success'=>false,'message'=>'All fields are required.']);
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid email address.']);
+    echo json_encode(['success'=>false,'message'=>'Invalid email.']);
     exit;
 }
 
-if ($password !== $confirmPassword) {
-    echo json_encode(['success' => false, 'message' => 'Passwords do not match.']);
+if ($password !== $confirm) {
+    echo json_encode(['success'=>false,'message'=>'Passwords do not match.']);
     exit;
 }
 
-// Check if username or email already exists
-foreach ($users as $u) {
-    if ($u['username'] === $username) {
-        echo json_encode(['success' => false, 'message' => 'Username already exists.']);
-        exit;
-    }
-    if ($u['email'] === $email) {
-        echo json_encode(['success' => false, 'message' => 'Email is already registered.']);
-        exit;
-    }
+// Check if user exists
+$stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+$stmt->bind_param("ss", $username, $email);
+$stmt->execute();
+$stmt->store_result();
+
+if ($stmt->num_rows > 0) {
+    echo json_encode(['success'=>false,'message'=>'Username or email already exists']);
+    exit;
 }
 
-// Add new user
-$newUser = [
-    'username' => $username,
-    'email' => $email,
-    'password' => $password, // Note: in production, use password hashing!
-];
+// Insert user
+$hashed = password_hash($password, PASSWORD_DEFAULT);
+$stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $username, $email, $hashed);
+$stmt->execute();
 
-$users[] = $newUser;
-
-// Save updated users
-file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
-
-echo json_encode(['success' => true, 'message' => 'Registration successful.', 'username' => $username]);
-exit;
+echo json_encode(['success'=>true,'message'=>'Registration successful', 'username'=>$username]);
 ?>

@@ -1,43 +1,33 @@
 <?php
 header('Content-Type: application/json');
 
-// Load users from JSON file
-$usersFile = 'users.json';
-if (!file_exists($usersFile)) {
-    file_put_contents($usersFile, json_encode([]));
-}
-$usersJson = file_get_contents($usersFile);
-$users = json_decode($usersJson, true);
+$conn = new mysqli("localhost", "root", "", "quiz_engine");
 
-// Get POST data
-$username = isset($_POST['username']) ? trim($_POST['username']) : '';
-$password = isset($_POST['password']) ? $_POST['password'] : '';
-
-if (!$username || !$password) {
-    echo json_encode(['success' => false, 'message' => 'Username and password are required.']);
+if ($conn->connect_error) {
+    echo json_encode(['success'=>false,'message'=>'Database connection failed']);
     exit;
 }
 
-// Find user by username
-$user = null;
-foreach ($users as $u) {
-    if ($u['username'] === $username) {
-        $user = $u;
-        break;
-    }
-}
+$username = trim($_POST['username']);
+$password = $_POST['password'];
 
-if (!$user) {
-    echo json_encode(['success' => false, 'message' => 'User not found.']);
+$stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->store_result();
+
+if ($stmt->num_rows === 0) {
+    echo json_encode(['success'=>false,'message'=>'User not found']);
     exit;
 }
 
-// Verify password (stored as plain text here, for production use hashed passwords)
-if ($user['password'] !== $password) {
-    echo json_encode(['success' => false, 'message' => 'Invalid password.']);
+$stmt->bind_result($id, $hashed);
+$stmt->fetch();
+
+if (!password_verify($password, $hashed)) {
+    echo json_encode(['success'=>false,'message'=>'Invalid password']);
     exit;
 }
 
-echo json_encode(['success' => true, 'message' => 'Login successful.', 'username' => $username]);
-exit;
+echo json_encode(['success'=>true,'message'=>'Login successful', 'username'=>$username]);
 ?>
