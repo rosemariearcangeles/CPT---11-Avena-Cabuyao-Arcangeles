@@ -579,6 +579,20 @@
     window.resumeHero = startTimer;
   }
 
+  // SERVICES carousel pause on hover
+  function initServicesCarousel() {
+    const carouselTrack = document.querySelector('.carousel-track');
+    if (!carouselTrack) return;
+
+    carouselTrack.addEventListener('mouseenter', () => {
+      carouselTrack.style.animationPlayState = 'paused';
+    });
+
+    carouselTrack.addEventListener('mouseleave', () => {
+      carouselTrack.style.animationPlayState = 'running';
+    });
+  }
+
   // Init when DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
