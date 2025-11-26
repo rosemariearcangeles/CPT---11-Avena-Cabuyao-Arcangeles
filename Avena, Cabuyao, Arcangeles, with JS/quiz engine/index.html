@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -47,6 +47,37 @@
 
     <div id="hero-dots" class="hero-dots" role="tablist" aria-label="Slide controls"></div>
   </section>
+
+ <section id="how-it-works">
+  <div class="container">
+    <h2>How It Works</h2>
+
+    <p class="how-description">Follow these simple steps to get started with our platform:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="icon">📝</div>
+        <h3>Step 1: Sign Up</h3>
+        <p>Create your account quickly and securely to start using our services.</p>
+      </div>
+      <div class="step">
+        <div class="icon">⚙️</div>
+        <h3>Step 2: Set Up</h3>
+        <p>Connect the tools and features you need to personalize your experience.</p>
+      </div>
+      <div class="step">
+        <div class="icon">🚀</div>
+        <h3>Step 3: Launch</h3>
+        <p>Start achieving your goals efficiently with our platform.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="background-shapes">
+    <div class="shape circle"></div>
+    <div class="shape triangle"></div>
+  </div>
+</section>
 
   <!-- MAIN CONTENT -->
   <div class="container">
@@ -174,7 +205,7 @@
       <button class="close close-register">&times;</button>
       <h2>Register a New Account</h2>
 
-<form id="registerForm">
+      <form id="registerForm">
         <label for="register-username">Username</label>
         <input type="text" id="register-username" required>
 
@@ -216,5 +247,19 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    // Animate steps on scroll
+    const steps = document.querySelectorAll('#how-it-works .step');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('animate');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    steps.forEach(step => observer.observe(step));
+  </script>
 </body>
 </html>
