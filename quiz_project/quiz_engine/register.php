@@ -1,9 +1,22 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 header('Content-Type: application/json');
 
 // Use DB connection from config.php
 require_once "config.php";
+
+if (!$conn) {
+    die(json_encode(['success' => false, 'message' => 'No DB connection']));
+}
+
+$test = $conn->prepare("SELECT id FROM users WHERE username = ?");
+if (!$test) {
+    die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
+}
+
 
 $username = trim($_POST['username']);
 $email = trim($_POST['email']);
