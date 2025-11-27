@@ -5,13 +5,25 @@ $pass = getenv("DB_PASS");
 $dbname = getenv("DB_NAME");
 $port = getenv("DB_PORT");
 
-// Create MySQL connection
-$conn = new mysqli($host, $user, $pass, $dbname, $port);
+// Initialize MySQLi with SSL
+$conn = mysqli_init();
+mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
 
-if ($conn->connect_error) {
+$success = mysqli_real_connect(
+    $conn,
+    $host,
+    $user,
+    $pass,
+    $dbname,
+    (int)$port,
+    NULL,
+    MYSQLI_CLIENT_SSL
+);
+
+if (!$success) {
     die(json_encode([
         "success" => false,
-        "message" => "Database connection failed: " . $conn->connect_error
+        "message" => "Database connection failed: " . mysqli_connect_error()
     ]));
 }
 ?>
