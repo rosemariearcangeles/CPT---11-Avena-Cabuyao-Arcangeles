@@ -931,5 +931,22 @@
     // Also update login UI on page load
     updateLoginUI();
   });
+// Scroll animation for "How It Works" section
+document.addEventListener('DOMContentLoaded', () => {
+  const howItWorksSection = document.getElementById('how-it-works');
+  if (!howItWorksSection) return;
+
+  // Create observer
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        howItWorksSection.classList.add('animate'); // Add class to trigger CSS animation
+        obs.unobserve(howItWorksSection); // Trigger only once
+      }
+    });
+  }, { threshold: 0.3 }); // Trigger when 30% visible
+
+  observer.observe(howItWorksSection);
+});
 
 })();
