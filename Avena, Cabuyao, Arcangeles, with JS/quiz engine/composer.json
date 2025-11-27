@@ -1,0 +1,12 @@
+{
+    "name": "quiz-engine-backend",
+    "description": "PHP backend for quiz engine",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "QuizEngine\\": "src/"
+        }
+    }
+}
