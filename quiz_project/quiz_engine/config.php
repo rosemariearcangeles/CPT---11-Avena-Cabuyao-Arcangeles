@@ -1,9 +1,8 @@
 <?php
-// InfinityFree MySQL Settings
-$host = "sql213.infinityfree.com";
-$user = "if0_40535178";
-$pass = "Doomereternal1";
-$dbname = "if0_40535178_quiz_engine_db";
+$host = getenv("DB_HOST");
+$user = getenv("DB_USER");
+$pass = getenv("DB_PASS");
+$dbname = getenv("DB_NAME");
 
 // Create MySQL connection
 $conn = new mysqli($host, $user, $pass, $dbname);
