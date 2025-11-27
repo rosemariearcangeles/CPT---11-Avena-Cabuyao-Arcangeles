@@ -2,20 +2,8 @@
 session_start();
 header('Content-Type: application/json');
 
-// Load database configuration from environment variables
-$host = getenv('DB_HOST') ?: 'localhost';
-$port = getenv('DB_PORT') ?: 3306;
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASS') ?: '';
-$dbname = getenv('DB_NAME') ?: 'quiz_engine';
-
-// Connect to MySQL
-$conn = new mysqli($host, $user, $pass, $dbname, $port);
-
-if ($conn->connect_error) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
-}
+// Use DB connection from config.php
+require_once "config.php";
 
 $username = trim($_POST['username']);
 $email = trim($_POST['email']);
