@@ -701,7 +701,8 @@ async function handleLogin(event) {
     formData.append("username", username);
     formData.append("password", password);
 
-    const res = await fetch("login.php", { method: "POST", body: formData });
+    const baseUrl = window.location.origin;
+    const res = await fetch(baseUrl + "/login.php", { method: "POST", body: formData });
     const data = await res.json();
 
     if (data.success) {
@@ -746,7 +747,8 @@ async function handleRegister(event) {
     formData.append("password", pass);
     formData.append("confirmPassword", confirm);
 
-    const res = await fetch("register.php", { method: "POST", body: formData });
+    const baseUrl = window.location.origin;
+    const res = await fetch(baseUrl + "/register.php", { method: "POST", body: formData });
     const data = await res.json();
 
     if (data.success) {
@@ -768,7 +770,8 @@ async function handleRegister(event) {
 
 async function updateLoginUI() {
   try {
-    const res = await fetch("session_check.php");
+    const baseUrl = window.location.origin;
+    const res = await fetch(baseUrl + "/session_check.php");
     const data = await res.json();
 
     const loginBtn = document.querySelector(".login-btn");
@@ -800,7 +803,8 @@ async function updateLoginUI() {
 
 async function handleLogout() {
   try {
-    const res = await fetch("logout.php", { method: "POST" });
+    const baseUrl = window.location.origin;
+    const res = await fetch(baseUrl + "/logout.php", { method: "POST" });
     const data = await res.json();
 
     if (data.success) {
