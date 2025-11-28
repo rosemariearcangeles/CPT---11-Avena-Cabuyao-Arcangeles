@@ -1,9 +1,5 @@
 <?php
-=======
-<?php
 header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 require_once "session_utils.php";
 require_once "config.php";
@@ -103,11 +99,7 @@ if (!$stmt->execute()) {
     exit;
 }
 
-// AUTO-LOGIN AFTER REGISTER
-$user_id = $conn->insert_id;
-$session->login($user_id, $username);
-
-// SUCCESS RESPONSE
+// SUCCESS RESPONSE (no auto-login for now)
 echo json_encode([
     'status' => 'success',
     'message' => 'Registration successful.',
