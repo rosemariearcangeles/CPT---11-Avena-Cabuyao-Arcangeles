@@ -9,7 +9,7 @@ if (!$session->isLoggedIn()) {
 
 require_once "config.php";
 
-$user_id = $_SESSION['user_id'];
+$user_id = $session->getUserId();
 $stmt = $conn->prepare("SELECT username, email, created_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -20,6 +20,9 @@ $stmt->close();
 // Handle profile update
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token
+    $session->requireCSRFToken();
+
     $new_username = trim($_POST['username']);
     $new_email = trim($_POST['email']);
 
@@ -42,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("ssi", $new_username, $new_email, $user_id);
             if ($stmt->execute()) {
                 $message = 'Profile updated successfully!';
-                $_SESSION['username'] = $new_username;
+                $session->login($user_id, $new_username); // Update session with new username
                 $username = $new_username;
                 $email = $new_email;
             } else {
@@ -57,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($session->generateCSRFToken()); ?>">
     <title>My Profile</title>
     <link rel="stylesheet" href="css/profile.css">
 </head>
