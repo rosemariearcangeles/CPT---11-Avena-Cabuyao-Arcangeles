@@ -13,8 +13,34 @@ const BASE_PATH = (() => {
 
 // Utility function to get CSRF token
 function getCSRFToken() {
-  const csrfInput = document.querySelector('meta[name="csrf-token"]');
-  return csrfInput ? csrfInput.getAttribute('content') : '';
+  // First try to get from meta tag
+  let csrfInput = document.querySelector('meta[name="csrf-token"]');
+  let token = csrfInput ? csrfInput.getAttribute('content') : '';
+  
+  // If not found in meta tag, try to get from session storage
+  if (!token) {
+    token = sessionStorage.getItem('csrf_token') || '';
+    
+    // If still not found, generate a new one
+    if (!token) {
+      token = generateCSRFToken();
+      sessionStorage.setItem('csrf_token', token);
+      
+      // Also update the meta tag if it exists
+      if (csrfInput) {
+        csrfInput.setAttribute('content', token);
+      }
+    }
+  }
+  
+  return token;
+}
+
+// Generate a random CSRF token
+function generateCSRFToken() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Modal functions
@@ -49,6 +75,13 @@ function clearFormErrors(modal) {
 function openLogin() {
   closeRegisterModal();
   const modal = document.getElementById('loginModal');
+  
+  // Set CSRF token in the login form
+  const csrfInput = document.getElementById('login-csrf');
+  if (csrfInput) {
+    csrfInput.value = getCSRFToken();
+  }
+  
   openModal(modal);
 }
 
@@ -60,6 +93,13 @@ function closeLoginModal() {
 function openRegister() {
   closeLoginModal();
   const modal = document.getElementById('registerModal');
+  
+  // Set CSRF token in the register form
+  const csrfInput = document.getElementById('register-csrf');
+  if (csrfInput) {
+    csrfInput.value = getCSRFToken();
+  }
+  
   openModal(modal);
 }
 
@@ -128,13 +168,18 @@ async function handleLogin(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<div class="spinner"></div>';
     
+    // Create form data object
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    formData.append('csrf_token', getCSRFToken());
+    
     const response = await fetch(`${BASE_PATH}login.php`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
         'X-Requested-With': 'XMLHttpRequest'
       },
-      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&csrf_token=${encodeURIComponent(getCSRFToken())}`
+      body: new URLSearchParams(formData)
     });
 
     const data = await response.json();
@@ -195,13 +240,20 @@ async function handleRegister(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<div class="spinner"></div>';
     
+    // Create form data object
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('confirmPassword', confirmPassword);
+    formData.append('csrf_token', getCSRFToken());
+    
     const response = await fetch(`${BASE_PATH}register.php`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
         'X-Requested-With': 'XMLHttpRequest'
       },
-      body: `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}&csrf_token=${encodeURIComponent(getCSRFToken())}`
+      body: new URLSearchParams(formData)
     });
 
     const data = await response.json();
