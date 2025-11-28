@@ -746,6 +746,9 @@ async function handleLogin(event) {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("password", password);
+    if (csrfToken) {
+      formData.append("csrf_token", csrfToken);
+    }
 
     const baseUrl = window.location.origin;
     const res = await fetch(baseUrl + "/login.php", { method: "POST", body: formData });
