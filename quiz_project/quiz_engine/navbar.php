@@ -11,7 +11,7 @@
       <li><a href="Contact/contact.html">Contact Us</a></li>
       <li><a href="FAQ/FAQ.html">FAQ</a></li>
       <li id="nav-profile-dashboard">
-        <a href="profile.php">Dashboard</a>
+        <a href="dashboard.html">Dashboard</a>
       </li>
 
       <!-- Username + logout (visible when logged in) -->

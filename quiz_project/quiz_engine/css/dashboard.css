@@ -3,19 +3,30 @@
    ============================ */
 
 :root {
-  --primary-color: #6366f1;
-  --primary-dark: #4f46e5;
+  --primary-color: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-light: #eef2ff;
   --secondary-color: #ec4899;
   --success-color: #10b981;
+  --success-light: #d1fae5;
   --danger-color: #ef4444;
+  --danger-light: #fee2e2;
   --warning-color: #f59e0b;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --warning-light: #fef3c7;
+  --info-color: #3b82f6;
+  --info-light: #dbeafe;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
   --border: #e5e7eb;
   --surface: #f9fafb;
   --background: #ffffff;
-  --radius: 8px;
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition: all 0.2s ease-in-out;
 }
 
 * {
@@ -28,12 +39,15 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--surface);
   color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .dashboard-container {
   display: flex;
-  min-height: calc(100vh - 80px);
-  margin-top: 80px;
+  min-height: 100vh;
+  background-color: var(--surface);
 }
 
 /* ============================
@@ -44,13 +58,17 @@ body {
   width: 280px;
   background: var(--background);
   border-right: 1px solid var(--border);
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 80px;
-  height: calc(100vh - 80px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
   overflow-y: auto;
+  z-index: 40;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
 }
 
 .user-profile {
@@ -138,7 +156,51 @@ body {
 .dashboard-main {
   flex: 1;
   padding: 2rem;
-  overflow-y: auto;
+  margin-left: 280px;
+  min-height: 100vh;
+  transition: var(--transition);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .dashboard-sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .dashboard-sidebar.active {
+    transform: translateX(0);
+  }
+  
+  .dashboard-main {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quiz-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .user-profile {
+    padding: 1rem 0;
+  }
+  
+  .avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
 }
 
 .dashboard-section {
@@ -193,9 +255,67 @@ body {
   border-radius: var(--radius);
   padding: 1.5rem;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary-color);
+}
+
+.stat-card.primary::before { background: var(--primary-color); }
+.stat-card.success::before { background: var(--success-color); }
+.stat-card.warning::before { background: var(--warning-color); }
+.stat-card.danger::before { background: var(--danger-color); }
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
   align-items: center;
-  gap: 1rem;
-  transition: all 0.2s ease;
+  gap: 0.5rem;
+}
+
+.stat-trend {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  margin-top: 0.5rem;
+}
+
+.trend-up {
+  color: var(--success-color);
+  background-color: var(--success-light);
+}
+
+.trend-down {
+  color: var(--danger-color);
+  background-color: var(--danger-light);
 }
 
 .stat-card:hover {
@@ -228,13 +348,14 @@ body {
   background: var(--background);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 2rem;
-  margin-bottom: 3rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
 }
 
-.chart-container h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.25rem;
+.chart-container:hover {
+  box-shadow: var(--shadow);
 }
 
 .chart-wrapper {
@@ -500,9 +621,34 @@ body {
    RESPONSIVE
    ============================ */
 
-@media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
+/* Mobile menu toggle button */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.menu-toggle:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+  .menu-toggle {
+    display: flex;
   }
 
   .dashboard-sidebar {
