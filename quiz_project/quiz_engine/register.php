@@ -54,6 +54,13 @@ if ($password !== $confirm) {
 
 // CHECK IF USERNAME/EMAIL EXISTS
 $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+if (!$stmt) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Database prepare failed for check.'
+    ]);
+    exit;
+}
 $stmt->bind_param("ss", $username, $email);
 $stmt->execute();
 $stmt->store_result();
@@ -68,9 +75,24 @@ if ($stmt->num_rows > 0) {
 
 // HASH PASSWORD
 $hashed = password_hash($password, PASSWORD_DEFAULT);
+if (!$hashed) {
+    error_log("Password hash failed for user: $username");
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Password hashing failed.'
+    ]);
+    exit;
+}
 
 // INSERT USER
-$stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO users (username, email, password, created_at) VALUES (?, ?, ?, NOW())");
+if (!$stmt) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Database prepare failed for insert.'
+    ]);
+    exit;
+}
 $stmt->bind_param("sss", $username, $email, $hashed);
 
 if (!$stmt->execute()) {
