@@ -130,19 +130,18 @@ async function handleLogin(event) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': getCSRFToken()
+        'X-Requested-With': 'XMLHttpRequest'
       },
-      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&csrf_token=${encodeURIComponent(getCSRFToken())}`
     });
-    
+
     const data = await response.json();
-    
-    if (data.success) {
+
+    if (data.status === 'success') {
       showToast('Login successful!', true);
       closeLoginModal();
       updateLoginUI();
-      
+
       // Redirect if needed
       if (data.redirect) {
         setTimeout(() => {
@@ -198,15 +197,14 @@ async function handleRegister(event) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': getCSRFToken()
+        'X-Requested-With': 'XMLHttpRequest'
       },
-      body: `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+      body: `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}&csrf_token=${encodeURIComponent(getCSRFToken())}`
     });
-    
+
     const data = await response.json();
-    
-    if (data.success) {
+
+    if (data.status === 'success') {
       showToast('Registration successful! Please log in.', true);
       closeRegisterModal();
       openLogin();
@@ -237,13 +235,13 @@ function updateLoginUI() {
       const logoutBtn = document.getElementById('nav-logout-btn');
       const dashboardLink = document.getElementById('nav-profile-dashboard');
       
-      if (data.authenticated && data.user) {
+      if (data.loggedIn && data.username) {
         // User is logged in
         if (usernameDisplay) usernameDisplay.style.display = 'block';
-        if (usernameSpan) usernameSpan.textContent = data.user.username || 'User';
+        if (usernameSpan) usernameSpan.textContent = data.username || 'User';
         if (logoutBtn) logoutBtn.style.display = 'block';
         if (dashboardLink) dashboardLink.style.display = 'block';
-        
+
         // Hide login/register buttons
         if (loginBtn) loginBtn.style.display = 'none';
         if (registerBtn) registerBtn.style.display = 'none';
@@ -252,7 +250,7 @@ function updateLoginUI() {
         if (usernameDisplay) usernameDisplay.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'none';
         if (dashboardLink) dashboardLink.style.display = 'none';
-        
+
         // Show login/register buttons
         if (loginBtn) loginBtn.style.display = 'block';
         if (registerBtn) registerBtn.style.display = 'block';
@@ -276,10 +274,10 @@ function handleLogout() {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.success) {
+    if (data.status === 'success') {
       showToast('Logged out successfully', true);
       updateLoginUI();
-      
+
       // Redirect to home page if not already there
       if (!window.location.pathname.endsWith('index.html')) {
         window.location.href = `${BASE_PATH}index.html`;
