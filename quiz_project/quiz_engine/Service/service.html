@@ -25,16 +25,9 @@
         <li><a href="../Contact/contact.html">Contact Us</a></li>
         <li><a href="../FAQ/FAQ.html">FAQ</a></li>
 
-        <!-- CONSISTENT LOGIN BUTTON -->
-        <li><button class="login-btn" onclick="openLogin()">Login</button></li>
-        <li><button class="register-btn" onclick="openRegister()">Register</button></li>
+        <li><button type="button" class="login-btn">Login</button></li>
+        <li><button type="button" class="register-btn">Register</button></li>
       </ul>
-
-      <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
     </div>
   </nav>
 
@@ -42,10 +35,9 @@
   <div class="hero">
     <div class="hero-content">
       <h1>Our Services</h1>
-      <p>We provide an interactive online quiz engine for students, educators, and self-learners. Generate quizzes, practice questions, and improve learning outcomes efficiently.</p>
+      <p>We provide an interactive online quiz engine for students, educators, and self-learners.</p>
     </div>
 
-    <!-- REMOVED placeholder illustration -->
     <div class="hero-image"></div>
   </div>
 
@@ -69,7 +61,7 @@
           <p>Track scores and monitor learning progress over time.</p>
         </div>
 
-        <!-- looped for seamless scroll -->
+        <!-- loop for seamless scroll -->
         <div class="category-card">
           <h3>Quiz Generation</h3>
           <p>Upload materials and automatically generate quizzes in seconds.</p>
@@ -89,27 +81,27 @@
     </div>
   </div>
 
-  <!-- Login Modal -->
+  <!-- Login Modal (FIXED) -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeLogin()">&times;</span>
+      <span class="close close-login">&times;</span>
       <h2>Login to Your Account</h2>
-      <form>
-        <label>Username</label>
-        <input type="text" required>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <label for="login-username">Username</label>
+        <input id="login-username" type="text" required>
 
-        <label>Password</label>
-        <input type="password" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" required>
 
         <button type="submit" class="login">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- Register Modal Added -->
-  <div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;">
+  <!-- Register Modal (FIXED) -->
+  <div id="registerModal" class="modal" aria-hidden="true">
     <div class="modal-content">
-      <button class="close close-register" onclick="closeRegister()" aria-label="Close Register Modal">&times;</button>
+      <span class="close close-register">&times;</span>
       <h2>Register a New Account</h2>
 
       <form id="registerForm" onsubmit="handleRegister(event)">
@@ -149,9 +141,6 @@
         <p>Email: support@quizengine.com</p>
         <p>Phone: +1 (123) 456-7890</p>
       </div>
-
-      <!-- REMOVED Follow Us + emojis -->
-
     </div>
 
     <div class="footer-bottom">

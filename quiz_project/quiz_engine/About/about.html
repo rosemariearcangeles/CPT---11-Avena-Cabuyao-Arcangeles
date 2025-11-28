@@ -9,12 +9,11 @@
 </head>
 
 <body>
+
   <!-- Navbar -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="container">
-      <div class="logo" aria-hidden="false">
-        <h1>Online Quiz Engine</h1>
-      </div>
+      <div class="logo"><h1>Online Quiz Engine</h1></div>
 
       <ul class="nav-links">
         <li><a href="../index.html">Home</a></li>
@@ -22,46 +21,19 @@
         <li><a href="../Service/service.html">Service</a></li>
         <li><a href="../Contact/contact.html">Contact Us</a></li>
         <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-        <li>
-          <button class="login-btn" aria-haspopup="dialog" onclick="openLogin()">Login</button>
-        </li>
-        <li>
-          <button class="register-btn" aria-haspopup="dialog" onclick="openRegister()">Register</button>
-        </li>
+        <li><button class="login-btn">Login</button></li>
+        <li><button class="register-btn">Register</button></li>
       </ul>
     </div>
   </nav>
 
-  <!-- Register Button in Navbar -->
-  <script>
-    // Add register button dynamically if missing in navbar
-    window.addEventListener('DOMContentLoaded', () => {
-      const navLinks = document.querySelector('nav ul.nav-links');
-      if (navLinks && !document.querySelector('.register-btn')) {
-        const li = document.createElement('li');
-        const btn = document.createElement('button');
-        btn.className = 'register-btn';
-        btn.textContent = 'Register';
-        btn.setAttribute('aria-haspopup', 'dialog');
-        btn.addEventListener('click', () => window.openRegister());
-        li.appendChild(btn);
-        navLinks.appendChild(li);
-      }
-    });
-  </script>
-
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="hero">
     <div class="hero-content">
       <h1>About Us</h1>
-      <p>
-        We are a team of 3 student programmers. This Online Quiz Engine is our finals project for web development,
-        designed to make learning intuitive and adaptive.
-      </p>
+      <p>We are a team of 3 student programmers...</p>
       <button class="get-started" onclick="scrollToTeam()">Meet the Team</button>
     </div>
-
-
   </section>
 
   <!-- Team Section -->
@@ -75,8 +47,8 @@
         <div class="category-card team-member"
           data-name="AVENA"
           data-role="Lead Developer"
-          data-img="../About/cat-stare-art.gif"
-          data-bio="Also known as 'GodMode' Avena, he's responsible for backend logic, quiz functionalities, and other animations.">
+          data-img="cat-stare-art.gif"
+          data-bio="Also known as 'GodMode' Avena...">
           <h3>AVENA</h3>
           <p>"Lead Developer"</p>
         </div>
@@ -84,8 +56,8 @@
         <div class="category-card team-member"
           data-name="CABUYAO"
           data-role="Frontend Designer"
-          data-img="../About/funny-rat-pictures-gw34k3ehb53muhnu-3534292634.jpg"
-          data-bio="This person only knows two things in his life: HTML & CSS, designs user-friendly interfaces and functionalities.">
+          data-img="funny-rat-pictures-gw34k3ehb53muhnu-3534292634.jpg"
+          data-bio="HTML & CSS enjoyer...">
           <h3>CABUYAO</h3>
           <p>"Frontend Designer"</p>
         </div>
@@ -93,99 +65,62 @@
         <div class="category-card team-member"
           data-name="ARCANGELES"
           data-role="Website Planner"
-          data-img="../About/th (2).webp"
-          data-bio="Plans the website structure and overall website flow, she's the brains behind this project.">
+          data-img="th (2).webp"
+          data-bio="Planner of the website...">
           <h3>ARCANGELES</h3>
           <p>"Website Planner"</p>
         </div>
 
       </div>
 
-      <!-- Bio box -->
       <div class="team-info-box">
-        <img id="infoImg" src="kkk.jpeg" alt="Profile">
+        <img id="infoImg" src="kkk.jpeg">
         <h3 id="infoName">Meet the Team</h3>
-        <p id="infoRole">Get to know the developers of this website and their role in hand.</p>
+        <p id="infoRole">Get to know the developers</p>
         <p id="infoBio"></p>
       </div>
 
     </div>
 
-    <p class="team-note">
-      We aim to make learning fun, efficient, and accessible even without AI integration.
-    </p>
+    <p class="team-note">We aim to make learning fun and efficient.</p>
   </section>
 
-  <!-- Login Modal -->
+  <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeLogin()">&times;</span>
+      <span class="close close-login">&times;</span>
       <h2>Login to Your Account</h2>
-
-      <form>
-        <label>Username</label>
-        <input type="text" required />
-
-        <label>Password</label>
-        <input type="password" required />
-
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <label for="login-username">Username</label>
+        <input id="login-username" type="text" required />
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" required />
         <button type="submit" class="login">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- Register Modal Added -->
-  <div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;">
+  <!-- REGISTER MODAL -->
+  <div id="registerModal" class="modal" aria-hidden="true">
     <div class="modal-content">
-      <button class="close close-register" onclick="closeRegister()" aria-label="Close Register Modal">&times;</button>
+      <span class="close close-register">&times;</span>
       <h2>Register a New Account</h2>
 
       <form id="registerForm" onsubmit="handleRegister(event)">
         <label for="register-username">Username</label>
         <input type="text" id="register-username" required>
-
         <label for="register-email">Email</label>
         <input type="email" id="register-email" required>
-
         <label for="register-password">Password</label>
         <input type="password" id="register-password" required>
-
         <label for="register-confirm-password">Confirm Password</label>
         <input type="password" id="register-confirm-password" required>
-
         <button class="register" type="submit">Register</button>
       </form>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="foot">
-    <div class="footer-content">
-
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="../Service/service.html">Services</a></li>
-          <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section">
-        <h4>Contact</h4>
-        <p>Email: support@quizengine.com</p>
-        <p>Phone: +1 (123) 456-7890</p>
-      </div>
-
-      <!-- REMOVED Follow Us section completely -->
-
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; Adaptive Quiz Engine 2025. All rights reserved.</p>
-    </div>
-  </footer>
+  <footer class="foot">...</footer>
 
   <script src="../script.js"></script>
 
@@ -193,16 +128,7 @@
     function scrollToTeam() {
       document.getElementById("team-section").scrollIntoView({ behavior: "smooth" });
     }
-
-    document.querySelectorAll('.team-member').forEach(member => {
-      member.addEventListener('mouseenter', () => {
-        document.getElementById("infoName").textContent = member.dataset.name;
-        document.getElementById("infoRole").textContent = member.dataset.role;
-        document.getElementById("infoImg").src = member.dataset.img;
-        document.getElementById("infoBio").textContent = member.dataset.bio;
-      });
-    });
   </script>
-</body>
 
+</body>
 </html>

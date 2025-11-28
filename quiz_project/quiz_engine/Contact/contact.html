@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -15,12 +15,6 @@
         <h1>Online Quiz Engine</h1>
       </div>
 
-      <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-
       <ul class="nav-links">
         <li><a href="../index.html">Home</a></li>
         <li><a href="../About/about.html">About</a></li>
@@ -28,9 +22,8 @@
         <li><a href="contact.html" class="active">Contact Us</a></li>
         <li><a href="../FAQ/FAQ.html">FAQ</a></li>
 
-        <!-- CONSISTENT LOGIN BUTTON -->
-        <li><button class="login-btn" onclick="openLogin()" aria-haspopup="dialog">Login</button></li>
-        <li><button class="register-btn" onclick="openRegister()" aria-haspopup="dialog">Register</button></li>
+        <li><button class="login-btn">Login</button></li>
+        <li><button class="register-btn">Register</button></li>
       </ul>
     </div>
   </nav>
@@ -42,7 +35,6 @@
       <p>Have questions or feedback? Reach out to us and we'll get back to you as soon as possible.</p>
     </div>
 
-    <!-- Removed illustration -->
     <div class="hero-image"></div>
   </div>
 
@@ -111,27 +103,27 @@
     </aside>
   </div>
 
-  <!-- Login Modal -->
+  <!-- Login Modal (FIXED) -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeLogin()">&times;</span>
+      <span class="close close-login">&times;</span>
       <h2>Login to Your Account</h2>
-      <form>
-        <label>Username</label>
-        <input type="text" required>
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <label for="login-username">Username</label>
+        <input id="login-username" type="text" required>
 
-        <label>Password</label>
-        <input type="password" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" required>
 
         <button type="submit" class="login">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- Register Modal Added -->
-  <div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;">
+  <!-- Register Modal (FIXED) -->
+  <div id="registerModal" class="modal" aria-hidden="true">
     <div class="modal-content">
-      <button class="close close-register" onclick="closeRegister()" aria-label="Close Register Modal">&times;</button>
+      <span class="close close-register">&times;</span>
       <h2>Register a New Account</h2>
 
       <form id="registerForm" onsubmit="handleRegister(event)">
@@ -173,7 +165,6 @@
         <p>Phone: +1 (123) 456-7890</p>
       </div>
 
-      <!-- Removed Follow Us and emojis completely -->
     </div>
 
     <div class="footer-bottom">
@@ -182,6 +173,5 @@
   </footer>
 
   <script src="../script.js"></script>
-
 </body>
 </html>

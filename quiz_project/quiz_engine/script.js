@@ -241,6 +241,7 @@
 
   // Wire up after DOM ready
   function init() {
+    // Safely get elements, they may not exist on all pages
     dragDropZone = $id('drag-drop-zone');
     fileInput = $id('file-input');
     fileNameEl = $id('file-name');
@@ -256,23 +257,18 @@
     heroSectionEl = $id('hero-section');
 
     // Add event listeners for login and register buttons, and close buttons
-    const loginBtn = document.querySelector('.login-btn');
-    const registerBtn = document.querySelector('.register-btn');
-    const closeLoginBtn = document.querySelector('.close-login');
-    const closeRegisterBtn = document.querySelector('.close-register');
-
-    if (loginBtn) {
-      loginBtn.addEventListener('click', openLogin);
-    }
-    if (registerBtn) {
-      registerBtn.addEventListener('click', openRegister);
-    }
-    if (closeLoginBtn) {
-      closeLoginBtn.addEventListener('click', closeLogin);
-    }
-    if (closeRegisterBtn) {
-      closeRegisterBtn.addEventListener('click', closeRegister);
-    }
+    document.querySelectorAll('.login-btn').forEach(btn => {
+      btn.addEventListener('click', openLogin);
+    });
+    document.querySelectorAll('.register-btn').forEach(btn => {
+      btn.addEventListener('click', openRegister);
+    });
+    document.querySelectorAll('.close-login').forEach(btn => {
+      btn.addEventListener('click', closeLogin);
+    });
+    document.querySelectorAll('.close-register').forEach(btn => {
+      btn.addEventListener('click', closeRegister);
+    });
 
     // Optional: Close modals when clicking outside modal content
     window.addEventListener('click', (event) => {
@@ -303,7 +299,7 @@
       });
     }
 
-    // Presets
+    // Presets - only if elements exist
     function bindPreset(btn, val) {
       if (!btn) return;
       btn.addEventListener('click', () => {
@@ -313,10 +309,10 @@
       });
       btn.addEventListener('mouseleave', () => btn.blur());
     }
-    bindPreset(presetFast, 5);
-    bindPreset(presetFull, 20);
+    if (presetFast) bindPreset(presetFast, 5);
+    if (presetFull) bindPreset(presetFull, 20);
 
-    // generate button
+    // generate button - only if exists
     if (genBtn) {
       genBtn.addEventListener('click', async () => {
         const numEl = $id('num-questions');
@@ -351,10 +347,8 @@
       });
     }
 
-    // Upload handlers (click, browse, drag/drop)
-    (function setupUploadHandlers() {
-      if (!dragDropZone) return;
-
+    // Upload handlers (click, browse, drag/drop) - only if dragDropZone exists
+    if (dragDropZone) {
       // prevent browse btn click from bubbling
       if (browseBtn && fileInput) {
         browseBtn.addEventListener('click', (ev) => {
@@ -413,7 +407,7 @@
           dragDropZone.classList.remove('dragover');
         }
       });
-    })();
+    }
 
     // Wire generation cards (if present) for improved UI
     function syncGenerationCards() {
@@ -664,29 +658,7 @@
     }
   }
 
-  // Mobile menu toggle function
-  function toggleMenu() {
-    const navLinks = document.querySelector('.nav-links');
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (navLinks) {
-      navLinks.classList.toggle('active');
-    }
-    if (menuToggle) {
-      menuToggle.classList.toggle('active');
-    }
-  }
 
-  // Close mobile menu when nav link is clicked
-  function closeMobileMenu() {
-    const navLinks = document.querySelector('.nav-links');
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (navLinks && navLinks.classList.contains('active')) {
-      navLinks.classList.remove('active');
-    }
-    if (menuToggle && menuToggle.classList.contains('active')) {
-      menuToggle.classList.remove('active');
-    }
-  }
 
   // Toast notification helper
   function showToast(message, isSuccess = true) {
@@ -785,35 +757,14 @@
       registerForm.addEventListener('submit', handleRegister);
     }
 
-    // Also ensure register button opens modal properly
-    const registerBtn = document.querySelector('.register-btn');
-    if (registerBtn) {
-      registerBtn.addEventListener('click', openRegister);
-    }
-
-    // And close button works
-    const closeRegisterBtn = document.querySelector('.close-register');
-    if (closeRegisterBtn) {
-      closeRegisterBtn.addEventListener('click', closeRegister);
+    // Add event listener for loginForm submit event to call handleLogin
+    const loginForm = document.getElementById('loginModal').querySelector('form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', handleLogin);
     }
   });
 
-  // Adjust openRegister and closeRegister to handle display style properly
-  function openRegister() {
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden', 'false');
-    }
-  }
 
-  function closeRegister() {
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-      modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-  }
 
   // Expose modal login/register functions globally for use in HTML inline events
   window.openLogin = openLogin;
@@ -822,7 +773,6 @@
   window.closeRegister = closeRegister;
   window.handleLogin = handleLogin;
   window.handleRegister = handleRegister;
-  window.toggleMenu = toggleMenu;
 
 
   // Function to update UI based on login status
@@ -953,12 +903,6 @@
 
     // Also update login UI on page load
     updateLoginUI();
-
-    // Close mobile menu when nav link is clicked
-    const navLinks = document.querySelectorAll('.nav-links a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', closeMobileMenu);
-    });
   });
 // Scroll animation for "How It Works" section
 document.addEventListener('DOMContentLoaded', () => {
