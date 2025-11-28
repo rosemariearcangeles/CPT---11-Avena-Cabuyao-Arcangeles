@@ -30,7 +30,7 @@ if ($username === "" || $password === "") {
 }
 
 // Prepare SQL
-$stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
+$stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $stmt->store_result();
@@ -38,30 +38,40 @@ $stmt->store_result();
 if ($stmt->num_rows === 0) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'User not found.'
+        'message' => 'Invalid username or password.'
     ]);
     exit;
 }
 
-$stmt->bind_result($user_id, $hashed);
+$stmt->bind_result($user_id, $db_username, $hashed);
 $stmt->fetch();
 
 // Password verify
 if (!password_verify($password, $hashed)) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Invalid password.'
+        'message' => 'Invalid username or password.'
     ]);
     exit;
 }
 
 // Successful login → set session
-$session->login($user_id, $username);
+$session->login($user_id, $db_username);
 
-echo json_encode([
+// Prepare response
+$response = [
     'status' => 'success',
     'message' => 'Login successful',
-    'username' => $username
-]);
+    'username' => $db_username
+];
+
+// Add redirect URL if needed
+if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'login') === false) {
+    $response['redirect'] = $_SERVER['HTTP_REFERER'];
+} else {
+    $response['redirect'] = 'dashboard.html';
+}
+
+echo json_encode($response);
 exit;
 ?>

@@ -187,14 +187,16 @@ async function handleLogin(event) {
     if (data.status === 'success') {
       showToast('Login successful!', true);
       closeLoginModal();
-      updateLoginUI();
-
-      // Redirect if needed
-      if (data.redirect) {
-        setTimeout(() => {
-          window.location.href = data.redirect;
-        }, 1000);
-      }
+      
+      // Update UI and then redirect
+      updateLoginUI().then(() => {
+        // Redirect if needed
+        if (data.redirect) {
+          setTimeout(() => {
+            window.location.href = data.redirect;
+          }, 1000);
+        }
+      });
     } else {
       showToast(data.message || 'Login failed. Please try again.', false);
     }
@@ -277,42 +279,106 @@ async function handleRegister(event) {
 /* ===============================
    UPDATE UI AFTER LOGIN
    =============================== */
-function updateLoginUI() {
-  // Check if user is logged in by making an AJAX request
-  fetch(`${BASE_PATH}check_auth.php`)
-    .then(response => response.json())
-    .then(data => {
-      const loginBtn = document.getElementById('nav-login-btn');
-      const registerBtn = document.getElementById('nav-register-btn');
-      const usernameDisplay = document.getElementById('nav-username-display');
-      const usernameSpan = document.getElementById('nav-username');
-      const logoutBtn = document.getElementById('nav-logout-btn');
-      const dashboardLink = document.getElementById('nav-profile-dashboard');
-      
-      if (data.loggedIn && data.username) {
-        // User is logged in
-        if (usernameDisplay) usernameDisplay.style.display = 'block';
-        if (usernameSpan) usernameSpan.textContent = data.username || 'User';
-        if (logoutBtn) logoutBtn.style.display = 'block';
-        if (dashboardLink) dashboardLink.style.display = 'block';
+// Check authentication status interval (1 minute)
+const AUTH_CHECK_INTERVAL = 60000;
+let authCheckInterval;
 
-        // Hide login/register buttons
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (registerBtn) registerBtn.style.display = 'none';
-      } else {
-        // User is not logged in
-        if (usernameDisplay) usernameDisplay.style.display = 'none';
-        if (logoutBtn) logoutBtn.style.display = 'none';
-        if (dashboardLink) dashboardLink.style.display = 'none';
-
-        // Show login/register buttons
-        if (loginBtn) loginBtn.style.display = 'block';
-        if (registerBtn) registerBtn.style.display = 'block';
-      }
-    })
-    .catch(error => {
-      console.error('Error checking auth status:', error);
+// Update UI based on authentication state
+async function updateLoginUI() {
+  try {
+    const response = await fetch(`${BASE_PATH}check_auth.php`, {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      credentials: 'same-origin' // Important for sending cookies
     });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    const loginBtn = document.getElementById('nav-login-btn');
+    const registerBtn = document.getElementById('nav-register-btn');
+    const usernameDisplay = document.getElementById('nav-username-display');
+    const usernameSpan = document.getElementById('nav-username');
+    const logoutBtn = document.getElementById('nav-logout-btn');
+    const dashboardLink = document.getElementById('nav-profile-dashboard');
+    
+    if (data.loggedIn && data.username) {
+      // User is logged in
+      if (usernameDisplay) usernameDisplay.style.display = 'block';
+      if (usernameSpan) usernameSpan.textContent = data.username;
+      if (logoutBtn) logoutBtn.style.display = 'block';
+      if (dashboardLink) dashboardLink.style.display = 'block';
+
+      // Hide login/register buttons
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (registerBtn) registerBtn.style.display = 'none';
+      
+      // Update any other UI elements that depend on login state
+      updateAuthenticatedUI(true);
+    } else {
+      // User is not logged in
+      if (usernameDisplay) usernameDisplay.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      if (dashboardLink) dashboardLink.style.display = 'none';
+
+      // Show login/register buttons
+      if (loginBtn) loginBtn.style.display = 'block';
+      if (registerBtn) registerBtn.style.display = 'block';
+      
+      // Update any other UI elements that depend on login state
+      updateAuthenticatedUI(false);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error checking auth status:', error);
+    return { loggedIn: false };
+  }
+}
+
+// Update UI elements based on authentication state
+function updateAuthenticatedUI(isAuthenticated) {
+  // Update any elements with data-auth-only or data-unauth-only attributes
+  const authElements = document.querySelectorAll('[data-auth-only]');
+  authElements.forEach(el => {
+    el.style.display = isAuthenticated ? 'block' : 'none';
+  });
+
+  const unauthElements = document.querySelectorAll('[data-unauth-only]');
+  unauthElements.forEach(el => {
+    el.style.display = isAuthenticated ? 'none' : 'block';
+  });
+  
+  // If user is not authenticated and we're on a protected page, redirect to login
+  if (!isAuthenticated && isProtectedPage()) {
+    window.location.href = `${BASE_PATH}index.html`;
+  }
+}
+
+// Check if current page requires authentication
+function isProtectedPage() {
+  // Add paths that require authentication
+  const protectedPaths = ['/dashboard.html', '/profile.html'];
+  return protectedPaths.some(path => window.location.pathname.endsWith(path));
+}
+
+// Start periodic auth check
+function startAuthCheck() {
+  // Clear any existing interval
+  if (authCheckInterval) {
+    clearInterval(authCheckInterval);
+  }
+  
+  // Initial check
+  updateLoginUI();
+  
+  // Set up periodic check
+  authCheckInterval = setInterval(updateLoginUI, AUTH_CHECK_INTERVAL);
 }
 
 /* ===============================
@@ -350,8 +416,8 @@ function handleLogout() {
    EVENT LISTENERS
    =============================== */
 document.addEventListener('DOMContentLoaded', function() {
-  // Update UI on page load
-  updateLoginUI();
+  // Start the authentication check when the page loads
+  startAuthCheck();
   
   // Close modals when clicking outside
   const modals = document.querySelectorAll('.modal');
