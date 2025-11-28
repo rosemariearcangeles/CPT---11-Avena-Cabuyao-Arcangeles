@@ -626,39 +626,85 @@
   };
 
 /* ===============================
-   LOGIN / REGISTER MODAL LOGIC
+   LOGIN / REGISTER MODAL LOGIC (ENHANCED)
    =============================== */
+
+// CSRF token management
+let csrfToken = null;
+
+async function getCSRFToken() {
+  try {
+    const response = await fetch('csrf_token.php');
+    const data = await response.json();
+    return data.token;
+  } catch (error) {
+    console.error('Failed to get CSRF token:', error);
+    return null;
+  }
+}
+
+// Modal functions
+function openModal(modal) {
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeModal(modal) {
+  modal.classList.remove('show');
+  document.body.style.overflow = 'auto';
+  modal.setAttribute('aria-hidden', 'true');
+  // Clear form errors
+  clearFormErrors(modal);
+}
+
+function clearFormErrors(modal) {
+  const errorMessages = modal.querySelectorAll('.error-message');
+  errorMessages.forEach(msg => msg.textContent = '');
+  const inputs = modal.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.classList.remove('error');
+    input.setCustomValidity('');
+  });
+}
 
 function openLogin() {
   const modal = document.getElementById('loginModal');
   if (modal) {
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
+    openModal(modal);
   }
 }
 
 function closeLogin() {
   const modal = document.getElementById('loginModal');
   if (modal) {
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
+    closeModal(modal);
   }
 }
 
 function openRegister() {
   const modal = document.getElementById('registerModal');
   if (modal) {
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
+    openModal(modal);
   }
 }
 
 function closeRegister() {
   const modal = document.getElementById('registerModal');
   if (modal) {
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
+    closeModal(modal);
   }
+}
+
+// Switch between login and register
+function switchToRegister() {
+  closeModal(document.getElementById('loginModal'));
+  openModal(document.getElementById('registerModal'));
+}
+
+function switchToLogin() {
+  closeModal(document.getElementById('registerModal'));
+  openModal(document.getElementById('loginModal'));
 }
 
 /* ===============================
@@ -719,24 +765,69 @@ async function handleLogin(event) {
 }
 
 /* ===============================
-   REGISTER HANDLER (AJAX → register.php)
+   REGISTER HANDLER (AJAX → register.php) - ENHANCED
    =============================== */
 
 async function handleRegister(event) {
   event.preventDefault();
+
+  const form = event.target;
+  const submitBtn = form.querySelector('#register-submit-btn');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const spinner = submitBtn.querySelector('.btn-spinner');
+
+  // Show loading state
+  submitBtn.disabled = true;
+  btnText.textContent = 'Creating Account...';
+  spinner.style.display = 'block';
+
+  // Clear previous errors
+  clearFormErrors(form);
 
   const username = document.getElementById("register-username").value.trim();
   const email = document.getElementById("register-email").value.trim();
   const pass = document.getElementById("register-password").value;
   const confirm = document.getElementById("register-confirm-password").value;
 
-  if (!username || !email || !pass || !confirm) {
-    showToast("Please fill in all fields.", false);
-    return;
+  // Client-side validation
+  let hasError = false;
+  if (!username) {
+    document.getElementById('register-username-error').textContent = 'Username is required';
+    document.getElementById('register-username').classList.add('error');
+    hasError = true;
+  }
+  if (!email) {
+    document.getElementById('register-email-error').textContent = 'Email is required';
+    document.getElementById('register-email').classList.add('error');
+    hasError = true;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('register-email-error').textContent = 'Please enter a valid email';
+    document.getElementById('register-email').classList.add('error');
+    hasError = true;
+  }
+  if (!pass) {
+    document.getElementById('register-password-error').textContent = 'Password is required';
+    document.getElementById('register-password').classList.add('error');
+    hasError = true;
+  } else if (pass.length < 6) {
+    document.getElementById('register-password-error').textContent = 'Password must be at least 6 characters';
+    document.getElementById('register-password').classList.add('error');
+    hasError = true;
+  }
+  if (!confirm) {
+    document.getElementById('register-confirm-error').textContent = 'Please confirm your password';
+    document.getElementById('register-confirm-password').classList.add('error');
+    hasError = true;
+  } else if (pass !== confirm) {
+    document.getElementById('register-confirm-error').textContent = 'Passwords do not match';
+    document.getElementById('register-confirm-password').classList.add('error');
+    hasError = true;
   }
 
-  if (pass !== confirm) {
-    showToast("Passwords do not match.", false);
+  if (hasError) {
+    submitBtn.disabled = false;
+    btnText.textContent = 'Create Account';
+    spinner.style.display = 'none';
     return;
   }
 
@@ -746,6 +837,9 @@ async function handleRegister(event) {
     formData.append("email", email);
     formData.append("password", pass);
     formData.append("confirmPassword", confirm);
+    if (csrfToken) {
+      formData.append("csrf_token", csrfToken);
+    }
 
     const baseUrl = window.location.origin;
     const res = await fetch(baseUrl + "/register.php", { method: "POST", body: formData });
@@ -759,8 +853,13 @@ async function handleRegister(event) {
       showToast(data.message || "Registration failed.", false);
     }
 
-  } catch {
+  } catch (error) {
+    console.error('Registration error:', error);
     showToast("Server error. Try again.", false);
+  } finally {
+    submitBtn.disabled = false;
+    btnText.textContent = 'Create Account';
+    spinner.style.display = 'none';
   }
 }
 
@@ -817,10 +916,19 @@ async function handleLogout() {
 }
 
 /* ===============================
-   EVENT LISTENERS
+   EVENT LISTENERS - ENHANCED
    =============================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Initialize CSRF tokens
+  csrfToken = await getCSRFToken();
+  if (csrfToken) {
+    const loginCsrf = document.getElementById('login-csrf');
+    const registerCsrf = document.getElementById('register-csrf');
+    if (loginCsrf) loginCsrf.value = csrfToken;
+    if (registerCsrf) registerCsrf.value = csrfToken;
+  }
+
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
   const logoutBtn = document.getElementById("nav-logout-btn");

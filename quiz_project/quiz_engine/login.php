@@ -1,9 +1,13 @@
 <?php
-session_start();
 header('Content-Type: application/json');
 
-// Load DB
+require_once "session_utils.php";
 require_once "config.php";
+
+$session = SessionManager::getInstance();
+
+// Validate CSRF token
+$session->requireCSRFToken();
 
 // Validate POST fields
 if (!isset($_POST['username']) || !isset($_POST['password'])) {
@@ -52,8 +56,7 @@ if (!password_verify($password, $hashed)) {
 }
 
 // Successful login → set session
-$_SESSION['user_id'] = $user_id;
-$_SESSION['username'] = $username;
+$session->login($user_id, $username);
 
 echo json_encode([
     'status' => 'success',

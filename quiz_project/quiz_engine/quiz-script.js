@@ -9,27 +9,135 @@ const $id = (id) => document.getElementById(id);
 let currentQuiz = [];
 let userAnswers = [];
 let currentQuestionIndex = 0;
+let quizProgress = {};
 
 // =====================
-// Load Quiz from localStorage
+// Generate Quiz ID
+// =====================
+function generateQuizId() {
+  return 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// =====================
+// Save Quiz Progress
+// =====================
+function saveQuizProgress() {
+  try {
+    // Update current answers
+    const selected = document.querySelector('input[name="q' + currentQuestionIndex + '"]:checked');
+    userAnswers[currentQuestionIndex] = selected ? selected.value : null;
+
+    quizProgress = {
+      quizId: quizProgress.quizId || generateQuizId(),
+      answers: [...userAnswers],
+      currentIndex: currentQuestionIndex,
+      startTime: quizProgress.startTime || Date.now(),
+      lastSaved: Date.now()
+    };
+
+    // Save to localStorage
+    localStorage.setItem('quizProgress', JSON.stringify(quizProgress));
+    localStorage.setItem('currentQuiz', JSON.stringify(currentQuiz));
+
+    // Save to server if user is logged in
+    saveProgressToServer();
+
+    console.log('Quiz progress saved');
+  } catch (err) {
+    console.error('Error saving quiz progress:', err);
+  }
+}
+
+// =====================
+// Load Quiz Progress
+// =====================
+function loadQuizProgress() {
+  try {
+    const progressData = localStorage.getItem('quizProgress');
+    const quizData = localStorage.getItem('currentQuiz');
+
+    if (progressData && quizData) {
+      const progress = JSON.parse(progressData);
+      currentQuiz = JSON.parse(quizData);
+
+      if (currentQuiz && currentQuiz.length) {
+        quizProgress = progress;
+        userAnswers = [...progress.answers];
+        currentQuestionIndex = progress.currentIndex || 0;
+        quizStartTime = progress.startTime;
+
+        return true; // Progress loaded successfully
+      }
+    }
+    return false; // No progress found
+  } catch (err) {
+    console.error('Error loading quiz progress:', err);
+    return false;
+  }
+}
+
+// =====================
+// Save Progress to Server (for logged-in users)
+// =====================
+async function saveProgressToServer() {
+  try {
+    // Check if user is logged in
+    const sessionResponse = await fetch('session_check.php');
+    const sessionData = await sessionResponse.json();
+
+    if (!sessionData.loggedIn) return; // Don't save if not logged in
+
+    const response = await fetch('save_quiz_progress.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        quizId: quizProgress.quizId,
+        quizData: currentQuiz,
+        answers: userAnswers,
+        currentIndex: currentQuestionIndex,
+        startTime: quizProgress.startTime,
+        lastSaved: quizProgress.lastSaved
+      })
+    });
+
+    if (!response.ok) {
+      console.warn('Failed to save progress to server');
+    }
+  } catch (err) {
+    console.error('Error saving progress to server:', err);
+  }
+}
+
+// =====================
+// Load Quiz from localStorage or Server
 // =====================
 function loadQuiz() {
   try {
-    const quizData = localStorage.getItem('currentQuiz');
-    if (!quizData) {
-      alert('No quiz data found. Please generate a quiz first.');
-      window.location.href = 'index.html';
-      return;
-    }
+    // Try to load saved progress first
+    const hasProgress = loadQuizProgress();
 
-    currentQuiz = JSON.parse(quizData);
-    if (!currentQuiz || !currentQuiz.length) {
-      alert('No questions found in quiz data.');
-      window.location.href = 'index.html';
-      return;
-    }
+    if (!hasProgress) {
+      // No progress, load fresh quiz
+      const quizData = localStorage.getItem('currentQuiz');
+      if (!quizData) {
+        alert('No quiz data found. Please generate a quiz first.');
+        window.location.href = 'index.html';
+        return;
+      }
 
-    userAnswers = new Array(currentQuiz.length).fill(null);
+      currentQuiz = JSON.parse(quizData);
+      if (!currentQuiz || !currentQuiz.length) {
+        alert('No questions found in quiz data.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      userAnswers = new Array(currentQuiz.length).fill(null);
+      quizProgress.quizId = generateQuizId();
+      quizProgress.startTime = Date.now();
+    }
 
     // Simulate loading progress
     simulateLoadingProgress(() => {
@@ -46,6 +154,9 @@ function loadQuiz() {
       renderAllQuestions();
       showCurrentQuestion();
       updateProgress();
+
+      // Auto-save progress every 30 seconds
+      setInterval(saveQuizProgress, 30000);
     });
   } catch (err) {
     console.error('Error loading quiz:', err);
@@ -198,6 +309,7 @@ function nextQuestion() {
     currentQuestionIndex++;
     showCurrentQuestion();
     updateProgress();
+    saveQuizProgress();
   }
 }
 
@@ -209,6 +321,7 @@ function prevQuestion() {
     currentQuestionIndex--;
     showCurrentQuestion();
     updateProgress();
+    saveQuizProgress();
   }
 }
 
@@ -286,6 +399,11 @@ function showResult() {
 
   const back = $id("back-btn");
   if (back) back.onclick = () => window.location.href = "index.html";
+
+  // Clear saved progress after quiz completion
+  localStorage.removeItem('quizProgress');
+  localStorage.removeItem('currentQuiz');
+  quizProgress = {};
 }
 
 // =====================
