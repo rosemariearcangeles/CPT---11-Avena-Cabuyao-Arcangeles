@@ -5,8 +5,10 @@ const authScript = document.currentScript;
 const BASE_PATH = (() => {
   if (!authScript) return '';
   const src = authScript.getAttribute('src') || '';
-  const depth = (src.match(/\.\.\//g) || []).length;
-  return depth ? '../'.repeat(depth) : '';
+  // Count directory separators to determine how many levels up we need to go
+  const pathParts = src.split('/').filter(part => part && part !== '.');
+  const depth = pathParts.length - 1; // Subtract 1 for the filename
+  return depth > 0 ? '../'.repeat(depth) : '';
 })();
 
 // Utility function to get CSRF token
@@ -82,20 +84,20 @@ function switchToLogin() {
    =============================== */
 function showToast(message, success = true) {
   const toast = document.createElement('div');
-  toast.className = `toast ${success ? 'success' : 'error'}`;
+  toast.className = `toast ${success ? 'toast-success' : 'toast-error'}`;
   toast.setAttribute('role', 'alert');
   toast.textContent = message;
-  
+
   document.body.appendChild(toast);
-  
+
   // Trigger reflow
   void toast.offsetWidth;
-  
-  toast.classList.add('show');
-  
+
+  toast.classList.add('visible');
+
   // Remove toast after delay
   setTimeout(() => {
-    toast.classList.remove('show');
+    toast.classList.remove('visible');
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
