@@ -4,35 +4,57 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Online Quiz Engine</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="logo" aria-hidden="false">
-      <h1>Online Quiz Engine</h1>
-    </div>
+    <div class="container">
+      <div class="logo" aria-hidden="false">
+        <h1>Online Quiz Engine</h1>
+      </div>
 
-    <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="About/about.html">About</a></li>
-      <li><a href="Service/service.html">Service</a></li>
-      <li><a href="Contact/contact.html">Contact Us</a></li>
-      <li><a href="FAQ/FAQ.html">FAQ</a></li>
-      <li>
-        <button class="login-btn" aria-haspopup="dialog" id="nav-login-btn">Login</button>
-      </li>
-      <li>
-        <button class="register-btn" aria-haspopup="dialog" id="nav-register-btn">Register</button>
-      </li>
-      <li style="display:none;" id="nav-username-display">
-        Logged in as <span id="nav-username"></span>
-      </li>
-      <li style="display:none;">
-        <button id="nav-logout-btn">Logout</button>
-      </li>
-    </ul>
+      <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="About/about.html">About</a></li>
+        <li><a href="Service/service.html">Service</a></li>
+        <li><a href="Contact/contact.html">Contact Us</a></li>
+        <li><a href="FAQ/FAQ.html">FAQ</a></li>
+        <li>
+          <button class="login-btn" aria-haspopup="dialog" id="nav-login-btn">Login</button>
+        </li>
+        <li>
+          <button class="register-btn" aria-haspopup="dialog" id="nav-register-btn">Register</button>
+        </li>
+        <li style="display:none;" id="nav-username-display">
+          Logged in as <span id="nav-username"></span>
+        </li>
+        <li style="display:none;">
+          <button id="nav-logout-btn">Logout</button>
+        </li>
+        <li style="display:none;" id="nav-profile-dashboard">
+          <div class="profile-dashboard">
+            <button id="profile-btn" class="profile-btn" aria-expanded="false" aria-haspopup="true">
+              <span id="profile-username">User</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="2,4 6,8 10,4"></polyline>
+              </svg>
+            </button>
+            <ul id="profile-menu" class="profile-menu" aria-hidden="true" style="display:none;">
+              <li><a href="#" id="profile-settings">Settings</a></li>
+              <li><button id="profile-logout-btn">Logout</button></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
   </nav>
 
   <!-- HERO -->
@@ -128,15 +150,15 @@
         <p class="upload-description">Upload a plain text file and automatically generate quiz questions.</p>
 
         <div id="drag-drop-zone" class="drag-drop-zone" role="button" aria-label="Upload learning material" tabindex="0">
-          <svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM13 3.5L18.5 9H14a1 1 0 0 1-1-1V3.5zM12 12v4.59l1.29-1.3 1.42 1.42L12 19.34l-2.71-2.71 1.42-1.42L11 16.59V12h1z"/>
           </svg>
 
-          <p class="upload-title">Drag & drop a .txt file here</p>
+          <h3 class="upload-title">Drag & drop a .txt file here</h3>
 
           <p class="upload-hint">
-            or 
-            <button id="browse-btn" class="btn btn-outline btn-sm">Browse</button>
+            or
+            <button id="browse-btn" class="upload-btn">Browse</button>
           </p>
 
           <input type="file" id="file-input" accept=".txt" hidden>

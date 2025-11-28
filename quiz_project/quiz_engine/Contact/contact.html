@@ -4,27 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Us - Online Quiz Engine</title>
-  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../css/contact.css" />
 </head>
 <body>
 
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">
-      <h1>Online Quiz Engine</h1>
+    <div class="container">
+      <div class="logo">
+        <h1>Online Quiz Engine</h1>
+      </div>
+
+      <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../About/about.html">About</a></li>
+        <li><a href="../Service/service.html">Service</a></li>
+        <li><a href="contact.html" class="active">Contact Us</a></li>
+        <li><a href="../FAQ/FAQ.html">FAQ</a></li>
+
+        <!-- CONSISTENT LOGIN BUTTON -->
+        <li><button class="login-btn" onclick="openLogin()" aria-haspopup="dialog">Login</button></li>
+        <li><button class="register-btn" onclick="openRegister()" aria-haspopup="dialog">Register</button></li>
+      </ul>
     </div>
-
-    <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="../About/about.html">About</a></li>
-      <li><a href="../Service/service.html">Service</a></li>
-      <li><a href="contact.html" class="active">Contact Us</a></li>
-      <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-
-      <!-- CONSISTENT LOGIN BUTTON -->
-      <li><button class="login-btn" onclick="openLogin()">Login</button></li>
-      <li><button class="register-btn" onclick="openRegister()">Register</button></li>
-    </ul>
   </nav>
 
   <!-- Hero Section -->

@@ -5,29 +5,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About - Online Quiz Engine</title>
-  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../css/about.css" />
 </head>
 
 <body>
   <!-- Navbar -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="logo" aria-hidden="false">
-      <h1>Online Quiz Engine</h1>
-    </div>
+    <div class="container">
+      <div class="logo" aria-hidden="false">
+        <h1>Online Quiz Engine</h1>
+      </div>
 
-    <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="about.html" class="active">About</a></li>
-      <li><a href="../Service/service.html">Service</a></li>
-      <li><a href="../Contact/contact.html">Contact Us</a></li>
-      <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-      <li>
-        <button class="login-btn" aria-haspopup="dialog">Login</button>
-      </li>
-      <li>
-        <button class="register-btn" aria-haspopup="dialog">Register</button>
-      </li>
-    </ul>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="../Service/service.html">Service</a></li>
+        <li><a href="../Contact/contact.html">Contact Us</a></li>
+        <li><a href="../FAQ/FAQ.html">FAQ</a></li>
+        <li>
+          <button class="login-btn" aria-haspopup="dialog" onclick="openLogin()">Login</button>
+        </li>
+        <li>
+          <button class="register-btn" aria-haspopup="dialog" onclick="openRegister()">Register</button>
+        </li>
+      </ul>
+    </div>
   </nav>
 
   <!-- Register Button in Navbar -->

@@ -4,27 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>FAQ - Online Quiz Engine</title>
-    <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../css/faq.css" />
     </head>
     <body>
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="logo">
-        <h1>Online Quiz Engine</h1>
+        <div class="container">
+            <div class="logo">
+            <h1>Online Quiz Engine</h1>
+            </div>
+
+            <ul class="nav-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../About/about.html">About</a></li>
+            <li><a href="../Service/service.html">Service</a></li>
+            <li><a href="../Contact/contact.html">Contact Us</a></li>
+            <li><a href="FAQ.html" class="active">FAQ</a></li>
+
+            <!-- CONSISTENT LOGIN BUTTON -->
+            <li><button class="login-btn" onclick="openLogin()" aria-haspopup="dialog">Login</button></li>
+            <li><button class="register-btn" onclick="openRegister()" aria-haspopup="dialog">Register</button></li>
+            </ul>
         </div>
-
-        <ul class="nav-links">
-        <li><a href="../index.html">Home</a></li>
-        <li><a href="../About/about.html">About</a></li>
-        <li><a href="../Service/service.html">Service</a></li>
-        <li><a href="../Contact/contact.html">Contact Us</a></li>
-        <li><a href="FAQ.html" class="active">FAQ</a></li>
-
-        <!-- CONSISTENT LOGIN BUTTON -->
-        <li><button class="login-btn" onclick="openLogin()">Login</button></li>
-        <li><button class="register-btn" onclick="openRegister()">Register</button></li>
-        </ul>
     </nav>
 
     <!-- Hero Section -->
@@ -39,44 +41,74 @@
     </div>
 
     <!-- FAQ Section -->
-    <div class="flip-card">
-        <div class="faq-list">
+    <section class="faq-section">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <p>Get answers to the most common questions about our quiz platform</p>
 
-        <div class="category-card">
-            <div class="category-card-inner">
-            <div class="category-card-front">
-                <h3>How do I create a quiz?</h3>
-            </div>
-            <div class="category-card-back">
-                <p>Upload a text file with learning material and click generate questions.</p>
-            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        How do I create a quiz?
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Upload a text file containing learning material, and our AI will automatically generate quiz questions for you. Simply click the "Generate Quiz" button after uploading your file.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Can I track my quiz scores?
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, your quiz results are displayed immediately after submission. You can see your score, correct answers, and areas for improvement.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Is the quiz generation free?
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, basic quiz generation and practice are completely free to use. You can upload text files and generate unlimited quizzes without any cost.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        What file formats are supported?
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We currently support plain text files (.txt) for quiz generation. Make sure your text file contains clear, readable content for best results.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        How accurate are the generated questions?
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our AI analyzes your text content to create relevant questions. The accuracy depends on the quality and clarity of your input text. Well-structured content produces better questions.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Can I customize the quiz difficulty?
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, you can choose from easy, medium, or hard difficulty levels when generating your quiz. The AI will adjust question complexity based on your selection.</p>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="category-card">
-            <div class="category-card-inner">
-            <div class="category-card-front">
-                <h3>Can I track my scores?</h3>
-            </div>
-            <div class="category-card-back">
-                <p>Yes, results are displayed immediately after submitting a quiz.</p>
-            </div>
-            </div>
-        </div>
-
-        <div class="category-card">
-            <div class="category-card-inner">
-            <div class="category-card-front">
-                <h3>Is it free?</h3>
-            </div>
-            <div class="category-card-back">
-                <p>Yes, basic quiz generation and practice are free to use.</p>
-            </div>
-            </div>
-        </div>
-
-        </div>
-    </div>
+    </section>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">

@@ -664,6 +664,30 @@
     }
   }
 
+  // Mobile menu toggle function
+  function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    const menuToggle = document.querySelector('.menu-toggle');
+    if (navLinks) {
+      navLinks.classList.toggle('active');
+    }
+    if (menuToggle) {
+      menuToggle.classList.toggle('active');
+    }
+  }
+
+  // Close mobile menu when nav link is clicked
+  function closeMobileMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    const menuToggle = document.querySelector('.menu-toggle');
+    if (navLinks && navLinks.classList.contains('active')) {
+      navLinks.classList.remove('active');
+    }
+    if (menuToggle && menuToggle.classList.contains('active')) {
+      menuToggle.classList.remove('active');
+    }
+  }
+
   // Toast notification helper
   function showToast(message, isSuccess = true) {
     const toast = document.createElement('div');
@@ -778,7 +802,6 @@
   function openRegister() {
     const modal = document.getElementById('registerModal');
     if (modal) {
-      modal.style.display = 'block';
       modal.classList.add('show');
       modal.setAttribute('aria-hidden', 'false');
     }
@@ -787,7 +810,6 @@
   function closeRegister() {
     const modal = document.getElementById('registerModal');
     if (modal) {
-      modal.style.display = 'none';
       modal.classList.remove('show');
       modal.setAttribute('aria-hidden', 'true');
     }
@@ -800,6 +822,7 @@
   window.closeRegister = closeRegister;
   window.handleLogin = handleLogin;
   window.handleRegister = handleRegister;
+  window.toggleMenu = toggleMenu;
 
 
   // Function to update UI based on login status
@@ -930,6 +953,12 @@
 
     // Also update login UI on page load
     updateLoginUI();
+
+    // Close mobile menu when nav link is clicked
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
   });
 // Scroll animation for "How It Works" section
 document.addEventListener('DOMContentLoaded', () => {
