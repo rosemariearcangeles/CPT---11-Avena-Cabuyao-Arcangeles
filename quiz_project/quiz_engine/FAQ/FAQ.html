@@ -1,121 +1,127 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>FAQ - Online Quiz Engine</title>
-  <link rel="stylesheet" href="../css/faq.css" />
-    </head>
-    <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FAQ - Online Quiz Engine</title>
+<link rel="stylesheet" href="../css/faq.css" />
+</head>
+<body>
 
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container">
+        <div class="logo">
             <h1>Online Quiz Engine</h1>
-            </div>
+        </div>
 
-            <ul class="nav-links">
+        <ul class="nav-links">
             <li><a href="../index.html">Home</a></li>
             <li><a href="../About/about.html">About</a></li>
             <li><a href="../Service/service.html">Service</a></li>
             <li><a href="../Contact/contact.html">Contact Us</a></li>
             <li><a href="FAQ.html" class="active">FAQ</a></li>
 
-            <!-- CONSISTENT LOGIN BUTTON -->
-            <li><button class="login-btn" aria-haspopup="dialog">Login</button></li>
-            <li><button class="register-btn" aria-haspopup="dialog">Register</button></li>
-            </ul>
-        </div>
-    </nav>
+            <!-- LOGIN / REGISTER BUTTONS (visible when logged out) -->
+            <li><button class="login-btn" id="nav-login-btn">Login</button></li>
+            <li><button class="register-btn" id="nav-register-btn">Register</button></li>
 
-    <!-- Hero Section -->
-    <div class="hero">
-        <div class="hero-content">
+            <!-- SIMPLE LOGGED-IN UI -->
+            <li id="nav-username-display" style="display:none;">
+                Hello, <span id="nav-username"></span>!
+            </li>
+            <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
         <h1>Frequently Asked Questions</h1>
         <p>Find answers to common questions about our platform and services.</p>
-        </div>
-
-        <!-- REMOVED the placeholder FAQ illustration -->
-        <div class="hero-image"></div>
     </div>
+    <div class="hero-image"></div>
+</div>
 
-    <!-- FAQ Section -->
-    <section class="faq-section">
-        <div class="container">
-            <h2>Frequently Asked Questions</h2>
-            <p>Get answers to the most common questions about our quiz platform</p>
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <p>Get answers to the most common questions about our quiz platform</p>
 
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        How do I create a quiz?
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Upload a text file containing learning material, and our AI will automatically generate quiz questions for you. Simply click the "Generate Quiz" button after uploading your file.</p>
-                    </div>
+        <div class="faq-container">
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How do I create a quiz?
+                    <span class="toggle-icon">+</span>
                 </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        Can I track my quiz scores?
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, your quiz results are displayed immediately after submission. You can see your score, correct answers, and areas for improvement.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        Is the quiz generation free?
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, basic quiz generation and practice are completely free to use. You can upload text files and generate unlimited quizzes without any cost.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        What file formats are supported?
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>We currently support plain text files (.txt) for quiz generation. Make sure your text file contains clear, readable content for best results.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        How accurate are the generated questions?
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Our AI analyzes your text content to create relevant questions. The accuracy depends on the quality and clarity of your input text. Well-structured content produces better questions.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        Can I customize the quiz difficulty?
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, you can choose from easy, medium, or hard difficulty levels when generating your quiz. The AI will adjust question complexity based on your selection.</p>
-                    </div>
+                <div class="faq-answer">
+                    <p>Upload a text file containing learning material, and our AI will automatically generate quiz questions for you. Simply click the "Generate Quiz" button after uploading your file.</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-        <span class="close close-login" >&times;</span>
+            <div class="faq-item">
+                <div class="faq-question">
+                    Can I track my quiz scores?
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, your quiz results are displayed immediately after submission along with correct answers and improvements.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Is the quiz generation free?
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, basic quiz generation is completely free. You can upload text files and generate unlimited quizzes with no cost.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    What file formats are supported?
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>We support plain text (.txt) files. Ensure the content is clear and well-structured for optimal question generation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How accurate are the generated questions?
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Our AI analyzes your text and produces questions based on sentence structure and keywords. Better input text results in better questions.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Can I customize the quiz difficulty?
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, you can select easy, medium, or hard difficulty, and the AI will adapt the level of complexity.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close close-login">&times;</span>
         <h2>Login to Your Account</h2>
-        <form onsubmit="handleLogin(event)">
+        <form id="loginForm" onsubmit="handleLogin(event)">
             <label for="login-username">Username</label>
             <input id="login-username" type="text" required>
 
@@ -124,15 +130,15 @@
 
             <button type="submit" class="login">Login</button>
         </form>
-        </div>
     </div>
+</div>
 
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
+<!-- Register Modal -->
+<div id="registerModal" class="modal">
+    <div class="modal-content">
         <span class="close close-register">&times;</span>
         <h2>Register a New Account</h2>
-        <form onsubmit="handleRegister(event)">
+        <form id="registerForm" onsubmit="handleRegister(event)">
             <label for="register-username">Username</label>
             <input id="register-username" type="text" required>
 
@@ -147,21 +153,21 @@
 
             <button type="submit" class="register">Register</button>
         </form>
-        </div>
     </div>
+</div>
 
-    <!-- Footer -->
-    <footer class="foot">
-        <div class="footer-content">
+<!-- Footer -->
+<footer class="foot">
+    <div class="footer-content">
 
         <div class="footer-section">
             <h4>Quick Links</h4>
             <ul>
-            <li><a href="../index.html">Home</a></li>
-            <li><a href="../About/about.html">About</a></li>
-            <li><a href="../Service/service.html">Services</a></li>
-            <li><a href="FAQ.html">FAQ</a></li>
-            <li><a href="../Contact/contact.html">Contact Us</a></li>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../About/about.html">About</a></li>
+                <li><a href="../Service/service.html">Services</a></li>
+                <li><a href="FAQ.html">FAQ</a></li>
+                <li><a href="../Contact/contact.html">Contact Us</a></li>
             </ul>
         </div>
 
@@ -171,15 +177,13 @@
             <p>Phone: +1 (123) 456-7890</p>
         </div>
 
-        <!-- REMOVED Follow Us section + emojis -->
+    </div>
 
-        </div>
-
-        <div class="footer-bottom">
+    <div class="footer-bottom">
         <p>&copy; Adaptive Quiz Engine 2025. All rights reserved.</p>
-        </div>
-    </footer>
+    </div>
+</footer>
 
-    <script src="../script.js"></script>
-    </body>
-    </html>
+<script src="../script.js"></script>
+</body>
+</html>

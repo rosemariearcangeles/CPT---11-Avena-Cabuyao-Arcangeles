@@ -22,8 +22,15 @@
         <li><a href="contact.html" class="active">Contact Us</a></li>
         <li><a href="../FAQ/FAQ.html">FAQ</a></li>
 
-        <li><button class="login-btn">Login</button></li>
-        <li><button class="register-btn">Register</button></li>
+        <!-- LOGIN / REGISTER BUTTONS -->
+        <li><button class="login-btn" id="nav-login-btn">Login</button></li>
+        <li><button class="register-btn" id="nav-register-btn">Register</button></li>
+
+        <!-- SIMPLE LOGGED-IN UI -->
+        <li id="nav-username-display" style="display:none;">
+          Hello, <span id="nav-username"></span>!
+        </li>
+        <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
       </ul>
     </div>
   </nav>
@@ -103,7 +110,7 @@
     </aside>
   </div>
 
-  <!-- Login Modal (FIXED) -->
+  <!-- Login Modal -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="close close-login">&times;</span>
@@ -120,7 +127,7 @@
     </div>
   </div>
 
-  <!-- Register Modal (FIXED) -->
+  <!-- Register Modal -->
   <div id="registerModal" class="modal" aria-hidden="true">
     <div class="modal-content">
       <span class="close close-register">&times;</span>

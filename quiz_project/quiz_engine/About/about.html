@@ -21,8 +21,17 @@
         <li><a href="../Service/service.html">Service</a></li>
         <li><a href="../Contact/contact.html">Contact Us</a></li>
         <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-        <li><button class="login-btn">Login</button></li>
-        <li><button class="register-btn">Register</button></li>
+
+        <!-- Login/Register buttons (visible when logged out) -->
+        <li><button class="login-btn" id="nav-login-btn">Login</button></li>
+        <li><button class="register-btn" id="nav-register-btn">Register</button></li>
+
+        <!-- Logged-in UI -->
+        <li id="nav-username-display" style="display:none;">
+          Hello, <span id="nav-username"></span>!
+        </li>
+        <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
+
       </ul>
     </div>
   </nav>
@@ -93,8 +102,10 @@
       <form id="loginForm" onsubmit="handleLogin(event)">
         <label for="login-username">Username</label>
         <input id="login-username" type="text" required />
+
         <label for="login-password">Password</label>
         <input id="login-password" type="password" required />
+
         <button type="submit" class="login">Login</button>
       </form>
     </div>
@@ -109,17 +120,22 @@
       <form id="registerForm" onsubmit="handleRegister(event)">
         <label for="register-username">Username</label>
         <input type="text" id="register-username" required>
+
         <label for="register-email">Email</label>
         <input type="email" id="register-email" required>
+
         <label for="register-password">Password</label>
         <input type="password" id="register-password" required>
+
         <label for="register-confirm-password">Confirm Password</label>
         <input type="password" id="register-confirm-password" required>
+
         <button class="register" type="submit">Register</button>
       </form>
     </div>
   </div>
 
+  <!-- Footer -->
   <footer class="foot">...</footer>
 
   <script src="../script.js"></script>

@@ -1,69 +1,89 @@
 <?php
+session_start();
+header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start();
-header('Content-Type: application/json');
-
-// Use DB connection from config.php
 require_once "config.php";
 
 if (!$conn) {
-    die(json_encode(['success' => false, 'message' => 'No DB connection']));
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Database connection failed.'
+    ]);
+    exit;
 }
 
-$test = $conn->prepare("SELECT id FROM users WHERE username = ?");
-if (!$test) {
-    die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
-}
+// GET POST DATA SAFELY
+$username = isset($_POST['username']) ? trim($_POST['username']) : '';
+$email    = isset($_POST['email']) ? trim($_POST['email']) : '';
+$password = $_POST['password'] ?? '';
+$confirm  = $_POST['confirmPassword'] ?? '';
 
-
-$username = trim($_POST['username']);
-$email = trim($_POST['email']);
-$password = $_POST['password'];
-$confirm = $_POST['confirmPassword'];
-
-if (!$username || !$email || !$password || !$confirm) {
-    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
+// VALIDATION
+if ($username === '' || $email === '' || $password === '' || $confirm === '') {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'All fields are required.'
+    ]);
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid email.']);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Invalid email format.'
+    ]);
     exit;
 }
 
 if ($password !== $confirm) {
-    echo json_encode(['success' => false, 'message' => 'Passwords do not match.']);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Passwords do not match.'
+    ]);
     exit;
 }
 
-// Check if username or email already exist
+// CHECK IF USERNAME/EMAIL EXISTS
 $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
 $stmt->bind_param("ss", $username, $email);
 $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows > 0) {
-    echo json_encode(['success' => false, 'message' => 'Username or email already exists']);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Username or email already exists.'
+    ]);
     exit;
 }
 
-// Insert new user
+// HASH PASSWORD
 $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+// INSERT USER
 $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
 $stmt->bind_param("sss", $username, $email, $hashed);
 
 if (!$stmt->execute()) {
-    echo json_encode(['success' => false, 'message' => 'Database insert failed: ' . $stmt->error]);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Database insert failed: ' . $stmt->error
+    ]);
     exit;
 }
 
+// AUTO-LOGIN AFTER REGISTER
 $user_id = $conn->insert_id;
-
-// Auto-login after registration
 $_SESSION['user_id'] = $user_id;
 $_SESSION['username'] = $username;
 
-echo json_encode(['success' => true, 'message' => 'Registration successful', 'username' => $username]);
+// SUCCESS RESPONSE
+echo json_encode([
+    'status' => 'success',
+    'message' => 'Registration successful.',
+    'username' => $username
+]);
+exit;
 ?>

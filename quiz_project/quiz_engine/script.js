@@ -497,8 +497,8 @@
     const slides = [
       { type: 'color', value: 'linear-gradient(135deg,#5A67D8,#805AD5)', ready: true },
       { type: 'image', value: 'images/mm.jpeg', ready: false },
-      { type: 'image', value: 'images/nn.jpg', ready: false },
-      { type: 'image', value: 'images/oo.jpg', ready: false }
+      { type: 'image', value: 'images/nn.jpeg', ready: false },
+      { type: 'image', value: 'images/oo.jpeg', ready: false }
     ];
 
     // preload images
@@ -625,285 +625,210 @@
     processFile
   };
 
-  // Added functions for login/register modal handling
-  function openLogin() {
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden', 'false');
-    }
+/* ===============================
+   LOGIN / REGISTER MODAL LOGIC
+   =============================== */
+
+function openLogin() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeLogin() {
+  const modal = document.getElementById('loginModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function openRegister() {
+  const modal = document.getElementById('registerModal');
+  if (modal) {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeRegister() {
+  const modal = document.getElementById('registerModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+/* ===============================
+   SINGLE TOAST NOTIFICATION FUNCTION
+   =============================== */
+
+function showToast(message, success = true) {
+  const toast = document.createElement('div');
+  toast.className = `toast ${success ? "toast-success" : "toast-error"}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Fade in
+  setTimeout(() => toast.classList.add("visible"), 30);
+
+  // Fade out
+  setTimeout(() => {
+    toast.classList.remove("visible");
+    setTimeout(() => toast.remove(), 350);
+  }, 3500);
+}
+
+/* ===============================
+   LOGIN HANDLER (AJAX → login.php)
+   =============================== */
+
+async function handleLogin(event) {
+  event.preventDefault();
+
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+
+  if (!username || !password) {
+    showToast("Please enter username and password.", false);
+    return;
   }
 
-  function closeLogin() {
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-      modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-  }
+  try {
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
 
-  function openRegister() {
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden', 'false');
-    }
-  }
+    const res = await fetch("login.php", { method: "POST", body: formData });
+    const data = await res.json();
 
-  function closeRegister() {
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-      modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-  }
-
-
-
-  // Toast notification helper
-  function showToast(message, isSuccess = true) {
-    const toast = document.createElement('div');
-    toast.className = `toast ${isSuccess ? 'toast-success' : 'toast-error'}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-      toast.classList.add('visible');
-    }, 100);
-    setTimeout(() => {
-      toast.classList.remove('visible');
-      setTimeout(() => document.body.removeChild(toast), 300);
-    }, 4000);
-  }
-
-  // Handle login form submission updated to send POST request to login.php
-  async function handleLogin(event) {
-    event.preventDefault();
-    const username = document.getElementById('login-username').value.trim();
-    const password = document.getElementById('login-password').value.trim();
-    if (!username || !password) {
-      showToast('Please enter both username and password.', false);
-      return;
-    }
-    try {
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('password', password);
-      const response = await fetch('login.php', {
-        method: 'POST',
-        body: formData,
-      });
-      const result = await response.json();
-    if (result.success) {
-      showToast(`Login successful. Welcome, ${result.username}!`);
+    if (data.success) {
       closeLogin();
-      // Update UI to reflect logged in status
+      showToast(`Welcome back, ${data.username}!`);
       await updateLoginUI();
     } else {
-      showToast(`Login failed: ${result.message}`, false);
+      showToast(data.message || "Login failed.", false);
     }
-    } catch (error) {
-      console.error('Login error:', error);
-      showToast('An error occurred during login.', false);
-    }
+
+  } catch {
+    showToast("Server error. Try again.", false);
+  }
+}
+
+/* ===============================
+   REGISTER HANDLER (AJAX → register.php)
+   =============================== */
+
+async function handleRegister(event) {
+  event.preventDefault();
+
+  const username = document.getElementById("register-username").value.trim();
+  const email = document.getElementById("register-email").value.trim();
+  const pass = document.getElementById("register-password").value;
+  const confirm = document.getElementById("register-confirm-password").value;
+
+  if (!username || !email || !pass || !confirm) {
+    showToast("Please fill in all fields.", false);
+    return;
   }
 
-  // Handle register form submission updated to send POST to register.php
-  async function handleRegister(event) {
-    event.preventDefault();
-    console.log("handleRegister called");
-    const username = document.getElementById('register-username').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const password = document.getElementById('register-password').value;
-    const confirmPassword = document.getElementById('register-confirm-password').value;
-    if (!username || !email || !password || !confirmPassword) {
-      showToast('Please fill out all fields.', false);
-      console.log("Registration failed: Please fill out all fields.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      showToast('Passwords do not match.', false);
-      console.log("Registration failed: Passwords do not match.");
-      return;
-    }
-    try {
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('confirmPassword', confirmPassword);
-      const response = await fetch('register.php', {
-        method: 'POST',
-        body: formData,
-      });
-      const result = await response.json();
-      if (result.success) {
-        showToast(`Registration successful. Welcome, ${result.username}!`);
-        closeRegister();
-        console.log("Registration successful for user: ", result.username);
-      } else {
-        showToast(`Registration failed: ${result.message}`, false);
-        console.log("Registration failed: ", result.message);
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      showToast('An error occurred during registration.', false);
-    }
+  if (pass !== confirm) {
+    showToast("Passwords do not match.", false);
+    return;
   }
 
-  // Add explicit event listener for registerForm submit event to call handleRegister
-  document.addEventListener('DOMContentLoaded', () => {
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-      registerForm.addEventListener('submit', handleRegister);
+  try {
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", pass);
+    formData.append("confirmPassword", confirm);
+
+    const res = await fetch("register.php", { method: "POST", body: formData });
+    const data = await res.json();
+
+    if (data.success) {
+      closeRegister();
+      showToast(`Account created! Welcome, ${data.username}!`);
+      await updateLoginUI();
+    } else {
+      showToast(data.message || "Registration failed.", false);
     }
 
-    // Add event listener for loginForm submit event to call handleLogin
-    const loginForm = document.getElementById('loginModal').querySelector('form');
-    if (loginForm) {
-      loginForm.addEventListener('submit', handleLogin);
-    }
-  });
-
-
-
-  // Expose modal login/register functions globally for use in HTML inline events
-  window.openLogin = openLogin;
-  window.closeLogin = closeLogin;
-  window.openRegister = openRegister;
-  window.closeRegister = closeRegister;
-  window.handleLogin = handleLogin;
-  window.handleRegister = handleRegister;
-
-
-  // Function to update UI based on login status
-  async function updateLoginUI() {
-    const navLoginBtn = document.getElementById('nav-login-btn');
-    const navRegisterBtn = document.getElementById('nav-register-btn');
-
-    // Old username display elements - hide
-    const navUsernameDisplay = document.getElementById('nav-username-display');
-    const navUsernameSpan = document.getElementById('nav-username');
-
-    // New profile dashboard elements
-    const profileDashboard = document.getElementById('nav-profile-dashboard');
-    const profileUsername = document.getElementById('profile-username');
-    const profileMenu = document.getElementById('profile-menu');
-
-    // Logout button inside profile dashboard
-    const navLogoutBtn = document.getElementById('nav-logout-btn');
-
-    try {
-      const response = await fetch('session_check.php');
-      const data = await response.json();
-
-      if (data.loggedIn) {
-        // Hide login and register buttons
-        if(navLoginBtn) navLoginBtn.style.display = 'none';
-        if(navRegisterBtn) navRegisterBtn.style.display = 'none';
-
-        // Hide old username display area
-        if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
-
-        // Show profile dashboard
-        if(profileDashboard) profileDashboard.style.display = 'inline-flex';
-        if(profileUsername) profileUsername.textContent = data.username || '';
-
-        // Hide old logout button if any (not needed)
-        if(navLogoutBtn) navLogoutBtn.style.display = 'none';
-
-        // Reset profile menu accessibility state
-        if(profileMenu) {
-          profileMenu.setAttribute('aria-hidden', 'true');
-          profileMenu.style.display = 'none';
-        }
-      } else {
-        // Show login and register buttons
-        if(navLoginBtn) navLoginBtn.style.display = 'inline';
-        if(navRegisterBtn) navRegisterBtn.style.display = 'inline';
-
-        // Show old username display (none)
-        if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
-
-        // Hide profile dashboard
-        if(profileDashboard) profileDashboard.style.display = 'none';
-
-        // Show old logout button none
-        if(navLogoutBtn) navLogoutBtn.style.display = 'none';
-      }
-    } catch (error) {
-      console.error('Failed to fetch login status:', error);
-      // Fallback to show login/register buttons
-      if(navLoginBtn) navLoginBtn.style.display = 'inline';
-      if(navRegisterBtn) navRegisterBtn.style.display = 'inline';
-      if(navUsernameDisplay) navUsernameDisplay.style.display = 'none';
-      if(navLogoutBtn) navLogoutBtn.style.display = 'none';
-      if(profileDashboard) profileDashboard.style.display = 'none';
-    }
+  } catch {
+    showToast("Server error. Try again.", false);
   }
+}
 
-  // Handle logout button click event
-  async function handleLogout() {
-    try {
-      const response = await fetch('logout.php', { method: 'POST' });
-      const data = await response.json();
-      if (data.success) {
-        await updateLoginUI();
-        showToast('Logged out successfully.');
-      } else {
-        showToast('Logout failed.', false);
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      showToast('An error occurred during logout.', false);
+/* ===============================
+   UPDATE NAVBAR AFTER LOGIN
+   =============================== */
+
+async function updateLoginUI() {
+  try {
+    const res = await fetch("session_check.php");
+    const data = await res.json();
+
+    const loginBtn = document.querySelector(".login-btn");
+    const regBtn = document.querySelector(".register-btn");
+    const profileDash = document.getElementById("nav-profile-dashboard");
+    const profileName = document.getElementById("profile-username");
+
+    if (data.loggedIn) {
+      if (loginBtn) loginBtn.style.display = "none";
+      if (regBtn) regBtn.style.display = "none";
+
+      if (profileDash) profileDash.style.display = "inline-flex";
+      if (profileName) profileName.textContent = data.username;
+    } else {
+      if (loginBtn) loginBtn.style.display = "inline-block";
+      if (regBtn) regBtn.style.display = "inline-block";
+
+      if (profileDash) profileDash.style.display = "none";
     }
+
+  } catch {
+    console.error("Login UI update failed");
   }
+}
 
-  // Add event listener to logout button
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLogoutBtn = document.getElementById('nav-logout-btn');
-    if (navLogoutBtn) {
-      navLogoutBtn.addEventListener('click', handleLogout);
+/* ===============================
+   LOGOUT HANDLER
+   =============================== */
+
+async function handleLogout() {
+  try {
+    const res = await fetch("logout.php", { method: "POST" });
+    const data = await res.json();
+
+    if (data.success) {
+      showToast("Logged out successfully.");
+      await updateLoginUI();
     }
+  } catch {
+    showToast("Logout failed.", false);
+  }
+}
 
-    // Setup toggle for profile button dropdown menu
-    const profileBtn = document.getElementById('profile-btn');
-    const profileMenu = document.getElementById('profile-menu');
+/* ===============================
+   EVENT LISTENERS
+   =============================== */
 
-    if (profileBtn && profileMenu) {
-      profileBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const expanded = profileBtn.getAttribute('aria-expanded') === 'true';
-        profileBtn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-        const isHidden = profileMenu.getAttribute('aria-hidden') === 'true';
-        profileMenu.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
-        profileMenu.style.display = isHidden ? 'block' : 'none';
-      });
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  const logoutBtn = document.getElementById("nav-logout-btn");
 
-      // Close menu on clicking outside
-      document.addEventListener('click', (e) => {
-        if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
-          profileBtn.setAttribute('aria-expanded', 'false');
-          profileMenu.setAttribute('aria-hidden', 'true');
-          profileMenu.style.display = 'none';
-        }
-      });
+  if (loginForm) loginForm.addEventListener("submit", handleLogin);
+  if (registerForm) registerForm.addEventListener("submit", handleRegister);
+  if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
 
-      // Keyboard navigation for menu items
-      profileMenu.querySelectorAll('li').forEach(item => {
-        item.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-            profileBtn.focus();
-            profileBtn.setAttribute('aria-expanded', 'false');
-            profileMenu.setAttribute('aria-hidden', 'true');
-            profileMenu.style.display = 'none';
-          }
-        });
-      });
-    }
+  updateLoginUI();
+});
 
-    // Also update login UI on page load
-    updateLoginUI();
-  });
+
 // Scroll animation for "How It Works" section
 document.addEventListener('DOMContentLoaded', () => {
   const howItWorksSection = document.getElementById('how-it-works');

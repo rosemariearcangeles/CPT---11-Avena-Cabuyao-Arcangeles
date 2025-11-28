@@ -22,9 +22,16 @@
         <li><a href="Contact/contact.html">Contact Us</a></li>
         <li><a href="FAQ/FAQ.html">FAQ</a></li>
 
-        <!-- MATCHED WORKING BUTTONS -->
-        <li><button type="button" class="login-btn">Login</button></li>
-        <li><button type="button" class="register-btn">Register</button></li>
+        <!-- Login/Register buttons (visible when NOT logged in) -->
+        <li><button type="button" class="login-btn" id="nav-login-btn">Login</button></li>
+        <li><button type="button" class="register-btn" id="nav-register-btn">Register</button></li>
+
+        <!-- Username + logout (visible when logged in) -->
+        <li id="nav-username-display" style="display:none;">
+          Hello, <span id="nav-username"></span>!
+        </li>
+
+        <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
       </ul>
     </div>
   </nav>
@@ -42,7 +49,7 @@
     <div id="hero-dots" class="hero-dots"></div>
   </section>
 
-  <!-- MAIN CONTENT (UNCHANGED) -->
+  <!-- MAIN CONTENT -->
   <div class="container">
 
     <aside class="sidebar">
@@ -133,7 +140,7 @@
     </main>
   </div>
 
-  <!-- LOGIN MODAL from working About/FAQ -->
+  <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="close close-login">&times;</span>
@@ -151,7 +158,7 @@
     </div>
   </div>
 
-  <!-- REGISTER MODAL from working About/FAQ -->
+  <!-- REGISTER MODAL -->
   <div id="registerModal" class="modal" aria-hidden="true">
     <div class="modal-content">
       <span class="close close-register">&times;</span>

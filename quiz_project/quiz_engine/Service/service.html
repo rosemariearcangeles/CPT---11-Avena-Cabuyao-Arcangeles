@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Service - Online Quiz Engine</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="../css/service.css" />
 </head>
 <body>
@@ -25,8 +27,15 @@
         <li><a href="../Contact/contact.html">Contact Us</a></li>
         <li><a href="../FAQ/FAQ.html">FAQ</a></li>
 
-        <li><button type="button" class="login-btn">Login</button></li>
-        <li><button type="button" class="register-btn">Register</button></li>
+        <!-- LOGIN / REGISTER BUTTONS (visible when logged out) -->
+        <li><button type="button" class="login-btn" id="nav-login-btn">Login</button></li>
+        <li><button type="button" class="register-btn" id="nav-register-btn">Register</button></li>
+
+        <!-- SIMPLE LOGGED-IN UI -->
+        <li id="nav-username-display" style="display:none;">
+          Hello, <span id="nav-username"></span>!
+        </li>
+        <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
       </ul>
     </div>
   </nav>
@@ -61,7 +70,7 @@
           <p>Track scores and monitor learning progress over time.</p>
         </div>
 
-        <!-- loop for seamless scroll -->
+        <!-- Loop for seamless scroll -->
         <div class="category-card">
           <h3>Quiz Generation</h3>
           <p>Upload materials and automatically generate quizzes in seconds.</p>
@@ -81,7 +90,7 @@
     </div>
   </div>
 
-  <!-- Login Modal (FIXED) -->
+  <!-- Login Modal -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="close close-login">&times;</span>
@@ -98,7 +107,7 @@
     </div>
   </div>
 
-  <!-- Register Modal (FIXED) -->
+  <!-- Register Modal -->
   <div id="registerModal" class="modal" aria-hidden="true">
     <div class="modal-content">
       <span class="close close-register">&times;</span>
