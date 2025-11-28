@@ -3,15 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="csrf-token" content="">
   <title>Online Quiz Engine</title>
   <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/modal.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- Navigation -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="container">
-      <div class="logo" aria-hidden="false">
+      <div class="logo">
         <h1>Online Quiz Engine</h1>
       </div>
 
@@ -22,19 +27,13 @@
         <li><a href="Contact/contact.html">Contact Us</a></li>
         <li><a href="FAQ/FAQ.html">FAQ</a></li>
         <li id="nav-profile-dashboard" style="display:none;">
-    <a href="profile.php">Dashboard</a>
-</li>
-
-
-        <!-- Login/Register buttons (visible when NOT logged in) -->
+          <a href="profile.php">Dashboard</a>
+        </li>
         <li><button type="button" class="login-btn" id="nav-login-btn">Login</button></li>
         <li><button type="button" class="register-btn" id="nav-register-btn">Register</button></li>
-
-        <!-- Username + logout (visible when logged in) -->
         <li id="nav-username-display" style="display:none;">
           Hello, <span id="nav-username"></span>!
         </li>
-
         <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
       </ul>
     </div>
@@ -149,17 +148,14 @@
     <div class="modal-content">
       <button class="close close-login" aria-label="Close login modal">&times;</button>
       <div class="modal-header">
-        <svg class="modal-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
+        <div class="modal-icon">🔑</div>
         <h2 id="login-title">Welcome Back</h2>
-        <p class="modal-subtitle">Sign in to your account</p>
+        <p class="modal-subtitle">Sign in to continue to your account</p>
       </div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+      <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)" novalidate>
         <input type="hidden" id="login-csrf" name="csrf_token">
-
+        
         <div class="form-group">
           <label for="login-username">Username</label>
           <div class="input-wrapper">
@@ -167,33 +163,34 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            <input type="text" id="login-username" name="username" required aria-describedby="login-username-error">
+            <input type="text" id="login-username" name="username" required placeholder="Enter your username" aria-describedby="login-username-error">
           </div>
           <div id="login-username-error" class="error-message" role="alert"></div>
         </div>
-
+        
         <div class="form-group">
           <label for="login-password">Password</label>
           <div class="input-wrapper">
             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <circle cx="12" cy="16" r="1"></circle>
-              <path d="m9 11 3-3 3 3"></path>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <input type="password" id="login-password" name="password" required aria-describedby="login-password-error">
+            <input type="password" id="login-password" name="password" required placeholder="Enter your password" aria-describedby="login-password-error">
           </div>
           <div id="login-password-error" class="error-message" role="alert"></div>
         </div>
+        
+        <div class="form-actions">
+          <button class="btn btn-primary btn-block" type="submit" id="login-submit-btn">
+            <span class="btn-text">Sign In</span>
+            <div class="btn-spinner" style="display: none;"></div>
+          </button>
+        </div>
 
-        <button class="btn btn-primary btn-full" type="submit" id="login-submit-btn">
-          <span class="btn-text">Sign In</span>
-          <div class="btn-spinner" style="display: none;"></div>
-        </button>
+        <div class="auth-footer">
+          <p>Don't have an account? <a href="#" id="switch-to-register" class="auth-link">Sign up</a></p>
+        </div>
       </form>
-
-      <div class="modal-footer">
-        <p>Don't have an account? <button class="link-btn" onclick="switchToRegister()">Sign up</button></p>
-      </div>
     </div>
   </div>
 
@@ -202,16 +199,12 @@
     <div class="modal-content">
       <button class="close close-register" aria-label="Close register modal">&times;</button>
       <div class="modal-header">
-        <svg class="modal-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <path d="M22 2l-4 4m0-4l4 4"></path>
-        </svg>
+        <div class="modal-icon">📝</div>
         <h2 id="register-title">Create Account</h2>
         <p class="modal-subtitle">Join our quiz community</p>
       </div>
 
-      <form id="registerForm" onsubmit="handleRegister(event)" novalidate>
+      <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)" novalidate>
         <input type="hidden" id="register-csrf" name="csrf_token">
 
         <div class="form-group">
@@ -221,7 +214,7 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            <input type="text" id="register-username" name="username" required aria-describedby="register-username-error">
+            <input type="text" id="register-username" name="username" required placeholder="Choose a username" aria-describedby="register-username-error">
           </div>
           <div id="register-username-error" class="error-message" role="alert"></div>
         </div>
@@ -233,7 +226,7 @@
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
-            <input type="email" id="register-email" name="email" required aria-describedby="register-email-error">
+            <input type="email" id="register-email" name="email" required placeholder="your@email.com" aria-describedby="register-email-error">
           </div>
           <div id="register-email-error" class="error-message" role="alert"></div>
         </div>
@@ -243,10 +236,9 @@
           <div class="input-wrapper">
             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <circle cx="12" cy="16" r="1"></circle>
-              <path d="m9 11 3-3 3 3"></path>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <input type="password" id="register-password" name="password" required aria-describedby="register-password-error">
+            <input type="password" id="register-password" name="password" required placeholder="Create a password" aria-describedby="register-password-error">
           </div>
           <div id="register-password-error" class="error-message" role="alert"></div>
         </div>
@@ -256,23 +248,24 @@
           <div class="input-wrapper">
             <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <circle cx="12" cy="16" r="1"></circle>
-              <path d="m9 11 3-3 3 3"></path>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <input type="password" id="register-confirm-password" name="confirmPassword" required aria-describedby="register-confirm-error">
+            <input type="password" id="register-confirm-password" name="confirmPassword" required placeholder="Confirm your password" aria-describedby="register-confirm-error">
           </div>
           <div id="register-confirm-error" class="error-message" role="alert"></div>
         </div>
 
-        <button class="btn btn-secondary btn-full" type="submit" id="register-submit-btn">
-          <span class="btn-text">Create Account</span>
-          <div class="btn-spinner" style="display: none;"></div>
-        </button>
-      </form>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-block" type="submit" id="register-submit-btn">
+            <span class="btn-text">Create Account</span>
+            <div class="btn-spinner" style="display: none;"></div>
+          </button>
+        </div>
 
-      <div class="modal-footer">
-        <p>Already have an account? <button class="link-btn" onclick="switchToLogin()">Sign in</button></p>
-      </div>
+        <div class="auth-footer">
+          <p>Already have an account? <a href="#" id="switch-to-login" class="auth-link">Sign in</a></p>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -296,9 +289,58 @@
       </div>
     </div>
 
-    <div class="footer-bottom">© Adaptive Quiz Engine 2025</div>
+    <div class="footer-bottom"> Adaptive Quiz Engine 2025</div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
+  <script>
+    // Initialize authentication functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Button event listeners
+      const loginBtn = document.getElementById('nav-login-btn');
+      const registerBtn = document.getElementById('nav-register-btn');
+      const logoutBtn = document.getElementById('nav-logout-btn');
+      
+      // Add click handlers
+      if (loginBtn) loginBtn.addEventListener('click', openLogin);
+      if (registerBtn) registerBtn.addEventListener('click', openRegister);
+      if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+      // Modal close buttons
+      document.querySelectorAll('.close').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const modal = btn.closest('.modal');
+          if (modal) closeModal(modal);
+        });
+      });
+
+      // Switch between login/register forms
+      const switchToRegister = document.getElementById('switch-to-register');
+      const switchToLogin = document.getElementById('switch-to-login');
+      
+      if (switchToRegister) {
+        switchToRegister.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeLoginModal();
+          openRegister();
+        });
+      }
+      
+      if (switchToLogin) {
+        switchToLogin.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeRegisterModal();
+          openLogin();
+        });
+      }
+
+      // Check login status
+      updateLoginUI();
+    });
+  </script>
 </body>
 </html>
