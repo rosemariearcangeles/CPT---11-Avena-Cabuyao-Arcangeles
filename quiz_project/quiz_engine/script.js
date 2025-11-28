@@ -634,7 +634,7 @@ let csrfToken = null;
 
 async function getCSRFToken() {
   try {
-    const response = await fetch('csrf_token.php');
+    const response = await fetch('../csrf_token.php');
     const data = await response.json();
     return data.token;
   } catch (error) {
