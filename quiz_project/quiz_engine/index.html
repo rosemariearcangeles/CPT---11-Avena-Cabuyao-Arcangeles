@@ -6,6 +6,7 @@
   <meta name="csrf-token" content="">
   <title>Online Quiz Engine</title>
   <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/modal.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +16,7 @@
 
   <!-- Navigation -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="container">
+    <div class="page-wrapper nav-inner">
       <div class="logo">
         <h1>Online Quiz Engine</h1>
       </div>
@@ -44,103 +45,129 @@
     <div id="hero-slides" class="hero-slides"></div>
     <div class="hero-overlay"></div>
 
-    <div class="hero-content">
-      <h1>Transform Your Learning Experience</h1>
-      <p>Interactive online quizzes that are easy, comprehensive, and reliable.</p>
-    </div>
+    <div class="page-wrapper hero-inner">
+      <div class="hero-content">
+        <h1>Transform Your Learning Experience</h1>
+        <p>Interactive online quizzes that are easy, comprehensive, and reliable.</p>
+        <a href="#main" class="cta-button">Get Started</a>
+      </div>
 
-    <div id="hero-dots" class="hero-dots"></div>
+      <div class="hero-visual" aria-hidden="true"></div>
+
+      <div id="hero-dots" class="hero-dots"></div>
+    </div>
   </section>
 
   <!-- MAIN CONTENT -->
-  <div class="container">
-
-    <aside class="sidebar">
-      <h2>Generation Settings</h2>
-
-      <select id="generation-mode" hidden>
-        <option value="local">Local Generation</option>
-        <option value="ai">AI Generation</option>
-      </select>
-
-      <div id="generation-mode-container">
-        <div class="generation-card gen-clean-option selected" data-mode="local">
-          <h3>Local Generation</h3>
-          <p>Generate quizzes instantly using your browser.</p>
+  <div class="page-wrapper">
+    <div class="home-layout">
+      <!-- Sidebar with Generation Options -->
+      <aside class="sidebar">
+        <h2 class="section-title">Generation Settings</h2>
+        
+        <div class="generation-cards">
+          <button class="generation-card selected" id="gen-local-btn" aria-pressed="true">
+            <h3>Local Generation</h3>
+            <p>Generate quizzes instantly using your browser</p>
+          </button>
+          
+          <button class="generation-card" id="gen-ai-btn" aria-pressed="false">
+            <h3>AI Generation</h3>
+            <p>Use AI for higher-quality quiz generation</p>
+          </button>
         </div>
-
-        <div class="generation-card gen-clean-option" data-mode="ai">
-          <h3>AI Generation</h3>
-          <p>Use an AI provider for higher-quality quiz generation.</p>
-        </div>
-      </div>
-
-      <div class="category-cards">
-        <div class="category-card">
-          <div class="card-title">Presets</div>
+        
+        <div class="preset-section">
+          <h3 class="section-subtitle">Quick Presets</h3>
           <div class="preset-buttons">
-            <button id="preset-fast" class="btn btn-outline btn-sm">Quick (5)</button>
-            <button id="preset-full" class="btn btn-outline btn-sm">Full (20)</button>
+            <button id="preset-fast" class="active" data-preset="5">Quick (5)</button>
+            <button id="preset-full" data-preset="20">Full (20)</button>
           </div>
+          <p id="preset-indicator" class="preset-indicator">Quick (5) questions selected</p>
         </div>
-      </div>
-    </aside>
+      </aside>
 
-    <main class="main-content" id="main">
-      <section class="upload-section">
-        <h1>Generate Quiz from Learning Material</h1>
-        <p class="upload-description">Upload a text file and automatically generate quiz questions.</p>
-
-        <div id="drag-drop-zone" class="drag-drop-zone">
-          <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM13 3.5L18.5 9H14a1 1 0 0 1-1-1V3.5zM12 12v4.59l1.29-1.3 1.42 1.42L12 19.34l-2.71-2.71 1.42-1.42L11 16.59V12h1z"/>
-          </svg>
-
-          <h3 class="upload-title">Drag & drop a .txt file here</h3>
-          <p class="upload-hint">
-            or
-            <button id="browse-btn" class="upload-btn">Browse</button>
-          </p>
-
-          <input type="file" id="file-input" accept=".txt" hidden>
-        </div>
-
-        <div id="file-name" class="file-name"></div>
-
-        <div id="quiz-options" class="quiz-options" style="display:none;">
-          <label for="num-questions">Number of Questions</label>
-          <input id="num-questions" type="number" min="1" max="50" value="5">
-
-          <label for="quiz-type">Quiz Type</label>
-          <select id="quiz-type">
-            <option value="multiple">Multiple Choice</option>
-            <option value="fill-blank">Fill-in-the-Blank</option>
-            <option value="true-false">True/False</option>
-            <option value="mixed">Mixed</option>
-          </select>
-
-          <div class="option-actions">
-            <button id="generate-quiz-ai" class="btn btn-primary">Generate Quiz</button>
+      <!-- Main Content Area -->
+      <main class="main-content" id="main">
+        <!-- File Upload Section -->
+        <section class="upload-section">
+          <h1>Generate Quiz from Learning Material</h1>
+          <p class="upload-description">Upload your study materials and get a customized quiz in seconds.</p>
+          
+          <div id="drag-drop-zone" class="drag-drop-zone" role="region" aria-labelledby="drop-zone-title" tabindex="0">
+            <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM13 3.5L18.5 9H14a1 1 0 0 1-1-1V3.5zM12 12v4.59l1.29-1.3 1.42 1.42L12 19.34l-2.71-2.71 1.42-1.42L11 16.59V12h1z"/>
+            </svg>
+            
+            <h3 id="drop-zone-title" class="upload-title">Drag & drop your file here</h3>
+            <p class="upload-hint">
+              or <button id="browse-btn" class="upload-btn" type="button">browse your files</button>
+            </p>
+            <p class="file-format">Supports .txt files up to 5MB</p>
+            
+            <input type="file" id="file-input" accept=".txt" hidden>
           </div>
-        </div>
-      </section>
-
-      <section class="services-carousel">
-        <div class="carousel">
-          <div class="carousel-track" id="carousel-track">
-            <div class="category-card">Fast generation</div>
-            <div class="category-card">Customizable quizzes</div>
-            <div class="category-card">AI-assisted</div>
-            <div class="category-card">Analytics & results</div>
-            <div class="category-card">Fast generation</div>
-            <div class="category-card">Customizable quizzes</div>
-            <div class="category-card">AI-assisted</div>
-            <div class="category-card">Analytics & results</div>
+          
+          <div id="file-name" class="file-name" aria-live="polite"></div>
+          
+          <div id="quiz-options" class="quiz-options" style="display: none;">
+            <div class="form-group">
+              <label for="num-questions">Number of Questions</label>
+              <input id="num-questions" type="number" min="1" max="50" value="5" aria-label="Number of questions">
+            </div>
+            
+            <div class="form-group">
+              <label for="quiz-type">Quiz Type</label>
+              <select id="quiz-type" aria-label="Quiz type">
+                <option value="multiple">Multiple Choice</option>
+                <option value="fill-blank">Fill-in-the-Blank</option>
+                <option value="true-false">True/False</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
+            
+            <div class="option-actions">
+              <button id="generate-quiz-btn" class="btn btn-primary" type="button">
+                Generate Quiz
+                <span class="btn-icon" aria-hidden="true">→</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
-
-    </main>
+        </section>
+        
+        <!-- Features Carousel -->
+        <section class="services-carousel" aria-label="Features">
+          <h2>Why Choose Our Quiz Engine?</h2>
+          
+          <div class="carousel-container">
+            <div class="carousel" aria-live="polite">
+              <div class="carousel-track">
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">⚡</span>
+                  <span class="card-text">Lightning Fast</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">🎯</span>
+                  <span class="card-text">Smart Learning</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">🔒</span>
+                  <span class="card-text">Secure & Private</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">📱</span>
+                  <span class="card-text">Mobile Friendly</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">🔄</span>
+                  <span class="card-text">Instant Results</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <!-- LOGIN MODAL -->
@@ -297,6 +324,7 @@
 
   <!-- Scripts -->
   <script src="js/auth.js"></script>
+  <script src="script.js"></script>
   <script>
     // Initialize authentication functionality
     document.addEventListener('DOMContentLoaded', function() {
@@ -340,6 +368,53 @@
 
       // Check login status
       updateLoginUI();
+
+      // ===== GENERATION MODE BUTTONS =====
+      const genLocalBtn = document.getElementById('gen-local-btn');
+      const genAiBtn = document.getElementById('gen-ai-btn');
+      const generationModeSelect = document.getElementById('generation-mode');
+
+      if (genLocalBtn) {
+        genLocalBtn.addEventListener('click', () => {
+          genLocalBtn.classList.add('selected');
+          genAiBtn.classList.remove('selected');
+          generationModeSelect.value = 'local';
+        });
+      }
+
+      if (genAiBtn) {
+        genAiBtn.addEventListener('click', () => {
+          genAiBtn.classList.add('selected');
+          genLocalBtn.classList.remove('selected');
+          generationModeSelect.value = 'ai';
+        });
+      }
+
+      // ===== PRESET BUTTONS WITH INDICATOR =====
+      const presetFast = document.getElementById('preset-fast');
+      const presetFull = document.getElementById('preset-full');
+      const presetIndicator = document.getElementById('preset-indicator');
+      const numQuestionsInput = document.getElementById('num-questions');
+
+      if (presetFast) {
+        presetFast.addEventListener('click', () => {
+          presetFast.classList.add('active');
+          presetFull.classList.remove('active');
+          numQuestionsInput.value = '5';
+          presetIndicator.textContent = '✓ Quick (5 questions) selected';
+          presetIndicator.classList.add('active');
+        });
+      }
+
+      if (presetFull) {
+        presetFull.addEventListener('click', () => {
+          presetFull.classList.add('active');
+          presetFast.classList.remove('active');
+          numQuestionsInput.value = '20';
+          presetIndicator.textContent = '✓ Full (20 questions) selected';
+          presetIndicator.classList.add('active');
+        });
+      }
     });
   </script>
 </body>
