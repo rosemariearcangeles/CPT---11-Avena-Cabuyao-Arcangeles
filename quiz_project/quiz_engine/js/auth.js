@@ -117,11 +117,12 @@ async function switchToLogin() {
 let activeToasts = [];
 let lastToastMessage = '';
 let lastToastTime = 0;
+const TOAST_DUPLICATE_THRESHOLD = 1000; // 1 second
 
 function showToast(message, success = true) {
-  // Prevent duplicate toasts within 500ms
+  // Prevent duplicate toasts within threshold
   const now = Date.now();
-  if (message === lastToastMessage && (now - lastToastTime) < 500) {
+  if (message === lastToastMessage && (now - lastToastTime) < TOAST_DUPLICATE_THRESHOLD) {
     return;
   }
   lastToastMessage = message;
@@ -142,7 +143,9 @@ function showToast(message, success = true) {
   document.body.appendChild(toast);
   activeToasts.push(toast);
 
-  setTimeout(() => toast.classList.add('visible'), 10);
+  requestAnimationFrame(() => {
+    toast.classList.add('visible');
+  });
 
   setTimeout(() => {
     toast.classList.remove('visible');
@@ -350,19 +353,39 @@ async function updateLoginUI() {
 function applyAuthState(data) {
   const authButtons = document.querySelector('.auth-buttons');
   const userMenu = document.querySelector('.user-menu');
-  const dashboardLink = document.querySelector('.dashboard-link');
+  const dashboardLink = document.querySelector('.dashboard-link, #nav-dashboard-link');
   const usernameSpan = document.getElementById('nav-username');
+  const dropdownUsername = document.getElementById('dropdown-username');
 
   if (data.loggedIn && data.username) {
-    if (authButtons) authButtons.style.display = 'none';
-    if (userMenu) userMenu.style.display = 'block';
-    if (dashboardLink) dashboardLink.style.display = 'block';
+    if (authButtons) {
+      authButtons.style.display = 'none';
+      authButtons.style.opacity = '0';
+    }
+    if (userMenu) {
+      userMenu.style.display = 'block';
+      userMenu.style.opacity = '1';
+    }
+    if (dashboardLink) {
+      dashboardLink.style.display = 'block';
+      dashboardLink.style.opacity = '1';
+    }
     if (usernameSpan) usernameSpan.textContent = data.username;
+    if (dropdownUsername) dropdownUsername.textContent = data.username;
     updateAuthenticatedUI(true);
   } else {
-    if (userMenu) userMenu.style.display = 'none';
-    if (dashboardLink) dashboardLink.style.display = 'none';
-    if (authButtons) authButtons.style.display = 'block';
+    if (userMenu) {
+      userMenu.style.display = 'none';
+      userMenu.style.opacity = '0';
+    }
+    if (dashboardLink) {
+      dashboardLink.style.display = 'none';
+      dashboardLink.style.opacity = '0';
+    }
+    if (authButtons) {
+      authButtons.style.display = 'flex';
+      authButtons.style.opacity = '1';
+    }
     updateAuthenticatedUI(false);
   }
 }
@@ -399,7 +422,7 @@ function startAuthCheck() {
     clearInterval(authCheckInterval);
   }
   
-  // Apply cached state BEFORE DOMContentLoaded for seamless experience
+  // Apply cached state immediately for seamless experience
   const cached = sessionStorage.getItem('authState');
   if (cached) {
     try {
@@ -407,8 +430,11 @@ function startAuthCheck() {
     } catch (e) {}
   }
   
-  updateLoginUI();
-  authCheckInterval = setInterval(updateLoginUI, AUTH_CHECK_INTERVAL);
+  // Debounce initial check to prevent race with navbar.js
+  setTimeout(() => {
+    updateLoginUI();
+    authCheckInterval = setInterval(updateLoginUI, AUTH_CHECK_INTERVAL);
+  }, 100);
 }
 
 /* ===============================
@@ -417,12 +443,15 @@ function startAuthCheck() {
 async function handleLogout() {
   try {
     const csrfToken = await getCSRFToken();
+    const formData = new FormData();
+    formData.append('csrf_token', csrfToken);
+    
     const response = await fetch(`${BASE_PATH}logout.php`, {
       method: 'POST',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': csrfToken
-      }
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: new URLSearchParams(formData)
     });
 
     const data = await response.json();

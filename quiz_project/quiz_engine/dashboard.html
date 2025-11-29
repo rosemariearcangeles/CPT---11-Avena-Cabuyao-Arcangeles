@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/png" href="favicon.png">
+    <script>
+    (function(){const c=sessionStorage.getItem('authState');if(c){try{const d=JSON.parse(c);document.write('<style>'+(d.loggedIn?'.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}.dashboard-link{display:block!important;opacity:1!important}':'.auth-buttons{display:flex!important;opacity:1!important}.user-menu{display:none!important;opacity:0!important}.dashboard-link{display:none!important;opacity:0!important}')+'</style>');}catch(e){}}})();
+    </script>
 </head>
 <body>
     <div class="dashboard-container">

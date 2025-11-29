@@ -211,8 +211,13 @@ class UnifiedNavbar {
 
   // Authentication functions
   initializeAuth() {
-    // Initial auth state check
-    this.updateAuthUI();
+    // Apply cached state immediately to prevent flicker
+    const cached = sessionStorage.getItem('authState');
+    if (cached) {
+      try {
+        this.applyAuthState(JSON.parse(cached));
+      } catch (e) {}
+    }
   }
 
   async updateAuthUI() {
@@ -255,27 +260,20 @@ class UnifiedNavbar {
   }
 
   showLoggedInState(username) {
-    // Hide auth buttons with fade effect
+    // Instant state change without animations to prevent glitching
     if (this.authButtons) {
-      this.authButtons.classList.add('fade-out');
-      setTimeout(() => {
-        this.authButtons.style.display = 'none';
-        this.authButtons.classList.remove('fade-out');
-      }, 200);
+      this.authButtons.style.display = 'none';
+      this.authButtons.style.opacity = '0';
     }
 
-    // Show user menu with fade effect
     if (this.userMenu) {
       this.userMenu.style.display = 'block';
-      this.userMenu.classList.add('fade-in');
-      setTimeout(() => this.userMenu.classList.remove('fade-in'), 200);
+      this.userMenu.style.opacity = '1';
     }
 
-    // Show dashboard link with fade effect
     if (this.dashboardLink) {
       this.dashboardLink.style.display = 'block';
-      this.dashboardLink.classList.add('fade-in');
-      setTimeout(() => this.dashboardLink.classList.remove('fade-in'), 200);
+      this.dashboardLink.style.opacity = '1';
     }
 
     // Update username displays
@@ -289,29 +287,20 @@ class UnifiedNavbar {
   }
 
   showLoggedOutState() {
-    // Show auth buttons with fade effect
+    // Instant state change without animations to prevent glitching
     if (this.authButtons) {
       this.authButtons.style.display = 'flex';
-      this.authButtons.classList.add('fade-in');
-      setTimeout(() => this.authButtons.classList.remove('fade-in'), 200);
+      this.authButtons.style.opacity = '1';
     }
 
-    // Hide user menu with fade effect
     if (this.userMenu) {
-      this.userMenu.classList.add('fade-out');
-      setTimeout(() => {
-        this.userMenu.style.display = 'none';
-        this.userMenu.classList.remove('fade-out');
-      }, 200);
+      this.userMenu.style.display = 'none';
+      this.userMenu.style.opacity = '0';
     }
 
-    // Hide dashboard link with fade effect
     if (this.dashboardLink) {
-      this.dashboardLink.classList.add('fade-out');
-      setTimeout(() => {
-        this.dashboardLink.style.display = 'none';
-        this.dashboardLink.classList.remove('fade-out');
-      }, 200);
+      this.dashboardLink.style.display = 'none';
+      this.dashboardLink.style.opacity = '0';
     }
   }
 
@@ -333,39 +322,11 @@ class UnifiedNavbar {
   }
 
   async handleLogoutClick() {
-    try {
-      const basePath = this.getBasePath();
-
-      // If global logout handler exists (from auth.js), use it and return to avoid duplicate flows
-      if (typeof window.handleLogout === 'function') {
-        return window.handleLogout();
-      }
-
-      // Fallback minimal logout without toast notifications to avoid duplicates
-      const response = await fetch(`${basePath}logout.php`, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      });
-
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        // Update UI only; toasts are managed by auth.js when available
-        this.updateAuthUI();
-        if (!window.location.pathname.endsWith('index.html')) {
-          setTimeout(() => {
-            window.location.href = `${basePath}index.html`;
-          }, 500);
-        }
-      } else {
-        // No toast here to prevent duplicates
-        console.warn('Logout failed');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
+    // Always delegate to auth.js handler to prevent duplicate toasts
+    if (typeof window.handleLogout === 'function') {
+      return window.handleLogout();
     }
+    console.warn('handleLogout function not found in auth.js');
   }
 
   // Navigation functions
@@ -405,13 +366,11 @@ class UnifiedNavbar {
       clearInterval(this.authCheckInterval);
     }
     
-    // Initial check
-    this.updateAuthUI();
-    
-    // Set up periodic check (every minute)
-    this.authCheckInterval = setInterval(() => {
+    // Disable periodic checks - let auth.js handle it to prevent race conditions
+    // Only do initial check if no cached state
+    if (!sessionStorage.getItem('authState')) {
       this.updateAuthUI();
-    }, 60000);
+    }
   }
 
   stopAuthCheck() {
