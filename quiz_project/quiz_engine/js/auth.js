@@ -296,12 +296,24 @@ async function handleRegister(event) {
     const data = await response.json();
 
     if (data && data.status === 'success') {
-      showToast('Registration successful! Please log in.', true);
+      // Don't show success message here - the backend will redirect with a success message
       form.reset();
       closeRegisterModal();
-      setTimeout(() => openLogin(), 500);
+      // Redirect to login page with success parameter
+      window.location.href = `${BASE_PATH}login.php?registered=1`;
     } else {
-      showToast(data?.message || 'Registration failed. Please try again.', false);
+      // Parse error message from backend
+      let errorMessage = 'Registration failed. Please try again.';
+      if (data && data.message) {
+        if (data.message.includes('already exists')) {
+          errorMessage = 'This username or email is already registered.';
+        } else if (data.message.includes('validation')) {
+          errorMessage = 'Please check your input and try again.';
+        } else {
+          errorMessage = data.message;
+        }
+      }
+      showToast(errorMessage, false);
     }
   } catch (error) {
     console.error('Registration error:', error);
@@ -443,35 +455,48 @@ function startAuthCheck() {
 async function handleLogout() {
   try {
     const csrfToken = await getCSRFToken();
+    if (!csrfToken) {
+      showToast('Failed to get security token. Please refresh the page and try again.', false);
+      return;
+    }
+    
     const formData = new FormData();
     formData.append('csrf_token', csrfToken);
     
     const response = await fetch(`${BASE_PATH}logout.php`, {
       method: 'POST',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest'
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
+      credentials: 'same-origin',
       body: new URLSearchParams(formData)
     });
 
-    const data = await response.json();
-
-    if (data && data.status === 'success') {
-      sessionStorage.removeItem('authState');
-      showToast('Logged out successfully', true);
-      await updateLoginUI();
-
-      setTimeout(() => {
-        if (!window.location.pathname.endsWith('index.html')) {
-          window.location.href = `${BASE_PATH}index.html`;
-        }
-      }, 500);
-    } else {
-      showToast(data?.message || 'Logout failed', false);
-    }
+    // Clear auth state immediately for better UX
+    sessionStorage.removeItem('authState');
+    updateAuthenticatedUI(false);
+    
+    // Show success message and redirect
+    showToast('You have been logged out successfully', true);
+    
+    setTimeout(() => {
+      if (!window.location.pathname.endsWith('index.html')) {
+        window.location.href = `${BASE_PATH}index.html`;
+      } else {
+        // Force a full page reload to ensure all state is cleared
+        window.location.reload();
+      }
+    }, 500);
+    
   } catch (error) {
     console.error('Logout error:', error);
-    showToast('Network error during logout', false);
+    // Don't show error message if we've already logged out
+    if (!sessionStorage.getItem('authState')) {
+      showToast('Logged out successfully', true);
+    } else {
+      showToast('Network error during logout. Please refresh the page.', false);
+    }
   }
 }
 
