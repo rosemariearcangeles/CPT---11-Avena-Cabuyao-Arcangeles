@@ -119,28 +119,44 @@ async function saveProgressToServer() {
 // =====================
 function loadQuiz() {
   try {
-    // Try to load saved progress first
-    const hasProgress = loadQuizProgress();
+    // Clear any previous quiz data from localStorage if it exists
+    const quizData = localStorage.getItem('currentQuiz');
+    if (!quizData) {
+      console.error('No quiz data found in localStorage');
+      // If we somehow got here without the check in quiz.html, redirect
+      window.location.href = 'index.html';
+      return;
+    }
 
-    if (!hasProgress) {
-      // No progress, load fresh quiz
-      const quizData = localStorage.getItem('currentQuiz');
-      if (!quizData) {
-        alert('No quiz data found. Please generate a quiz first.');
-        window.location.href = 'index.html';
-        return;
-      }
-
+    // Try to parse the quiz data
+    try {
       currentQuiz = JSON.parse(quizData);
-      if (!currentQuiz || !currentQuiz.length) {
-        alert('No questions found in quiz data.');
-        window.location.href = 'index.html';
-        return;
+      if (!Array.isArray(currentQuiz) || currentQuiz.length === 0) {
+        throw new Error('Invalid quiz data format');
       }
+    } catch (e) {
+      console.error('Error parsing quiz data:', e);
+      localStorage.removeItem('currentQuiz');
+      localStorage.removeItem('quizProgress');
+      window.location.href = 'index.html';
+      return;
+    }
 
-      userAnswers = new Array(currentQuiz.length).fill(null);
-      quizProgress.quizId = generateQuizId();
-      quizProgress.startTime = Date.now();
+    // Initialize user answers array
+    userAnswers = new Array(currentQuiz.length).fill(null);
+    
+    // Try to load saved progress
+    const hasProgress = loadQuizProgress();
+    
+    // If no progress found, initialize a new quiz session
+    if (!hasProgress) {
+      quizProgress = {
+        quizId: generateQuizId(),
+        startTime: Date.now(),
+        lastSaved: Date.now(),
+        answers: [...userAnswers]
+      };
+      saveQuizProgress();
     }
 
     // Simulate loading progress

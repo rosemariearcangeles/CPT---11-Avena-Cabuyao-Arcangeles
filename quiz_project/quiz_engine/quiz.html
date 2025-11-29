@@ -115,8 +115,48 @@
     </div>
   </div>
 
-  <script src="quiz-script.js"></script>
-
+  <script>
+    // Check if we have a quiz to load
+    document.addEventListener('DOMContentLoaded', function() {
+      const quizData = localStorage.getItem('currentQuiz');
+      
+      // Clear any existing quiz data if it's invalid
+      if (quizData) {
+        try {
+          const parsedData = JSON.parse(quizData);
+          if (!Array.isArray(parsedData) || parsedData.length === 0) {
+            // Invalid or empty quiz data
+            localStorage.removeItem('currentQuiz');
+            localStorage.removeItem('quizProgress');
+            window.location.href = 'index.html';
+            return;
+          }
+        } catch (e) {
+          // Invalid JSON
+          localStorage.removeItem('currentQuiz');
+          localStorage.removeItem('quizProgress');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // Quiz data exists and is valid, load the quiz script
+        const script = document.createElement('script');
+        script.src = 'quiz-script.js';
+        script.onerror = function() {
+          // If script fails to load, redirect to home
+          localStorage.removeItem('currentQuiz');
+          localStorage.removeItem('quizProgress');
+          window.location.href = 'index.html';
+        };
+        document.body.appendChild(script);
+      } else {
+        // No quiz data found, redirect to home
+        localStorage.removeItem('currentQuiz');
+        localStorage.removeItem('quizProgress');
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
 </body>
 </html>
 
