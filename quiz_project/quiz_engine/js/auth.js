@@ -313,11 +313,20 @@ async function handleRegister(event) {
     const data = await response.json();
 
     if (data && data.status === 'success') {
-      // Don't show success message here - the backend will redirect with a success message
+      // Reset form and close modal
       form.reset();
       closeRegisterModal();
-      // Redirect to login page with success parameter
-      window.location.href = `${BASE_PATH}login.php?registered=1`;
+      
+      // Show success message
+      showToast('Registration successful! Please log in.', true);
+      
+      // Redirect to login page with success parameter if provided in the response
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      } else {
+        // Fallback to default login page
+        window.location.href = `${BASE_PATH}login.php?registered=1`;
+      }
     } else {
       // Parse error message from backend
       let errorMessage = 'Registration failed. Please try again.';

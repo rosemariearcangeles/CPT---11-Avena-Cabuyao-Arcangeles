@@ -104,11 +104,12 @@ if (!$stmt->execute()) {
     exit;
 }
 
-// SUCCESS RESPONSE (no auto-login for now)
+// SUCCESS RESPONSE with redirect URL
 echo json_encode([
     'status' => 'success',
-    'message' => 'Registration successful.',
-    'username' => $username
+    'message' => 'Registration successful!',
+    'username' => $username,
+    'redirect' => 'login.php?registered=1'
 ]);
 exit;
 ?>
