@@ -280,17 +280,17 @@ async function handleRegister(event) {
 
     const data = await response.json();
 
-    if (data.status === 'success') {
+    if (data && data.status === 'success') {
       showToast('Registration successful! Please log in.', true);
       form.reset();
       closeRegisterModal();
       setTimeout(() => openLogin(), 500);
     } else {
-      showToast(data.message || 'Registration failed. Please try again.', false);
+      showToast(data?.message || 'Registration failed. Please try again.', false);
     }
   } catch (error) {
     console.error('Registration error:', error);
-    showToast('An error occurred. Please try again.', false);
+    showToast('Network error. Please try again.', false);
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerHTML = originalText;
@@ -328,6 +328,8 @@ async function updateLoginUI() {
     const dashboardLink = document.getElementById('nav-profile-dashboard');
     const usernameSpan = document.getElementById('nav-username');
 
+    const navbarAuth = document.querySelector('.navbar-auth');
+    
     if (data.loggedIn && data.username) {
       // User is logged in - show user menu and dashboard
       if (authButtons) authButtons.style.display = 'none';
@@ -342,6 +344,9 @@ async function updateLoginUI() {
       if (authButtons) authButtons.style.display = 'block';
       updateAuthenticatedUI(false);
     }
+    
+    // Make navbar visible after auth check
+    if (navbarAuth) navbarAuth.style.visibility = 'visible';
 
     return data;
   } catch (error) {
@@ -394,32 +399,38 @@ function startAuthCheck() {
    LOGOUT HANDLER
    =============================== */
 async function handleLogout() {
-  const csrfToken = await getCSRFToken();
-  fetch(`${BASE_PATH}logout.php`, {
-    method: 'POST',
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-CSRF-TOKEN': csrfToken
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      showToast('Logged out successfully', true);
-      updateLoginUI();
-
-      // Redirect to home page if not already there
-      if (!window.location.pathname.endsWith('index.html')) {
-        window.location.href = `${BASE_PATH}index.html`;
+  try {
+    const csrfToken = await getCSRFToken();
+    const response = await fetch(`${BASE_PATH}logout.php`, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': csrfToken
       }
-    } else {
-      showToast('Logout failed. Please try again.', false);
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  })
-  .catch(error => {
+
+    const data = await response.json();
+
+    if (data && data.status === 'success') {
+      showToast('Logged out successfully', true);
+      await updateLoginUI();
+
+      setTimeout(() => {
+        if (!window.location.pathname.endsWith('index.html')) {
+          window.location.href = `${BASE_PATH}index.html`;
+        }
+      }, 500);
+    } else {
+      showToast(data?.message || 'Logout failed', false);
+    }
+  } catch (error) {
     console.error('Logout error:', error);
     showToast('An error occurred during logout', false);
-  });
+  }
 }
 
 /* ===============================
