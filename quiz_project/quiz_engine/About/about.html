@@ -8,6 +8,7 @@
   <title>About - Online Quiz Engine</title>
   <link rel="stylesheet" href="../css/about.css" />
   <link rel="stylesheet" href="../css/modal.css" />
+  <link rel="stylesheet" href="../css/navbar.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -15,33 +16,120 @@
 
 <body>
 
-  <!-- NAVBAR -->
+  <!-- Unified Navigation -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
-    <div class="container">
-      <div class="logo" aria-hidden="false">
-        <h1>Online Quiz Engine</h1>
+    <div class="navbar-container">
+      <!-- Logo -->
+      <div class="navbar-logo">
+        <a href="../index.html" class="logo-link">
+          <h1 class="logo-text">Online Quiz Engine</h1>
+        </a>
       </div>
 
-      <ul class="nav-links">
-        <li><a href="../index.html">Home</a></li>
-        <li><a href="about.html" class="active">About</a></li>
-        <li><a href="../Service/service.html">Service</a></li>
-        <li><a href="../Contact/contact.html">Contact Us</a></li>
-        <li><a href="../FAQ/FAQ.html">FAQ</a></li>
-        <li id="nav-profile-dashboard" style="display:none;">
-          <a href="../dashboard.html">Dashboard</a>
-        </li>
+      <!-- Mobile menu toggle -->
+      <button class="mobile-menu-toggle" 
+              aria-label="Toggle navigation menu" 
+              aria-expanded="false"
+              aria-controls="navbar-menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
 
-        <!-- Login/Register buttons (visible when NOT logged in) -->
-        <li><button type="button" class="login-btn" id="nav-login-btn">Login</button></li>
-        <li><button type="button" class="register-btn" id="nav-register-btn">Register</button></li>
+      <!-- Navigation menu -->
+      <div class="navbar-menu" id="navbar-menu">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="../index.html" class="nav-link" data-page="home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="about.html" class="nav-link active" data-page="about">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="../Service/service.html" class="nav-link" data-page="service">Service</a>
+          </li>
+          <li class="nav-item">
+            <a href="../Contact/contact.html" class="nav-link" data-page="contact">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a href="../FAQ/FAQ.html" class="nav-link" data-page="faq">FAQ</a>
+          </li>
+        </ul>
 
-        <!-- Username + logout (visible when logged in) -->
-        <li id="nav-username-display" style="display:none;">
-          Hello, <span id="nav-username"></span>!
-        </li>
-        <li><button id="nav-logout-btn" style="display:none;">Logout</button></li>
-      </ul>
+        <!-- Authentication section -->
+        <div class="navbar-auth">
+          <!-- Dashboard link (visible when logged in) -->
+          <div class="nav-item dashboard-link" style="display: none;">
+            <a href="../dashboard.html" class="nav-link dashboard-btn">
+              <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+              </svg>
+              Dashboard
+            </a>
+          </div>
+
+          <!-- Login/Register buttons (visible when NOT logged in) -->
+          <div class="auth-buttons">
+            <button type="button" class="btn btn-outline login-btn" id="nav-login-btn">
+              <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10,17 15,12 10,7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+              Login
+            </button>
+            <button type="button" class="btn btn-primary register-btn" id="nav-register-btn">
+              <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <line x1="19" y1="8" x2="19" y2="14"></line>
+                <line x1="16" y1="11" x2="22" y2="11"></line>
+              </svg>
+              Register
+            </button>
+          </div>
+
+          <!-- User menu (visible when logged in) -->
+          <div class="user-menu" style="display: none;">
+            <button class="user-toggle" id="user-menu-toggle" aria-expanded="false" aria-haspopup="true">
+              <div class="user-avatar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <span class="username" id="nav-username">User</span>
+              <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"></polyline>
+              </svg>
+            </button>
+            
+            <div class="user-dropdown" id="user-dropdown">
+              <div class="user-info">
+                <div class="user-name" id="dropdown-username">User</div>
+                <div class="user-status">Logged in</div>
+              </div>
+              <hr class="dropdown-divider">
+              <a href="../dashboard.html" class="dropdown-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                </svg>
+                Dashboard
+              </a>
+              <button class="dropdown-item logout-btn" id="nav-logout-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16,17 21,12 16,7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -245,7 +333,8 @@
     }
   </script>
 
-  <!-- Include auth script -->
+  <!-- Include scripts -->
   <script src="../js/auth.js"></script>
+  <script src="../js/navbar.js"></script>
 </body>
 </html>
