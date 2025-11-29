@@ -228,21 +228,28 @@ async function handleLogin(event) {
     console.error('Login error:', error);
     showToast('An error occurred. Please try again.', false);
   } finally {
-    submitBtn.disabled = false;
-    if (btnText) btnText.style.display = '';
-    if (btnSpinner) btnSpinner.style.display = 'none';
-    submitBtn.style.minWidth = originalMinWidth || '';
+    isSubmitting = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      if (btnText) btnText.style.display = '';
+      if (btnSpinner) btnSpinner.style.display = 'none';
+      submitBtn.style.minWidth = originalMinWidth || '';
+    }
   }
 }
 
 /* ===============================
    REGISTER HANDLER
    =============================== */
+let isSubmitting = false;
+
 async function handleRegister(event) {
   if (event) event.preventDefault();
   
   const form = document.getElementById('registerForm');
-  if (!form) return;
+  if (!form || isSubmitting) return;
+  
+  isSubmitting = true;
   
   const username = document.getElementById('register-username')?.value.trim();
   const email = document.getElementById('register-email')?.value.trim();
@@ -358,10 +365,13 @@ async function handleRegister(event) {
     console.error('Registration error:', error);
     showToast('Network error. Please try again.', false);
   } finally {
-    submitBtn.disabled = false;
-    if (btnText) btnText.style.display = '';
-    if (btnSpinner) btnSpinner.style.display = 'none';
-    submitBtn.style.minWidth = originalMinWidth || '';
+    isSubmitting = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      if (btnText) btnText.style.display = '';
+      if (btnSpinner) btnSpinner.style.display = 'none';
+      submitBtn.style.minWidth = originalMinWidth || '';
+    }
   }
 }
 
