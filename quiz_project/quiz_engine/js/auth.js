@@ -320,13 +320,26 @@ async function handleRegister(event) {
       // Show success message
       showToast('Registration successful! Please log in.', true);
       
-      // Redirect to login page with success parameter if provided in the response
-      if (data.redirect) {
-        window.location.href = data.redirect;
-      } else {
-        // Fallback to default login page
-        window.location.href = `${BASE_PATH}login.php?registered=1`;
-      }
+      // Open the login modal and show success message
+      setTimeout(() => {
+        openLogin();
+        
+        // Show success message in the login form if it exists
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+          const successMessage = document.createElement('div');
+          successMessage.className = 'success-message';
+          successMessage.style.color = '#4BB543';
+          successMessage.style.marginBottom = '15px';
+          successMessage.style.textAlign = 'center';
+          successMessage.textContent = 'Registration successful! Please log in.';
+          
+          const formHeader = loginForm.querySelector('.modal-header');
+          if (formHeader) {
+            formHeader.insertAdjacentElement('afterend', successMessage);
+          }
+        }
+      }, 500);
     } else {
       // Parse error message from backend
       let errorMessage = 'Registration failed. Please try again.';
