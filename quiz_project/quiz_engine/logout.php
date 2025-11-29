@@ -1,22 +1,17 @@
 <?php
+require_once "session_utils.php";
+
+$session = SessionManager::getInstance();
+
+// Validate CSRF token for logout
+$session->requireCSRFToken();
+
+// Use centralized logout method
+$session->logout();
+
+// Regenerate session ID after logout for security
 session_start();
-
-// Clear all session data
-$_SESSION = [];
-
-// Destroy session cookie
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 3600,
-        $params["path"], 
-        $params["domain"],
-        $params["secure"], 
-        $params["httponly"]
-    );
-}
-
-// Destroy session
-session_destroy();
+session_regenerate_id(true);
 
 header('Content-Type: application/json');
 echo json_encode([

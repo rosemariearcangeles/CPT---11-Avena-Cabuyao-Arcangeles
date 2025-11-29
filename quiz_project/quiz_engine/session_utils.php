@@ -8,7 +8,7 @@ class SessionManager {
         if (session_status() === PHP_SESSION_NONE) {
             // Set secure session parameters
             $sessionName = 'quiz_engine_sid';
-            $secure = false; // Set to true if using HTTPS
+            $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'; // Enable HTTPS security
             $httponly = true; // Prevent JavaScript access to session cookie
 
             // Set session cookie parameters
@@ -70,18 +70,25 @@ class SessionManager {
     }
 
     public function isLoggedIn() {
-        // Check if session has expired (24 hours)
-        $maxIdleTime = 86400; // 24 hours
-        if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time'] > $maxIdleTime)) {
+        // Check if session has expired due to total login time (24 hours)
+        $maxLoginTime = 86400; // 24 hours
+        if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time'] > $maxLoginTime)) {
             $this->logout();
             return false;
         }
-        
+
+        // Check if session has expired due to inactivity (2 hours)
+        $maxIdleTime = 7200; // 2 hours
+        if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $maxIdleTime)) {
+            $this->logout();
+            return false;
+        }
+
         // Update last activity time
-        if (isset($_SESSION['login_time'])) {
+        if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) {
             $_SESSION['last_activity'] = time();
         }
-        
+
         return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
     }
 
@@ -101,8 +108,10 @@ class SessionManager {
     }
 
     public function requireCSRFToken() {
-        if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!$token || !isset($_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $token)) {
             http_response_code(403);
             echo json_encode(['status' => 'error', 'message' => 'Invalid CSRF token']);
             exit;

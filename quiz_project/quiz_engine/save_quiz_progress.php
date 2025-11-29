@@ -13,6 +13,14 @@ if (!$session->isLoggedIn()) {
     exit;
 }
 
+// Validate CSRF token for JSON requests
+$csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_GET['csrf_token'] ?? null;
+if (!$csrfToken || !$session->validateCSRFToken($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid CSRF token']);
+    exit;
+}
+
 $user_id = $session->getUserId();
 
 // Get JSON input

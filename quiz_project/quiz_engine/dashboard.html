@@ -38,24 +38,24 @@
             </div>
 
             <nav class="dashboard-nav">
-                <a href="#overview" class="nav-link active" data-section="overview">
+                <a href="#overview" class="nav-link active disabled" data-section="overview">
                     <span class="icon"><i class="fas fa-chart-line"></i></span>
                     <span class="nav-text">Overview</span>
                 </a>
-                <a href="#quiz-history" class="nav-link" data-section="quiz-history">
+                <a href="#quiz-history" class="nav-link disabled" data-section="quiz-history">
                     <span class="icon"><i class="fas fa-history"></i></span>
                     <span class="nav-text">Quiz History</span>
                 </a>
-                <a href="#in-progress" class="nav-link" data-section="in-progress">
+                <a href="#in-progress" class="nav-link disabled" data-section="in-progress">
                     <span class="icon"><i class="fas fa-spinner"></i></span>
                     <span class="nav-text">In Progress</span>
                     <span class="badge" id="inProgressCount">0</span>
                 </a>
-                <a href="#achievements" class="nav-link" data-section="achievements">
+                <a href="#achievements" class="nav-link disabled" data-section="achievements">
                     <span class="icon"><i class="fas fa-trophy"></i></span>
                     <span class="nav-text">Achievements</span>
                 </a>
-                <a href="#settings" class="nav-link" data-section="settings">
+                <a href="#settings" class="nav-link disabled" data-section="settings">
                     <span class="icon"><i class="fas fa-cog"></i></span>
                     <span class="nav-text">Settings</span>
                 </a>
@@ -73,7 +73,7 @@
                     </button>
                     <span class="coming-soon-badge">Coming Soon</span>
                 </div>
-                <button id="logoutBtn" class="btn btn-logout">
+                <button id="logoutBtn" class="btn btn-logout" disabled>
                     <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
                     <span>Logout</span>
                 </button>
@@ -82,6 +82,12 @@
 
         <!-- Main Content -->
         <main class="dashboard-main">
+            <div class="wip-overlay">
+                <div class="wip-content">
+                    <h2>🚧 Work in Progress 🚧</h2>
+                    <p>This dashboard is currently under development. Please check back later.</p>
+                </div>
+            </div>
             <!-- Overview Section -->
             <section id="overview" class="dashboard-section active">
                 <div class="section-header">
@@ -328,7 +334,7 @@
                             <h4>Edit Profile</h4>
                             <p>Update your username and email</p>
                         </div>
-                        <a href="profile.php" class="btn btn-secondary btn-sm">Edit</a>
+                        <button class="btn btn-secondary btn-sm" disabled>Edit</button>
                     </div>
                 </div>
 
@@ -339,7 +345,7 @@
                             <h4>Change Password</h4>
                             <p>Update your password regularly for security</p>
                         </div>
-                        <button class="btn btn-secondary btn-sm" id="changePasswordBtn">Change</button>
+                        <button class="btn btn-secondary btn-sm" id="changePasswordBtn" disabled>Change</button>
                     </div>
                 </div>
 
@@ -350,7 +356,7 @@
                             <h4>Delete Account</h4>
                             <p>Permanently delete your account and all data</p>
                         </div>
-                        <button class="btn btn-danger btn-sm" id="deleteAccountBtn">Delete</button>
+                        <button class="btn btn-danger btn-sm" id="deleteAccountBtn" disabled>Delete</button>
                     </div>
                 </div>
             </section>

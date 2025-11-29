@@ -18,13 +18,13 @@ if ($session->isLoggedIn()) {
     // Verify the user still exists in the database
     $userId = $session->getUserId();
     $username = $session->getUsername();
-    
+
     if ($userId && $username) {
         $stmt = $conn->prepare("SELECT id FROM users WHERE id = ? AND username = ?");
         $stmt->bind_param("is", $userId, $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $isLoggedIn = true;
         } else {
@@ -36,7 +36,6 @@ if ($session->isLoggedIn()) {
 }
 
 // Return the authentication status
-header('Content-Type: application/json');
 echo json_encode([
     'status' => 'success',
     'loggedIn' => $isLoggedIn,
