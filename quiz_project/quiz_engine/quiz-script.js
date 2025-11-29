@@ -87,10 +87,14 @@ async function saveProgressToServer() {
 
     if (!sessionData.loggedIn) return; // Don't save if not logged in
 
+    // Get CSRF token
+    const csrfToken = getCSRFToken();
+
     const response = await fetch('save_quiz_progress.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
       },
       body: JSON.stringify({
         quizId: quizProgress.quizId,

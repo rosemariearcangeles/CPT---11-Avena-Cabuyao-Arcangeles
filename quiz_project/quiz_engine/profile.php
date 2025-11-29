@@ -93,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div id="editForm" class="edit-form" style="display: none;">
         <h2>Edit Profile</h2>
         <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->generateCSRFToken()); ?>">
             <label for="edit-username">Username:</label>
             <input type="text" id="edit-username" name="username" value="<?= htmlspecialchars($username) ?>" required>
 
