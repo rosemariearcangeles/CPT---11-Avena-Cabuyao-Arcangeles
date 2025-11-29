@@ -174,12 +174,17 @@ async function handleLogin(event) {
   }
   
   const submitBtn = form.querySelector('button[type="submit"]');
-  const originalText = submitBtn.innerHTML;
+  const btnText = submitBtn?.querySelector('.btn-text');
+  const btnSpinner = submitBtn?.querySelector('.btn-spinner');
+  let originalMinWidth = '';
   
   try {
-    // Show loading state
+    // Show loading state without changing layout
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<div class="spinner"></div>';
+    originalMinWidth = submitBtn.style.minWidth;
+    submitBtn.style.minWidth = submitBtn.offsetWidth + 'px';
+    if (btnText) btnText.style.display = 'none';
+    if (btnSpinner) btnSpinner.style.display = 'inline-block';
     
     // Create form data object
     const formData = new FormData();
@@ -221,7 +226,9 @@ async function handleLogin(event) {
     showToast('An error occurred. Please try again.', false);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = originalText;
+    if (btnText) btnText.style.display = '';
+    if (btnSpinner) btnSpinner.style.display = 'none';
+    submitBtn.style.minWidth = originalMinWidth || '';
   }
 }
 
@@ -251,12 +258,17 @@ async function handleRegister(event) {
   }
   
   const submitBtn = form.querySelector('button[type="submit"]');
-  const originalText = submitBtn.innerHTML;
+  const btnText = submitBtn?.querySelector('.btn-text');
+  const btnSpinner = submitBtn?.querySelector('.btn-spinner');
+  let originalMinWidth = '';
   
   try {
-    // Show loading state
+    // Show loading state without changing layout
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<div class="spinner"></div>';
+    originalMinWidth = submitBtn.style.minWidth;
+    submitBtn.style.minWidth = submitBtn.offsetWidth + 'px';
+    if (btnText) btnText.style.display = 'none';
+    if (btnSpinner) btnSpinner.style.display = 'inline-block';
     
     // Create form data object
     const formData = new FormData();
@@ -293,7 +305,9 @@ async function handleRegister(event) {
     showToast('Network error. Please try again.', false);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = originalText;
+    if (btnText) btnText.style.display = '';
+    if (btnSpinner) btnSpinner.style.display = 'none';
+    submitBtn.style.minWidth = originalMinWidth || '';
   }
 }
 

@@ -91,7 +91,16 @@ class UnifiedNavbar {
     }
 
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => this.handleLogoutClick());
+      // Delegate logout handling to global auth.js handler if available to avoid duplicate toasts
+      logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof window.handleLogout === 'function') {
+          window.handleLogout();
+        } else {
+          // Fallback to internal handler (without toasts) if auth.js is not loaded
+          this.handleLogoutClick();
+        }
+      });
     }
 
     // Close dropdown when clicking dropdown items
@@ -326,7 +335,13 @@ class UnifiedNavbar {
   async handleLogoutClick() {
     try {
       const basePath = this.getBasePath();
-      
+
+      // If global logout handler exists (from auth.js), use it and return to avoid duplicate flows
+      if (typeof window.handleLogout === 'function') {
+        return window.handleLogout();
+      }
+
+      // Fallback minimal logout without toast notifications to avoid duplicates
       const response = await fetch(`${basePath}logout.php`, {
         method: 'POST',
         headers: {
@@ -337,30 +352,19 @@ class UnifiedNavbar {
       const data = await response.json();
 
       if (data.status === 'success') {
-        // Show logout success message if function exists
-        if (typeof showToast === 'function') {
-          showToast('Logged out successfully', true);
-        }
-        
-        // Update UI
+        // Update UI only; toasts are managed by auth.js when available
         this.updateAuthUI();
-        
-        // Redirect if needed
         if (!window.location.pathname.endsWith('index.html')) {
           setTimeout(() => {
             window.location.href = `${basePath}index.html`;
-          }, 1000);
+          }, 500);
         }
       } else {
-        if (typeof showToast === 'function') {
-          showToast('Logout failed. Please try again.', false);
-        }
+        // No toast here to prevent duplicates
+        console.warn('Logout failed');
       }
     } catch (error) {
       console.error('Logout error:', error);
-      if (typeof showToast === 'function') {
-        showToast('An error occurred during logout', false);
-      }
     }
   }
 
