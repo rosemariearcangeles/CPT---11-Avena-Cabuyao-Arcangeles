@@ -404,6 +404,28 @@ body {
   z-index: 1000;
   border-bottom: 1px solid rgba(0,0,0,0.08);
   box-shadow: var(--shadow-sm);
+  min-height: 70px; /* Ensure consistent height */
+}
+
+/* Smooth fade transitions for navbar elements */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.2s ease-in-out forwards;
+}
+
+.fade-out {
+  opacity: 1;
+  animation: fadeOut 0.2s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-5px); }
 }
 
 .nav-inner {
@@ -1676,5 +1698,3 @@ background-clip: text;
   color: var(--primary-color);
   font-weight: 600;
 }
-
-

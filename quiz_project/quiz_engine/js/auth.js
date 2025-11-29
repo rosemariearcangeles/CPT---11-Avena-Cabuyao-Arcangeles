@@ -300,40 +300,67 @@ async function updateLoginUI() {
     }
 
     const data = await response.json();
-    const loginBtn = document.getElementById('nav-login-btn');
-    const registerBtn = document.getElementById('nav-register-btn');
-    const usernameDisplay = document.getElementById('nav-username-display');
-    const usernameSpan = document.getElementById('nav-username');
-    const logoutBtn = document.getElementById('nav-logout-btn');
-    const dashboardLink = document.getElementById('nav-profile-dashboard');
-    
-    if (data.loggedIn && data.username) {
-      // User is logged in
-      if (usernameDisplay) usernameDisplay.style.display = 'block';
-      if (usernameSpan) usernameSpan.textContent = data.username;
-      if (logoutBtn) logoutBtn.style.display = 'block';
-      if (dashboardLink) dashboardLink.style.display = 'block';
 
-      // Hide login/register buttons
-      if (loginBtn) loginBtn.style.display = 'none';
-      if (registerBtn) registerBtn.style.display = 'none';
-      
+    // Use opacity classes for smooth transitions instead of display toggling
+    const authButtons = document.querySelector('.auth-buttons');
+    const userMenu = document.getElementById('nav-user-menu');
+    const dashboardLink = document.getElementById('nav-profile-dashboard');
+    const usernameSpan = document.getElementById('nav-username');
+
+    if (data.loggedIn && data.username) {
+      // User is logged in - show user menu and dashboard
+      if (authButtons) {
+        authButtons.classList.add('fade-out');
+        setTimeout(() => {
+          authButtons.style.display = 'none';
+          authButtons.classList.remove('fade-out');
+        }, 200);
+      }
+
+      if (userMenu) {
+        userMenu.style.display = 'block';
+        userMenu.classList.add('fade-in');
+        setTimeout(() => userMenu.classList.remove('fade-in'), 200);
+      }
+
+      if (dashboardLink) {
+        dashboardLink.style.display = 'block';
+        dashboardLink.classList.add('fade-in');
+        setTimeout(() => dashboardLink.classList.remove('fade-in'), 200);
+      }
+
+      if (usernameSpan) usernameSpan.textContent = data.username;
+
       // Update any other UI elements that depend on login state
       updateAuthenticatedUI(true);
     } else {
-      // User is not logged in
-      if (usernameDisplay) usernameDisplay.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'none';
-      if (dashboardLink) dashboardLink.style.display = 'none';
+      // User is not logged in - show auth buttons
+      if (userMenu) {
+        userMenu.classList.add('fade-out');
+        setTimeout(() => {
+          userMenu.style.display = 'none';
+          userMenu.classList.remove('fade-out');
+        }, 200);
+      }
 
-      // Show login/register buttons
-      if (loginBtn) loginBtn.style.display = 'block';
-      if (registerBtn) registerBtn.style.display = 'block';
-      
+      if (dashboardLink) {
+        dashboardLink.classList.add('fade-out');
+        setTimeout(() => {
+          dashboardLink.style.display = 'none';
+          dashboardLink.classList.remove('fade-out');
+        }, 200);
+      }
+
+      if (authButtons) {
+        authButtons.style.display = 'block';
+        authButtons.classList.add('fade-in');
+        setTimeout(() => authButtons.classList.remove('fade-in'), 200);
+      }
+
       // Update any other UI elements that depend on login state
       updateAuthenticatedUI(false);
     }
-    
+
     return data;
   } catch (error) {
     console.error('Error checking auth status:', error);
