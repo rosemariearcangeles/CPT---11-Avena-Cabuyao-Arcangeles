@@ -114,7 +114,25 @@ async function switchToLogin() {
 /* ===============================
    TOAST NOTIFICATION
    =============================== */
+let activeToasts = [];
+let lastToastMessage = '';
+let lastToastTime = 0;
+
 function showToast(message, success = true) {
+  // Prevent duplicate toasts within 500ms
+  const now = Date.now();
+  if (message === lastToastMessage && (now - lastToastTime) < 500) {
+    return;
+  }
+  lastToastMessage = message;
+  lastToastTime = now;
+
+  // Remove existing toasts if more than 3
+  if (activeToasts.length >= 3) {
+    const oldToast = activeToasts.shift();
+    if (oldToast && oldToast.parentNode) oldToast.remove();
+  }
+
   const toast = document.createElement('div');
   toast.className = `toast ${success ? 'toast-success' : 'toast-error'}`;
   toast.setAttribute('role', 'alert');
@@ -122,13 +140,17 @@ function showToast(message, success = true) {
   toast.textContent = message;
 
   document.body.appendChild(toast);
+  activeToasts.push(toast);
 
   setTimeout(() => toast.classList.add('visible'), 10);
 
   setTimeout(() => {
     toast.classList.remove('visible');
     setTimeout(() => {
-      if (toast.parentNode) toast.remove();
+      if (toast.parentNode) {
+        toast.remove();
+        activeToasts = activeToasts.filter(t => t !== toast);
+      }
     }, 300);
   }, 3000);
 }
@@ -173,23 +195,26 @@ async function handleLogin(event) {
       body: new URLSearchParams(formData)
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (data.status === 'success') {
       showToast('Login successful!', true);
       closeLoginModal();
+      form.reset();
       
-      // Update UI and then redirect
-      updateLoginUI().then(() => {
-        // Redirect if needed
-        if (data.redirect) {
-          setTimeout(() => {
-            window.location.href = data.redirect;
-          }, 1000);
-        }
-      });
+      await updateLoginUI();
+      
+      if (data.redirect) {
+        setTimeout(() => {
+          window.location.href = data.redirect;
+        }, 500);
+      }
     } else {
-      showToast(data.message || 'Login failed. Please try again.', false);
+      showToast(data.message || 'Invalid username or password', false);
     }
   } catch (error) {
     console.error('Login error:', error);
@@ -249,12 +274,17 @@ async function handleRegister(event) {
       body: new URLSearchParams(formData)
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
 
     if (data.status === 'success') {
       showToast('Registration successful! Please log in.', true);
+      form.reset();
       closeRegisterModal();
-      openLogin();
+      setTimeout(() => openLogin(), 500);
     } else {
       showToast(data.message || 'Registration failed. Please try again.', false);
     }
