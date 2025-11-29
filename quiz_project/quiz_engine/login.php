@@ -6,72 +6,89 @@ require_once "config.php";
 
 $session = SessionManager::getInstance();
 
-// Validate CSRF token
-$session->requireCSRFToken();
+// Only validate CSRF token for POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token
+    $session->requireCSRFToken();
 
-// Validate POST fields
-if (!isset($_POST['username']) || !isset($_POST['password'])) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Missing required fields.'
-    ]);
+    // Validate POST fields
+    if (!isset($_POST['username']) || !isset($_POST['password'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Missing required fields.'
+        ]);
+        exit;
+    }
+
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+
+    if ($username === "" || $password === "") {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'All fields are required.'
+        ]);
+        exit;
+    }
+
+    // Prepare SQL
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows === 0) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Invalid username or password.'
+        ]);
+        exit;
+    }
+
+    $stmt->bind_result($user_id, $db_username, $hashed);
+    $stmt->fetch();
+
+    // Password verify
+    if (!password_verify($password, $hashed)) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Invalid username or password.'
+        ]);
+        exit;
+    }
+
+    // Successful login → set session
+    $session->login($user_id, $db_username);
+
+    // Prepare response
+    $response = [
+        'status' => 'success',
+        'message' => 'Login successful',
+        'username' => $db_username
+    ];
+
+    // Add redirect URL if needed
+    if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'login') === false) {
+        $response['redirect'] = $_SERVER['HTTP_REFERER'];
+    } else {
+        $response['redirect'] = 'dashboard.html';
+    }
+
+    echo json_encode($response);
     exit;
-}
-
-$username = trim($_POST['username']);
-$password = $_POST['password'];
-
-if ($username === "" || $password === "") {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'All fields are required.'
-    ]);
-    exit;
-}
-
-// Prepare SQL
-$stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows === 0) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Invalid username or password.'
-    ]);
-    exit;
-}
-
-$stmt->bind_result($user_id, $db_username, $hashed);
-$stmt->fetch();
-
-// Password verify
-if (!password_verify($password, $hashed)) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Invalid username or password.'
-    ]);
-    exit;
-}
-
-// Successful login → set session
-$session->login($user_id, $db_username);
-
-// Prepare response
-$response = [
-    'status' => 'success',
-    'message' => 'Login successful',
-    'username' => $db_username
-];
-
-// Add redirect URL if needed
-if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'login') === false) {
-    $response['redirect'] = $_SERVER['HTTP_REFERER'];
 } else {
-    $response['redirect'] = 'dashboard.html';
+    // Handle non-POST requests (like the redirect after registration)
+    if (isset($_GET['registered']) && $_GET['registered'] == '1') {
+        // This is a GET request after successful registration
+        // Redirect to the login page with a success message
+        header('Location: login.php?registration=success');
+        exit;
+    }
+    
+    // For any other GET request, just return success
+    echo json_encode([
+        'status' => 'success'
+    ]);
+    exit;
 }
-
-echo json_encode($response);
-exit;
 ?>
