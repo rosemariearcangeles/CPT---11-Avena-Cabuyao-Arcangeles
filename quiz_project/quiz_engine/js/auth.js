@@ -313,7 +313,7 @@ async function updateLoginUI() {
         'Cache-Control': 'no-cache',
         'X-Requested-With': 'XMLHttpRequest'
       },
-      credentials: 'same-origin' // Important for sending cookies
+      credentials: 'same-origin'
     });
 
     if (!response.ok) {
@@ -321,37 +321,35 @@ async function updateLoginUI() {
     }
 
     const data = await response.json();
-
-    // Use opacity classes for smooth transitions instead of display toggling
-    const authButtons = document.querySelector('.auth-buttons');
-    const userMenu = document.getElementById('nav-user-menu');
-    const dashboardLink = document.getElementById('nav-profile-dashboard');
-    const usernameSpan = document.getElementById('nav-username');
-
-    const navbarAuth = document.querySelector('.navbar-auth');
     
-    if (data.loggedIn && data.username) {
-      // User is logged in - show user menu and dashboard
-      if (authButtons) authButtons.style.display = 'none';
-      if (userMenu) userMenu.style.display = 'block';
-      if (dashboardLink) dashboardLink.style.display = 'block';
-      if (usernameSpan) usernameSpan.textContent = data.username;
-      updateAuthenticatedUI(true);
-    } else {
-      // User is not logged in - show auth buttons
-      if (userMenu) userMenu.style.display = 'none';
-      if (dashboardLink) dashboardLink.style.display = 'none';
-      if (authButtons) authButtons.style.display = 'block';
-      updateAuthenticatedUI(false);
-    }
+    // Cache the auth state
+    sessionStorage.setItem('authState', JSON.stringify(data));
     
-    // Make navbar visible after auth check
-    if (navbarAuth) navbarAuth.style.visibility = 'visible';
-
+    applyAuthState(data);
     return data;
   } catch (error) {
     console.error('Error checking auth status:', error);
     return { loggedIn: false };
+  }
+}
+
+function applyAuthState(data) {
+  const authButtons = document.querySelector('.auth-buttons');
+  const userMenu = document.querySelector('.user-menu');
+  const dashboardLink = document.querySelector('.dashboard-link');
+  const usernameSpan = document.getElementById('nav-username');
+
+  if (data.loggedIn && data.username) {
+    if (authButtons) authButtons.style.display = 'none';
+    if (userMenu) userMenu.style.display = 'block';
+    if (dashboardLink) dashboardLink.style.display = 'block';
+    if (usernameSpan) usernameSpan.textContent = data.username;
+    updateAuthenticatedUI(true);
+  } else {
+    if (userMenu) userMenu.style.display = 'none';
+    if (dashboardLink) dashboardLink.style.display = 'none';
+    if (authButtons) authButtons.style.display = 'block';
+    updateAuthenticatedUI(false);
   }
 }
 
@@ -383,15 +381,19 @@ function isProtectedPage() {
 
 // Start periodic auth check
 function startAuthCheck() {
-  // Clear any existing interval
   if (authCheckInterval) {
     clearInterval(authCheckInterval);
   }
   
-  // Initial check
-  updateLoginUI();
+  // Apply cached state BEFORE DOMContentLoaded for seamless experience
+  const cached = sessionStorage.getItem('authState');
+  if (cached) {
+    try {
+      applyAuthState(JSON.parse(cached));
+    } catch (e) {}
+  }
   
-  // Set up periodic check
+  updateLoginUI();
   authCheckInterval = setInterval(updateLoginUI, AUTH_CHECK_INTERVAL);
 }
 
@@ -416,6 +418,7 @@ async function handleLogout() {
     const data = await response.json();
 
     if (data && data.status === 'success') {
+      sessionStorage.removeItem('authState');
       showToast('Logged out successfully', true);
       await updateLoginUI();
 

@@ -56,7 +56,20 @@
         </ul>
 
         <!-- Authentication section -->
-        <div class="navbar-auth" style="visibility: hidden;">
+        <div class="navbar-auth">
+          <script>
+            (function() {
+              const cached = sessionStorage.getItem('authState');
+              if (cached) {
+                try {
+                  const data = JSON.parse(cached);
+                  if (data.loggedIn) {
+                    document.write('<style>.auth-buttons{display:none!important}.user-menu,.dashboard-link{display:block!important}</style>');
+                  }
+                } catch (e) {}
+              }
+            })();
+          </script>
           <!-- Dashboard link (visible when logged in) -->
           <div class="nav-item dashboard-link" style="display: none;">
             <a href="dashboard.html" class="nav-link dashboard-btn">
