@@ -416,26 +416,7 @@ body {
   min-height: 70px; /* Ensure consistent height */
 }
 
-/* Smooth fade transitions for navbar elements */
-.fade-in {
-  opacity: 0;
-  animation: fadeIn 0.2s ease-in-out forwards;
-}
 
-.fade-out {
-  opacity: 1;
-  animation: fadeOut 0.2s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-5px); }
-}
 
 .nav-inner {
   display: flex;
@@ -1416,37 +1397,33 @@ background-clip: text;
 
 .toast {
   position: fixed;
-  top: 20px;
+  top: 90px;
   right: 20px;
-  padding: 14px 20px;
-  border-radius: 12px;
-  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  color: #fff;
   font-weight: 600;
   font-size: 0.95rem;
-  opacity: 0;
-  transform: translateY(-12px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  z-index: 9999999;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  pointer-events: none; /* Prevent blocking UI clicks */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  z-index: 10000;
+  transform: translateX(400px);
+  transition: transform 0.3s ease;
+  max-width: 400px;
+  min-width: 250px;
 }
 
-/* Make toast appear */
 .toast.visible {
-  opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
-/* SUCCESS — GREEN */
 .toast-success {
-  background: var(--success-color);
-  border-left: 6px solid #0e9f6e;
+  background: linear-gradient(135deg, var(--success-color), #059669);
+  border-left: 4px solid #10b981;
 }
 
-/* ERROR — RED */
 .toast-error {
-  background: var(--error-color);
-  border-left: 6px solid #b91c1c;
+  background: linear-gradient(135deg, var(--error-color), #dc2626);
+  border-left: 4px solid #ef4444;
 }
 
 /* ===============================

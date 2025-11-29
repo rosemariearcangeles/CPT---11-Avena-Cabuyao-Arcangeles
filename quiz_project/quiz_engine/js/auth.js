@@ -118,19 +118,18 @@ function showToast(message, success = true) {
   const toast = document.createElement('div');
   toast.className = `toast ${success ? 'toast-success' : 'toast-error'}`;
   toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'polite');
   toast.textContent = message;
 
   document.body.appendChild(toast);
 
-  // Trigger reflow
-  void toast.offsetWidth;
+  setTimeout(() => toast.classList.add('visible'), 10);
 
-  toast.classList.add('visible');
-
-  // Remove toast after delay
   setTimeout(() => {
     toast.classList.remove('visible');
-    setTimeout(() => toast.remove(), 300);
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 300);
   }, 3000);
 }
 
@@ -301,55 +300,16 @@ async function updateLoginUI() {
 
     if (data.loggedIn && data.username) {
       // User is logged in - show user menu and dashboard
-      if (authButtons) {
-        authButtons.classList.add('fade-out');
-        setTimeout(() => {
-          authButtons.style.display = 'none';
-          authButtons.classList.remove('fade-out');
-        }, 200);
-      }
-
-      if (userMenu) {
-        userMenu.style.display = 'block';
-        userMenu.classList.add('fade-in');
-        setTimeout(() => userMenu.classList.remove('fade-in'), 200);
-      }
-
-      if (dashboardLink) {
-        dashboardLink.style.display = 'block';
-        dashboardLink.classList.add('fade-in');
-        setTimeout(() => dashboardLink.classList.remove('fade-in'), 200);
-      }
-
+      if (authButtons) authButtons.style.display = 'none';
+      if (userMenu) userMenu.style.display = 'block';
+      if (dashboardLink) dashboardLink.style.display = 'block';
       if (usernameSpan) usernameSpan.textContent = data.username;
-
-      // Update any other UI elements that depend on login state
       updateAuthenticatedUI(true);
     } else {
       // User is not logged in - show auth buttons
-      if (userMenu) {
-        userMenu.classList.add('fade-out');
-        setTimeout(() => {
-          userMenu.style.display = 'none';
-          userMenu.classList.remove('fade-out');
-        }, 200);
-      }
-
-      if (dashboardLink) {
-        dashboardLink.classList.add('fade-out');
-        setTimeout(() => {
-          dashboardLink.style.display = 'none';
-          dashboardLink.classList.remove('fade-out');
-        }, 200);
-      }
-
-      if (authButtons) {
-        authButtons.style.display = 'block';
-        authButtons.classList.add('fade-in');
-        setTimeout(() => authButtons.classList.remove('fade-in'), 200);
-      }
-
-      // Update any other UI elements that depend on login state
+      if (userMenu) userMenu.style.display = 'none';
+      if (dashboardLink) dashboardLink.style.display = 'none';
+      if (authButtons) authButtons.style.display = 'block';
       updateAuthenticatedUI(false);
     }
 
