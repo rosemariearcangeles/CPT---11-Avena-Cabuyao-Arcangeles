@@ -1,22 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="csrf-token" content="">
   <title>Service - Online Quiz Engine</title>
+  <style>
+    /* Critical CSS for navbar to prevent FOUC */
+    .navbar {
+      width: 100%;
+      padding: 1rem 0;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
+    .navbar.loaded {
+      opacity: 1;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #4a6cf7;
+    }
+
+    /* Ensure content doesn't hide behind fixed navbar */
+    body {
+      padding-top: 70px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    body.loaded {
+      opacity: 1;
+    }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="../css/service.css" />
   <link rel="stylesheet" href="../css/modal.css" />
 </head>
 <body>
 
   <!-- Navigation -->
-  <nav class="navbar" role="navigation" aria-label="Main navigation">
+  <nav class="navbar loaded" role="navigation" aria-label="Main navigation">
     <div class="container">
       <div class="logo">
         <h1>Online Quiz Engine</h1>
@@ -248,6 +304,11 @@
 
   <!-- Scripts -->
   <script src="../js/auth.js"></script>
+  <script>
+  // Remove no-js class and add loaded class when page is fully loaded
+  document.documentElement.classList.remove('no-js');
+  document.body.classList.add('loaded');
+  </script>
   <script>
   // Initialize authentication functionality
   document.addEventListener('DOMContentLoaded', function() {
