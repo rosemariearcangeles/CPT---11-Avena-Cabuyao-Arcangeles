@@ -411,10 +411,6 @@ async function handleLogout() {
       }
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const data = await response.json();
 
     if (data && data.status === 'success') {
@@ -432,7 +428,7 @@ async function handleLogout() {
     }
   } catch (error) {
     console.error('Logout error:', error);
-    showToast('An error occurred during logout', false);
+    showToast('Network error during logout', false);
   }
 }
 
