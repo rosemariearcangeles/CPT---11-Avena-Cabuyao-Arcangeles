@@ -249,7 +249,7 @@
     browseBtn = $id('browse-btn');
     presetFast = $id('preset-fast');
     presetFull = $id('preset-full');
-    genBtn = $id('generate-quiz-ai');
+    genBtn = $id('generate-quiz-btn');
     modeSelect = $id('generation-mode');
     // IMPORTANT: use the hero SECTION element that exists in your HTML
     heroSlidesEl = $id('hero-section'); // <- patched: previously looked for non-existent #hero-slides
