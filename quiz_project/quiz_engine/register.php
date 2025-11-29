@@ -6,6 +6,11 @@ require_once "config.php";
 
 $session = SessionManager::getInstance();
 
+// Initialize CSRF token if not set
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Validate CSRF token
 $session->requireCSRFToken();
 
