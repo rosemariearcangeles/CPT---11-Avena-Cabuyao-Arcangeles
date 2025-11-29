@@ -438,12 +438,23 @@ function showResult() {
   }
 
   const back = $id("back-btn");
-  if (back) back.onclick = () => window.location.href = "index.html";
+  if (back) {
+    back.onclick = () => {
+      localStorage.removeItem('quizProgress');
+      localStorage.removeItem('currentQuiz');
+      window.location.href = "index.html";
+    };
+  }
 
   // Clear saved progress after quiz completion
   localStorage.removeItem('quizProgress');
   localStorage.removeItem('currentQuiz');
   quizProgress = {};
+  
+  // Clear uploaded text if not logged in
+  if (window._uploadedText) {
+    window._uploadedText = '';
+  }
 }
 
 // =====================
@@ -497,5 +508,9 @@ function parseQuizFromText(text) {
 // =====================
 // Initialize
 // =====================
-document.addEventListener('DOMContentLoaded', loadQuiz);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadQuiz);
+} else {
+  loadQuiz();
+}
 

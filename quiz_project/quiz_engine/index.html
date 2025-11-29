@@ -456,7 +456,6 @@
   <script src="js/auth.js"></script>
   <script src="js/navbar.js"></script>
   <script src="script.js"></script>
-  <script src="quiz-script.js"></script>
   <script>
     // Page-specific initialization
     document.addEventListener('DOMContentLoaded', function() {
@@ -475,9 +474,10 @@
 
       if (genAiBtn) {
         genAiBtn.addEventListener('click', () => {
-          genAiBtn.classList.add('selected');
-          genLocalBtn.classList.remove('selected');
-          if (generationModeSelect) generationModeSelect.value = 'ai';
+          alert('AI Generation is not available yet. Please use Local Generation.');
+          genLocalBtn.classList.add('selected');
+          genAiBtn.classList.remove('selected');
+          if (generationModeSelect) generationModeSelect.value = 'local';
         });
       }
 
