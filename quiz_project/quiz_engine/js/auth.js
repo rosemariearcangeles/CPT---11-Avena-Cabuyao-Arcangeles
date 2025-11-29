@@ -279,13 +279,22 @@ async function handleRegister(event) {
     formData.append('email', email);
     formData.append('password', password);
     formData.append('confirmPassword', confirmPassword);
-    formData.append('csrf_token', await getCSRFToken());
+    
+    // Get CSRF token for this request
+    const csrfToken = await getCSRFToken();
+    if (!csrfToken) {
+      throw new Error('Failed to get security token');
+    }
+    formData.append('csrf_token', csrfToken);
     
     const response = await fetch(`${BASE_PATH}register.php`, {
       method: 'POST',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest'
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRF-Token': csrfToken
       },
+      credentials: 'same-origin',
       body: new URLSearchParams(formData)
     });
 
