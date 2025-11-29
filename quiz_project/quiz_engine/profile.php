@@ -66,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<?php include "navbar.php"; ?> 
+<?php include "navbar.php"; ?>
+<?php include "login_modal.php"; ?>
 
 <div class="profile-container">
     <h1>My Profile</h1>
