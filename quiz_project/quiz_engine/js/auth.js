@@ -11,36 +11,28 @@ const BASE_PATH = (() => {
   return depth > 0 ? '../'.repeat(depth) : '';
 })();
 
-// Utility function to get CSRF token
-function getCSRFToken() {
-  // First try to get from meta tag
-  let csrfInput = document.querySelector('meta[name="csrf-token"]');
-  let token = csrfInput ? csrfInput.getAttribute('content') : '';
-  
-  // If not found in meta tag, try to get from session storage
-  if (!token) {
-    token = sessionStorage.getItem('csrf_token') || '';
+// Utility function to get CSRF token from server
+async function getCSRFToken() {
+  try {
+    const response = await fetch(`${BASE_PATH}csrf_token.php`, {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      credentials: 'same-origin'
+    });
     
-    // If still not found, generate a new one
-    if (!token) {
-      token = generateCSRFToken();
-      sessionStorage.setItem('csrf_token', token);
-      
-      // Also update the meta tag if it exists
-      if (csrfInput) {
-        csrfInput.setAttribute('content', token);
-      }
+    if (!response.ok) {
+      throw new Error('Failed to fetch CSRF token');
     }
+    
+    const data = await response.json();
+    return data.token || '';
+  } catch (error) {
+    console.error('Error fetching CSRF token:', error);
+    return '';
   }
-  
-  return token;
-}
-
-// Generate a random CSRF token
-function generateCSRFToken() {
-  const array = new Uint8Array(32);
-  window.crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Modal functions
@@ -72,14 +64,14 @@ function clearFormErrors(modal) {
 }
 
 // Modal toggles
-function openLogin() {
+async function openLogin() {
   closeRegisterModal();
   const modal = document.getElementById('loginModal');
   
   // Set CSRF token in the login form
   const csrfInput = document.getElementById('login-csrf');
   if (csrfInput) {
-    csrfInput.value = getCSRFToken();
+    csrfInput.value = await getCSRFToken();
   }
   
   openModal(modal);
@@ -90,14 +82,14 @@ function closeLoginModal() {
   closeModal(modal);
 }
 
-function openRegister() {
+async function openRegister() {
   closeLoginModal();
   const modal = document.getElementById('registerModal');
   
   // Set CSRF token in the register form
   const csrfInput = document.getElementById('register-csrf');
   if (csrfInput) {
-    csrfInput.value = getCSRFToken();
+    csrfInput.value = await getCSRFToken();
   }
   
   openModal(modal);
@@ -109,14 +101,14 @@ function closeRegisterModal() {
 }
 
 // Switch between login and register
-function switchToRegister() {
+async function switchToRegister() {
   closeLoginModal();
-  openRegister();
+  await openRegister();
 }
 
-function switchToLogin() {
+async function switchToLogin() {
   closeRegisterModal();
-  openLogin();
+  await openLogin();
 }
 
 /* ===============================
@@ -172,7 +164,7 @@ async function handleLogin(event) {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
-    formData.append('csrf_token', getCSRFToken());
+    formData.append('csrf_token', await getCSRFToken());
     
     const response = await fetch(`${BASE_PATH}login.php`, {
       method: 'POST',
@@ -248,7 +240,7 @@ async function handleRegister(event) {
     formData.append('email', email);
     formData.append('password', password);
     formData.append('confirmPassword', confirmPassword);
-    formData.append('csrf_token', getCSRFToken());
+    formData.append('csrf_token', await getCSRFToken());
     
     const response = await fetch(`${BASE_PATH}register.php`, {
       method: 'POST',
@@ -411,12 +403,13 @@ function startAuthCheck() {
 /* ===============================
    LOGOUT HANDLER
    =============================== */
-function handleLogout() {
+async function handleLogout() {
+  const csrfToken = await getCSRFToken();
   fetch(`${BASE_PATH}logout.php`, {
     method: 'POST',
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
-      'X-CSRF-TOKEN': getCSRFToken()
+      'X-CSRF-TOKEN': csrfToken
     }
   })
   .then(response => response.json())
@@ -470,16 +463,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const switchToLoginBtn = document.getElementById('switch-to-login');
   
   if (switchToRegisterBtn) {
-    switchToRegisterBtn.addEventListener('click', function(e) {
+    switchToRegisterBtn.addEventListener('click', async function(e) {
       e.preventDefault();
-      switchToRegister();
+      await switchToRegister();
     });
   }
   
   if (switchToLoginBtn) {
-    switchToLoginBtn.addEventListener('click', function(e) {
+    switchToLoginBtn.addEventListener('click', async function(e) {
       e.preventDefault();
-      switchToLogin();
+      await switchToLogin();
     });
   }
   
@@ -506,10 +499,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const navRegisterBtn = document.getElementById('nav-register-btn');
   
   if (navLoginBtn) {
-    navLoginBtn.addEventListener('click', openLogin);
+    navLoginBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      await openLogin();
+    });
   }
   
   if (navRegisterBtn) {
-    navRegisterBtn.addEventListener('click', openRegister);
+    navRegisterBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      await openRegister();
+    });
   }
 });

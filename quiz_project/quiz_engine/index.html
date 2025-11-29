@@ -153,34 +153,35 @@
   <!-- MAIN CONTENT -->
   <div class="page-wrapper">
     <div class="home-layout">
-      <!-- Sidebar with Generation Options -->
-      <aside class="sidebar">
-        <h2 class="section-title">Generation Settings</h2>
-        
-        <div class="generation-cards">
-          <button class="generation-card selected" id="gen-local-btn" aria-pressed="true">
-            <h3>Local Generation</h3>
-            <p>Generate quizzes instantly using your browser</p>
-          </button>
-          
-          <button class="generation-card" id="gen-ai-btn" aria-pressed="false">
-            <h3>AI Generation</h3>
-            <p>Use AI for higher-quality quiz generation</p>
-          </button>
-        </div>
-        
-        <div class="preset-section">
-          <h3 class="section-subtitle">Quick Presets</h3>
-          <div class="preset-buttons">
-            <button id="preset-fast" class="active" data-preset="5">Quick (5)</button>
-            <button id="preset-full" data-preset="20">Full (20)</button>
-          </div>
-          <p id="preset-indicator" class="preset-indicator">Quick (5) questions selected</p>
-        </div>
-      </aside>
-
       <!-- Main Content Area -->
       <main class="main-content" id="main">
+        <!-- Generation Settings -->
+        <section class="generation-settings">
+          <h2 class="section-title">Generation Settings</h2>
+          
+          <div class="settings-grid">
+            <div class="generation-cards">
+              <button class="generation-card selected" id="gen-local-btn" aria-pressed="true">
+                <h3>Local Generation</h3>
+                <p>Generate quizzes instantly using your browser</p>
+              </button>
+              
+              <button class="generation-card" id="gen-ai-btn" aria-pressed="false">
+                <h3>AI Generation</h3>
+                <p>Use AI for higher-quality quiz generation</p>
+              </button>
+            </div>
+            
+            <div class="preset-section">
+              <h3 class="section-subtitle">Quick Presets</h3>
+              <div class="preset-buttons">
+                <button id="preset-fast" class="active" data-preset="5">Quick (5)</button>
+                <button id="preset-full" data-preset="20">Full (20)</button>
+              </div>
+              <p id="preset-indicator" class="preset-indicator">Quick (5) questions selected</p>
+            </div>
+          </div>
+        </section>
         <!-- File Upload Section -->
         <section class="upload-section">
           <h1>Generate Quiz from Learning Material</h1>
@@ -234,6 +235,27 @@
           <div class="carousel-container">
             <div class="carousel" aria-live="polite">
               <div class="carousel-track">
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">⚡</span>
+                  <span class="card-text">Lightning Fast</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">🎯</span>
+                  <span class="card-text">Smart Learning</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">🔒</span>
+                  <span class="card-text">Secure & Private</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">📱</span>
+                  <span class="card-text">Mobile Friendly</span>
+                </div>
+                <div class="category-card">
+                  <span class="card-emoji" role="img" aria-hidden="true">🔄</span>
+                  <span class="card-text">Instant Results</span>
+                </div>
+                <!-- Duplicate cards for seamless loop -->
                 <div class="category-card">
                   <span class="card-emoji" role="img" aria-hidden="true">⚡</span>
                   <span class="card-text">Lightning Fast</span>
@@ -408,7 +430,7 @@
       </div>
     </div>
 
-    <div class="footer-bottom"> Adaptive Quiz Engine 2025</div>
+    <div class="footer-bottom">© Adaptive Quiz Engine 2025</div>
   </footer>
 
   <!-- Toast Container -->

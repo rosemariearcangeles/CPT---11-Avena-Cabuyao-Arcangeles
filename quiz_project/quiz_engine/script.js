@@ -456,6 +456,9 @@
       initHeroCarousel();
     }
 
+    // Initialize card carousel
+    initCardCarousel();
+
     // Bind generation UI after DOM ready
     bindGenerationCards();
   } // end init()
@@ -502,37 +505,24 @@
     function render(i) {
       const s = slides[i];
       if (!s) return;
-      if (s.type === 'image') {
-        if (s.ready) {
-          // apply image to hero SECTION element
+      
+      heroSectionEl.style.opacity = '0';
+      
+      setTimeout(() => {
+        if (s.type === 'image' && s.ready) {
           heroSectionEl.style.backgroundImage = `url('${s.value}')`;
           heroSectionEl.style.backgroundSize = 'cover';
           heroSectionEl.style.backgroundPosition = 'center';
           heroSectionEl.style.backgroundRepeat = 'no-repeat';
           heroSectionEl.style.backgroundColor = '';
-        } else {
-          // temporarily use first color slide as background
+        } else if (s.type === 'color') {
           heroSectionEl.style.backgroundImage = '';
-          heroSectionEl.style.backgroundColor = slides[0] && slides[0].value ? '' : '#4b6cb7';
-          // attempt to set image when it becomes ready (poll short times)
-          const poll = setInterval(() => {
-            if (s.ready) {
-              heroSectionEl.style.backgroundImage = `url('${s.value}')`;
-              heroSectionEl.style.backgroundSize = 'cover';
-              heroSectionEl.style.backgroundPosition = 'center';
-              heroSectionEl.style.backgroundRepeat = 'no-repeat';
-              clearInterval(poll);
-            }
-          }, 300);
-          // stop polling after a timeout to avoid runaway
-          setTimeout(() => clearInterval(poll), 8000);
+          heroSectionEl.style.background = s.value;
         }
-      } else {
-        heroSectionEl.style.backgroundImage = '';
-        heroSectionEl.style.background = s.value;
-      }
+        
+        heroSectionEl.style.opacity = '1';
+      }, 300);
 
-      // update dots
       dotButtons.forEach((d, j) => d.classList.toggle('active', j === i));
     }
 
@@ -578,6 +568,27 @@
     window.setHeroSlide = goTo;
     window.pauseHero = stopTimer;
     window.resumeHero = startTimer;
+  }
+
+  // Card carousel initialization
+  function initCardCarousel() {
+    const carouselTrack = document.querySelector('.carousel-track');
+    if (!carouselTrack) return;
+
+    // Ensure animation is running
+    carouselTrack.style.animationPlayState = 'running';
+    
+    // Pause on hover, resume on leave
+    const carouselContainer = document.querySelector('.carousel-container');
+    if (carouselContainer) {
+      carouselContainer.addEventListener('mouseenter', () => {
+        carouselTrack.style.animationPlayState = 'paused';
+      });
+      
+      carouselContainer.addEventListener('mouseleave', () => {
+        carouselTrack.style.animationPlayState = 'running';
+      });
+    }
   }
 
   // Init when DOM ready
