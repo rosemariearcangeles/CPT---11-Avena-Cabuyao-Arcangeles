@@ -405,3 +405,4 @@ window.updateLoginUI = () => {
     window.navbarInstance.updateAuthUI();
   }
 };
+
