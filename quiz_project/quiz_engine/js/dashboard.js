@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Dashboard initializing...');
     await checkAuth();
     await loadDashboardData();
     setupNavigation();
@@ -10,7 +11,10 @@ async function checkAuth() {
         const response = await fetch('check_auth.php');
         const data = await response.json();
         
+        console.log('Auth check:', data);
+        
         if (!data.loggedIn) {
+            console.warn('User not logged in, redirecting...');
             window.location.href = 'index.html';
             return;
         }
@@ -26,21 +30,33 @@ async function checkAuth() {
 }
 
 async function loadDashboardData() {
+    console.log('Loading dashboard data...');
     try {
         const response = await fetch('api/get_quizzes.php');
+        console.log('API response status:', response.status);
+        
         const data = await response.json();
+        console.log('API data:', data);
         
         if (data.success && data.quizzes) {
+            console.log('Found', data.quizzes.length, 'quizzes');
             updateStats(data.quizzes);
             displayQuizzes(data.quizzes);
         } else {
+            console.warn('No quizzes or API error:', data);
             updateStats([]);
             displayQuizzes([]);
+            
+            // Show helpful message if table doesn't exist
+            if (data.message && data.message.includes('Table')) {
+                showToast('Database table not created. Run database_setup.sql', false);
+            }
         }
     } catch (error) {
         console.error('Failed to load quizzes:', error);
         updateStats([]);
         displayQuizzes([]);
+        showToast('Failed to load quizzes. Check console for details.', false);
     }
 }
 
@@ -63,6 +79,8 @@ function updateStats(quizzes) {
     document.getElementById('totalQuizzes').textContent = total;
     document.getElementById('completedQuizzes').textContent = completed;
     document.getElementById('avgScore').textContent = avgScore + '%';
+    
+    console.log('Stats updated:', { total, completed, avgScore });
 }
 
 function displayQuizzes(quizzes) {
