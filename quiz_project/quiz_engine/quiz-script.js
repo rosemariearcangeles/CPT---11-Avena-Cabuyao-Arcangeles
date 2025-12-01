@@ -408,6 +408,9 @@ function showResult() {
       '</div>';
   });
 
+  // Update quiz score in database
+  updateQuizScore(score, currentQuiz.length);
+
   const quizFormEl = $id("quiz-form");
   if (quizFormEl) quizFormEl.style.display = "none";
 
@@ -442,6 +445,7 @@ function showResult() {
     back.onclick = () => {
       localStorage.removeItem('quizProgress');
       localStorage.removeItem('currentQuiz');
+      localStorage.removeItem('current_quiz_id');
       window.location.href = "index.html";
     };
   }

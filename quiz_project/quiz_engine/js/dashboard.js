@@ -101,8 +101,20 @@ function displayQuizzes(quizzes) {
     recentContainer.innerHTML = recentQuizzes.map(quiz => createQuizCard(quiz)).join('');
     allContainer.innerHTML = sortedQuizzes.map(quiz => createQuizCard(quiz)).join('');
     
+    // Add click handlers for viewing quiz results
+    document.querySelectorAll('.quiz-item.clickable').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (!e.target.closest('.btn-delete')) {
+                const quizId = item.dataset.quizId;
+                viewQuizResults(quizId);
+            }
+        });
+    });
+    
+    // Add delete handlers
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const quizId = e.target.closest('.btn-delete').dataset.id;
             deleteQuiz(quizId);
         });
@@ -122,8 +134,10 @@ function createQuizCard(quiz) {
         else scoreClass = 'low';
     }
     
+    const isCompleted = quiz.status === 'completed' && score !== null;
+    
     return `
-        <div class="quiz-item">
+        <div class="quiz-item ${isCompleted ? 'clickable' : ''}" data-quiz-id="${quiz.id}" data-status="${quiz.status}">
             <div class="quiz-info">
                 <h3>${quiz.quiz_name || 'Quiz #' + quiz.id}</h3>
                 <div class="quiz-meta">
@@ -131,6 +145,7 @@ function createQuizCard(quiz) {
                     <span><i class="fas fa-question-circle"></i> ${quiz.total_questions || 0} questions</span>
                     ${score !== null ? `<span class="score-badge ${scoreClass}">${score}%</span>` : '<span class="score-badge medium">In Progress</span>'}
                 </div>
+                ${isCompleted ? '<p class="view-hint"><i class="fas fa-eye"></i> Click to view results</p>' : ''}
             </div>
             <div class="quiz-actions">
                 <button class="btn btn-danger btn-sm btn-delete" data-id="${quiz.id}">
@@ -206,6 +221,89 @@ function setupLogout() {
             }
         });
     }
+}
+
+async function viewQuizResults(quizId) {
+    try {
+        const response = await fetch('api/get_quiz_details.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quiz_id: quizId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.quiz) {
+            showQuizResultsModal(data.quiz);
+        } else {
+            showToast('Failed to load quiz details', false);
+        }
+    } catch (error) {
+        console.error('Error loading quiz:', error);
+        showToast('Error loading quiz details', false);
+    }
+}
+
+function showQuizResultsModal(quiz) {
+    const score = quiz.score || 0;
+    const total = quiz.total_questions || 0;
+    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+    
+    let resultsHTML = '';
+    if (quiz.quiz_data && Array.isArray(quiz.quiz_data)) {
+        resultsHTML = '<div class="results-list">';
+        quiz.quiz_data.forEach((q, i) => {
+            resultsHTML += `
+                <div class="result-item-modal">
+                    <h4>Question ${i + 1}</h4>
+                    <p class="question-text">${escapeHtml(q.question)}</p>
+                    <div class="options-list">
+                        ${q.options.map((opt, idx) => {
+                            const letter = String.fromCharCode(65 + idx);
+                            const isCorrect = q.answer === opt || q.options.indexOf(q.answer) === idx;
+                            return `<div class="option-display ${isCorrect ? 'correct-option' : ''}">
+                                <span class="option-letter">${letter}</span> ${escapeHtml(opt)}
+                                ${isCorrect ? '<i class="fas fa-check-circle"></i>' : ''}
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        });
+        resultsHTML += '</div>';
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'quiz-results-modal';
+    modal.innerHTML = `
+        <div class="modal-overlay"></div>
+        <div class="modal-content-large">
+            <button class="modal-close" onclick="this.closest('.quiz-results-modal').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header-results">
+                <h2>${quiz.quiz_name}</h2>
+                <div class="score-display-large">
+                    <div class="score-circle-large">${percentage}%</div>
+                    <p>Score: ${score} / ${total}</p>
+                </div>
+            </div>
+            <div class="modal-body-results">
+                ${resultsHTML || '<p>No quiz data available</p>'}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+    
+    modal.querySelector('.modal-overlay').addEventListener('click', () => modal.remove());
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function showToast(message, success = true) {
