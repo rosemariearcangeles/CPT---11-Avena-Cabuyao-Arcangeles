@@ -1,34 +1,30 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-
+require_once '../session_utils.php';
 require_once '../config.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not authenticated']);
+header('Content-Type: application/json');
+
+$session = SessionManager::getInstance();
+
+if (!$session->isLoggedIn()) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
 
-$user_id = $_SESSION['user_id'];
-$quiz_id = $data['quiz_id'] ?? null;
-$score = $data['score'] ?? null;
-$status = $data['status'] ?? 'in_progress';
+$user_id = $session->getUserId();
+$quiz_id = intval($data['quiz_id'] ?? 0);
+$score = intval($data['score'] ?? 0);
 
-if (!$quiz_id) {
-    echo json_encode(['success' => false, 'message' => 'Quiz ID required']);
-    exit;
-}
-
-$sql = "UPDATE quizzes SET score = ?, status = ?, updated_at = NOW() 
-        WHERE id = ? AND user_id = ?";
+$sql = "UPDATE quizzes SET score = ?, status = 'completed' WHERE id = ? AND user_id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("isii", $score, $status, $quiz_id, $user_id);
+$stmt->bind_param("iii", $score, $quiz_id, $user_id);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to update quiz']);
+    echo json_encode(['success' => false, 'message' => $stmt->error]);
 }
 ?>

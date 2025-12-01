@@ -1,31 +1,31 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-
+require_once '../session_utils.php';
 require_once '../config.php';
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not authenticated']);
+header('Content-Type: application/json');
+
+$session = SessionManager::getInstance();
+
+if (!$session->isLoggedIn()) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
 
-$user_id = $_SESSION['user_id'];
+$user_id = $session->getUserId();
 $quiz_name = $data['quiz_name'] ?? 'Quiz ' . date('M d, Y');
 $quiz_data = json_encode($data['quiz_data'] ?? []);
-$total_questions = $data['total_questions'] ?? 0;
-$score = $data['score'] ?? null;
-$status = $data['status'] ?? 'in_progress';
+$total_questions = intval($data['total_questions'] ?? 0);
 
-$sql = "INSERT INTO quizzes (user_id, quiz_name, quiz_data, total_questions, score, status, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, NOW())";
+$sql = "INSERT INTO quizzes (user_id, quiz_name, quiz_data, total_questions, status) VALUES (?, ?, ?, ?, 'in_progress')";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("isssis", $user_id, $quiz_name, $quiz_data, $total_questions, $score, $status);
+$stmt->bind_param("issi", $user_id, $quiz_name, $quiz_data, $total_questions);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'quiz_id' => $stmt->insert_id]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to save quiz']);
+    echo json_encode(['success' => false, 'message' => $stmt->error]);
 }
 ?>
