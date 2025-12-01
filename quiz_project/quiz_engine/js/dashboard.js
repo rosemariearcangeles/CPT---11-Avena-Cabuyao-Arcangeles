@@ -134,7 +134,7 @@ function createQuizCard(quiz) {
         else scoreClass = 'low';
     }
     
-    const isCompleted = quiz.status === 'completed' && score !== null;
+    const isCompleted = (quiz.status === 'completed' && score !== null) || (quiz.total_questions > 0);
     
     return `
         <div class="quiz-item ${isCompleted ? 'clickable' : ''}" data-quiz-id="${quiz.id}" data-status="${quiz.status}">
