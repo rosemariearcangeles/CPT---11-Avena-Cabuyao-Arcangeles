@@ -1,14 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    // Check authentication
     await checkAuth();
-    
-    // Load dashboard data
     await loadDashboardData();
-    
-    // Setup navigation
     setupNavigation();
-    
-    // Setup logout
     setupLogout();
 });
 
@@ -22,7 +15,6 @@ async function checkAuth() {
             return;
         }
         
-        // Update user info
         document.getElementById('userName').textContent = data.username;
         document.getElementById('userEmail').textContent = data.email || '';
         document.getElementById('welcomeName').textContent = data.username;
@@ -38,12 +30,17 @@ async function loadDashboardData() {
         const response = await fetch('api/get_quizzes.php');
         const data = await response.json();
         
-        if (data.success) {
+        if (data.success && data.quizzes) {
             updateStats(data.quizzes);
             displayQuizzes(data.quizzes);
+        } else {
+            updateStats([]);
+            displayQuizzes([]);
         }
     } catch (error) {
         console.error('Failed to load quizzes:', error);
+        updateStats([]);
+        displayQuizzes([]);
     }
 }
 
@@ -78,19 +75,14 @@ function displayQuizzes(quizzes) {
         return;
     }
     
-    // Sort by date (newest first)
     const sortedQuizzes = [...quizzes].sort((a, b) => 
         new Date(b.created_at) - new Date(a.created_at)
     );
     
-    // Recent quizzes (last 5)
     const recentQuizzes = sortedQuizzes.slice(0, 5);
     recentContainer.innerHTML = recentQuizzes.map(quiz => createQuizCard(quiz)).join('');
-    
-    // All quizzes
     allContainer.innerHTML = sortedQuizzes.map(quiz => createQuizCard(quiz)).join('');
     
-    // Add delete listeners
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const quizId = e.target.closest('.btn-delete').dataset.id;
@@ -123,7 +115,6 @@ function createQuizCard(quiz) {
                 </div>
             </div>
             <div class="quiz-actions">
-                ${quiz.status !== 'completed' ? `<a href="quiz.html?id=${quiz.id}" class="btn btn-primary btn-sm">Continue</a>` : ''}
                 <button class="btn btn-danger btn-sm btn-delete" data-id="${quiz.id}">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -184,7 +175,7 @@ function setupLogout() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch('logout.php', {
+                await fetch('logout.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -193,6 +184,7 @@ function setupLogout() {
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error('Logout failed:', error);
+                window.location.href = 'index.html';
             }
         });
     }
@@ -200,7 +192,6 @@ function setupLogout() {
 
 function showToast(message, success = true) {
     const toast = document.createElement('div');
-    toast.className = `toast ${success ? 'toast-success' : 'toast-error'}`;
     toast.textContent = message;
     toast.style.cssText = `
         position: fixed;

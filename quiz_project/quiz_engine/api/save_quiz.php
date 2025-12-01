@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 $data = json_decode(file_get_contents('php://input'), true);
 
 $user_id = $_SESSION['user_id'];
-$quiz_name = $data['quiz_name'] ?? 'Untitled Quiz';
+$quiz_name = $data['quiz_name'] ?? 'Quiz ' . date('M d, Y');
 $quiz_data = json_encode($data['quiz_data'] ?? []);
 $total_questions = $data['total_questions'] ?? 0;
 $score = $data['score'] ?? null;
