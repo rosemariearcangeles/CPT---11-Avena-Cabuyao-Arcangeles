@@ -1,341 +1,224 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Navigation between sections
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.dashboard-section');
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check authentication
+    await checkAuth();
+    
+    // Load dashboard data
+    await loadDashboardData();
+    
+    // Setup navigation
+    setupNavigation();
+    
+    // Setup logout
+    setupLogout();
+});
 
-    // Fetch user data and populate dashboard
-    fetchDashboardData();
+async function checkAuth() {
+    try {
+        const response = await fetch('check_auth.php');
+        const data = await response.json();
+        
+        if (!data.loggedIn) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Update user info
+        document.getElementById('userName').textContent = data.username;
+        document.getElementById('userEmail').textContent = data.email || '';
+        document.getElementById('welcomeName').textContent = data.username;
+        document.getElementById('userAvatar').textContent = data.username.charAt(0).toUpperCase();
+    } catch (error) {
+        console.error('Auth check failed:', error);
+        window.location.href = 'index.html';
+    }
+}
 
-    // Navigation event listeners
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+async function loadDashboardData() {
+    try {
+        const response = await fetch('api/get_quizzes.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            updateStats(data.quizzes);
+            displayQuizzes(data.quizzes);
+        }
+    } catch (error) {
+        console.error('Failed to load quizzes:', error);
+    }
+}
+
+function updateStats(quizzes) {
+    const total = quizzes.length;
+    const completed = quizzes.filter(q => q.status === 'completed').length;
+    
+    let totalScore = 0;
+    let scoreCount = 0;
+    
+    quizzes.forEach(quiz => {
+        if (quiz.score !== null && quiz.total_questions > 0) {
+            totalScore += (quiz.score / quiz.total_questions) * 100;
+            scoreCount++;
+        }
+    });
+    
+    const avgScore = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 0;
+    
+    document.getElementById('totalQuizzes').textContent = total;
+    document.getElementById('completedQuizzes').textContent = completed;
+    document.getElementById('avgScore').textContent = avgScore + '%';
+}
+
+function displayQuizzes(quizzes) {
+    const recentContainer = document.getElementById('recentQuizzes');
+    const allContainer = document.getElementById('allQuizzes');
+    
+    if (quizzes.length === 0) {
+        recentContainer.innerHTML = '<p class="empty-state">No quizzes yet. Create your first quiz!</p>';
+        allContainer.innerHTML = '<p class="empty-state">No quizzes found.</p>';
+        return;
+    }
+    
+    // Sort by date (newest first)
+    const sortedQuizzes = [...quizzes].sort((a, b) => 
+        new Date(b.created_at) - new Date(a.created_at)
+    );
+    
+    // Recent quizzes (last 5)
+    const recentQuizzes = sortedQuizzes.slice(0, 5);
+    recentContainer.innerHTML = recentQuizzes.map(quiz => createQuizCard(quiz)).join('');
+    
+    // All quizzes
+    allContainer.innerHTML = sortedQuizzes.map(quiz => createQuizCard(quiz)).join('');
+    
+    // Add delete listeners
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const quizId = e.target.closest('.btn-delete').dataset.id;
+            deleteQuiz(quizId);
+        });
+    });
+}
+
+function createQuizCard(quiz) {
+    const date = new Date(quiz.created_at).toLocaleDateString();
+    const score = quiz.score !== null && quiz.total_questions > 0 
+        ? Math.round((quiz.score / quiz.total_questions) * 100) 
+        : null;
+    
+    let scoreClass = '';
+    if (score !== null) {
+        if (score >= 80) scoreClass = 'high';
+        else if (score >= 60) scoreClass = 'medium';
+        else scoreClass = 'low';
+    }
+    
+    return `
+        <div class="quiz-item">
+            <div class="quiz-info">
+                <h3>${quiz.quiz_name || 'Quiz #' + quiz.id}</h3>
+                <div class="quiz-meta">
+                    <span><i class="fas fa-calendar"></i> ${date}</span>
+                    <span><i class="fas fa-question-circle"></i> ${quiz.total_questions || 0} questions</span>
+                    ${score !== null ? `<span class="score-badge ${scoreClass}">${score}%</span>` : '<span class="score-badge medium">In Progress</span>'}
+                </div>
+            </div>
+            <div class="quiz-actions">
+                ${quiz.status !== 'completed' ? `<a href="quiz.html?id=${quiz.id}" class="btn btn-primary btn-sm">Continue</a>` : ''}
+                <button class="btn btn-danger btn-sm btn-delete" data-id="${quiz.id}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function deleteQuiz(quizId) {
+    if (!confirm('Are you sure you want to delete this quiz?')) return;
+    
+    try {
+        const response = await fetch('api/delete_quiz.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quiz_id: quizId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Quiz deleted successfully', true);
+            await loadDashboardData();
+        } else {
+            showToast('Failed to delete quiz', false);
+        }
+    } catch (error) {
+        console.error('Delete failed:', error);
+        showToast('Error deleting quiz', false);
+    }
+}
+
+function setupNavigation() {
+    const navItems = document.querySelectorAll('.nav-item[data-section]');
+    const sections = document.querySelectorAll('.section');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
             e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
             
-            // Update active nav link
-            navLinks.forEach(navLink => navLink.classList.remove('active'));
-            this.classList.add('active');
+            const targetSection = item.dataset.section;
             
-            // Show target section
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            
             sections.forEach(section => {
                 section.classList.remove('active');
-                if (section.id === targetId) {
+                if (section.id === targetSection) {
                     section.classList.add('active');
                 }
             });
         });
     });
+}
 
-    // Logout button
+function setupLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            fetch('logout.php', {
-                method: 'POST',
-                credentials: 'same-origin'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = 'index.php';
-                }
-            });
-        });
-    }
-});
-
-// Fetch dashboard data from the server
-function fetchDashboardData() {
-    fetch('api/dashboard_data.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateDashboardUI(data.data);
-            } else {
-                console.error('Failed to load dashboard data:', data.message);
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('logout.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                sessionStorage.removeItem('authState');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout failed:', error);
             }
-        })
-        .catch(error => {
-            console.error('Error fetching dashboard data:', error);
         });
-}
-
-// Update the UI with dashboard data
-function updateDashboardUI(data) {
-    // Update user info
-    const { user, stats, recent_attempts, in_progress, performance_trend } = data;
-    
-    // Set user info
-    document.getElementById('userInitial').textContent = user.username.charAt(0).toUpperCase();
-    document.getElementById('username').textContent = user.username;
-    document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('welcomeUsername').textContent = user.username;
-
-    // Update stats grid
-    updateStatsGrid(stats);
-    
-    // Update quiz history
-    updateQuizHistory(recent_attempts);
-    
-    // Update in-progress quizzes
-    updateInProgressQuizzes(in_progress);
-    
-    // Initialize performance chart
-    if (performance_trend && performance_trend.length > 0) {
-        initPerformanceChart(performance_trend);
-    } else {
-        document.querySelector('.chart-container').style.display = 'none';
     }
 }
 
-// Update the stats grid
-function updateStatsGrid(stats) {
-    const statsGrid = document.getElementById('statsGrid');
-    if (!statsGrid) return;
-
-    const statsHTML = `
-        <div class="stat-card">
-            <div class="stat-icon">📚</div>
-            <div class="stat-content">
-                <h3>Total Quizzes</h3>
-                <p class="stat-value">${stats.total_attempts || 0}</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-content">
-                <h3>Average Score</h3>
-                <p class="stat-value">${stats.average_score || 0}%</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🏆</div>
-            <div class="stat-content">
-                <h3>Best Score</h3>
-                <p class="stat-value">${stats.best_score || 0}%</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🔥</div>
-            <div class="stat-content">
-                <h3>Study Streak</h3>
-                <p class="stat-value">${stats.study_streak || 0} days</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">❓</div>
-            <div class="stat-content">
-                <h3>Questions Answered</h3>
-                <p class="stat-value">${stats.total_questions || 0}</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📅</div>
-            <div class="stat-content">
-                <h3>Member Since</h3>
-                <p class="stat-value">${new Date(stats.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-            </div>
-        </div>
+function showToast(message, success = true) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${success ? 'toast-success' : 'toast-error'}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${success ? '#10b981' : '#ef4444'};
+        color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
     `;
     
-    statsGrid.innerHTML = statsHTML;
-}
-
-// Update quiz history table
-function updateQuizHistory(attempts) {
-    const tbody = document.querySelector('#quizHistoryTable tbody');
-    if (!tbody) return;
+    document.body.appendChild(toast);
     
-    if (!attempts || attempts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No quiz history available</td></tr>';
-        return;
-    }
-    
-    const rows = attempts.map(attempt => {
-        const percentage = Math.round((attempt.score / attempt.total_questions) * 100);
-        const date = new Date(attempt.completed_at);
-        const formattedDate = date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
-        
-        return `
-            <tr>
-                <td>${attempt.quiz_id || 'N/A'}</td>
-                <td>${attempt.score} / ${attempt.total_questions}</td>
-                <td>
-                    <div class="score-bar">
-                        <div class="score-fill" style="width: ${percentage}%"></div>
-                    </div>
-                    ${percentage}%
-                </td>
-                <td>${formattedDate}</td>
-            </tr>
-        `;
-    }).join('');
-    
-    tbody.innerHTML = rows;
-}
-
-// Update in-progress quizzes
-function updateInProgressQuizzes(quizzes) {
-    const inProgressSection = document.getElementById('inProgressSection');
-    const inProgressQuizzes = document.getElementById('inProgressQuizzes');
-    
-    if (!quizzes || quizzes.length === 0) {
-        if (inProgressSection) {
-            inProgressSection.innerHTML = `
-                <div class="empty-state">
-                    <p>No quizzes in progress. Start a new quiz!</p>
-                    <a href="index.html" class="btn btn-primary">Generate Quiz</a>
-                </div>
-            `;
-        }
-        if (inProgressQuizzes) {
-            inProgressQuizzes.closest('.quick-actions').style.display = 'none';
-        }
-        return;
-    }
-    
-    const quizCards = quizzes.map(quiz => {
-        const lastSaved = new Date(parseInt(quiz.last_saved));
-        const formattedDate = lastSaved.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        return `
-            <div class="progress-card">
-                <h3>${quiz.quiz_id || 'Untitled Quiz'}</h3>
-                <p>Question ${(quiz.current_index || 0) + 1}</p>
-                <p class="last-saved">Last saved: ${formattedDate}</p>
-                <a href="quiz.html?resume=${encodeURIComponent(quiz.quiz_id)}" class="btn btn-primary">Continue</a>
-            </div>
-        `;
-    }).join('');
-    
-    if (inProgressSection) {
-        inProgressSection.innerHTML = `
-            <div class="progress-cards">
-                ${quizCards}
-            </div>
-        `;
-    }
-    
-    if (inProgressQuizzes) {
-        inProgressQuizzes.innerHTML = quizCards;
-    }
-}
-
-// Initialize performance chart
-function initPerformanceChart(performanceData) {
-    const ctx = document.getElementById('performanceChart');
-    if (!ctx) return;
-    
-    const labels = performanceData.map(item => {
-        const date = new Date(item.date);
-        return date.toLocaleDateString('en-US', { weekday: 'short' });
-    });
-    
-    const scores = performanceData.map(item => Math.round(item.avg_score * 100) / 100);
-    
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Average Score (%)',
-                data: scores,
-                borderColor: 'rgb(99, 102, 241)',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                tension: 0.3,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
-                }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.parsed.y.toFixed(2) + '%';
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Handle change password
-const changePasswordBtn = document.getElementById('changePasswordBtn');
-if (changePasswordBtn) {
-    changePasswordBtn.addEventListener('click', function() {
-        // Implement password change functionality
-        const newPassword = prompt('Enter your new password:');
-        if (newPassword) {
-            // Send password change request to the server
-            fetch('api/change_password.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    new_password: newPassword
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Password changed successfully!');
-                } else {
-                    alert('Failed to change password: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error changing password:', error);
-                alert('An error occurred while changing your password.');
-            });
-        }
-    });
-}
-
-// Handle account deletion
-const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-if (deleteAccountBtn) {
-    deleteAccountBtn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-            fetch('api/delete_account.php', {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Your account has been deleted successfully.');
-                    window.location.href = 'index.php';
-                } else {
-                    alert('Failed to delete account: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting account:', error);
-                alert('An error occurred while deleting your account.');
-            });
-        }
-    });
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }

@@ -9,362 +9,106 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <script>
-    (function(){const c=sessionStorage.getItem('authState');if(c){try{const d=JSON.parse(c);document.write('<style>'+(d.loggedIn?'.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}.dashboard-link{display:block!important;opacity:1!important}':'.auth-buttons{display:flex!important;opacity:1!important}.user-menu{display:none!important;opacity:0!important}.dashboard-link{display:none!important;opacity:0!important}')+'</style>');}catch(e){}}})();
-    </script>
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Mobile Menu Toggle -->
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-            <i class="fas fa-bars"></i>
-        </button>
-
         <!-- Sidebar -->
-        <aside class="dashboard-sidebar" id="sidebar">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Quiz Engine</h2>
+            </div>
+            
             <div class="user-profile">
-                <div class="avatar" id="userInitial">U</div>
-                <h3 id="username">Loading...</h3>
-                <p class="email" id="userEmail">user@example.com</p>
-                <div class="user-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="totalQuizzes">0</span>
-                        <span class="stat-label">Quizzes</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="avgScore">0%</span>
-                        <span class="stat-label">Avg. Score</span>
-                    </div>
-                </div>
+                <div class="avatar" id="userAvatar">U</div>
+                <h3 id="userName">Loading...</h3>
+                <p id="userEmail">user@example.com</p>
             </div>
 
-            <nav class="dashboard-nav">
-                <a href="#overview" class="nav-link active disabled" data-section="overview">
-                    <span class="icon"><i class="fas fa-chart-line"></i></span>
-                    <span class="nav-text">Overview</span>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="overview">
+                    <i class="fas fa-home"></i>
+                    <span>Overview</span>
                 </a>
-                <a href="#quiz-history" class="nav-link disabled" data-section="quiz-history">
-                    <span class="icon"><i class="fas fa-history"></i></span>
-                    <span class="nav-text">Quiz History</span>
+                <a href="#" class="nav-item" data-section="quizzes">
+                    <i class="fas fa-list"></i>
+                    <span>My Quizzes</span>
                 </a>
-                <a href="#in-progress" class="nav-link disabled" data-section="in-progress">
-                    <span class="icon"><i class="fas fa-spinner"></i></span>
-                    <span class="nav-text">In Progress</span>
-                    <span class="badge" id="inProgressCount">0</span>
-                </a>
-                <a href="#achievements" class="nav-link disabled" data-section="achievements">
-                    <span class="icon"><i class="fas fa-trophy"></i></span>
-                    <span class="nav-text">Achievements</span>
-                </a>
-                <a href="#settings" class="nav-link disabled" data-section="settings">
-                    <span class="icon"><i class="fas fa-cog"></i></span>
-                    <span class="nav-text">Settings</span>
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Quiz</span>
                 </a>
             </nav>
 
             <div class="sidebar-footer">
-                <a href="index.html" class="btn btn-primary">
-                    <span class="icon"><i class="fas fa-home"></i></span>
-                    <span>Back to Home</span>
-                </a>
-                <div class="profile-option">
-                    <a href="profile.php" class="btn btn-secondary">
-                        <span class="icon"><i class="fas fa-user-edit"></i></span>
-                        <span>Edit Profile</span>
-                    </a>
-                </div>
-                <button id="logoutBtn" class="btn btn-logout" disabled>
-                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                <button id="logoutBtn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </button>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="dashboard-main">
-            <div class="wip-overlay">
-                <div class="wip-content">
-                    <h2>🚧 Work in Progress 🚧</h2>
-                    <p>This dashboard is currently under development. Please check back later.</p>
-                </div>
-            </div>
+        <main class="main-content">
             <!-- Overview Section -->
-            <section id="overview" class="dashboard-section active">
+            <section id="overview" class="section active">
                 <div class="section-header">
-                    <div>
-                        <h1>Welcome back, <span id="welcomeUsername">User</span>! 👋</h1>
-                        <p class="section-subtitle">Here's your learning progress at a glance</p>
-                    </div>
-                    <div class="date-display">
-                        <i class="far fa-calendar-alt"></i>
-                        <span id="currentDate"></span>
-                    </div>
+                    <h1>Welcome back, <span id="welcomeName">User</span>! 👋</h1>
+                    <p>Track your quiz progress and performance</p>
                 </div>
 
-                <!-- Stats Grid -->
-                <div class="stats-grid" id="statsGrid">
-                    <div class="stat-card primary">
-                        <div class="stat-icon">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalQuizzes">0</h3>
+                            <p>Total Quizzes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h3 class="stat-value" id="completedQuizzes">0</h3>
-                        <p class="stat-label">Quizzes Completed</p>
-                        <span class="stat-trend trend-up">
-                            <i class="fas fa-arrow-up"></i> 12% from last week
-                        </span>
-                    </div>
-                    <div class="stat-card success">
-                        <div class="stat-icon">
-                            <i class="fas fa-chart-line"></i>
+                        <div class="stat-info">
+                            <h3 id="completedQuizzes">0</h3>
+                            <p>Completed</p>
                         </div>
-                        <h3 class="stat-value" id="avgScoreCard">0%</h3>
-                        <p class="stat-label">Average Score</p>
-                        <span class="stat-trend trend-up">
-                            <i class="fas fa-arrow-up"></i> 5% from last week
-                        </span>
                     </div>
-                    <div class="stat-card warning">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-star"></i>
                         </div>
-                        <h3 class="stat-value" id="timeSpent">0h 0m</h3>
-                        <p class="stat-label">Time Spent</p>
-                        <span class="stat-trend trend-down">
-                            <i class="fas fa-arrow-down"></i> 2% from last week
-                        </span>
-                    </div>
-                    <div class="stat-card info">
-                        <div class="stat-icon">
-                            <i class="fas fa-medal"></i>
+                        <div class="stat-info">
+                            <h3 id="avgScore">0%</h3>
+                            <p>Avg Score</p>
                         </div>
-                        <h3 class="stat-value" id="streak">0</h3>
-                        <p class="stat-label">Day Streak</p>
-                        <span class="stat-trend trend-up">
-                            <i class="fas fa-fire"></i> Keep it up!
-                        </span>
                     </div>
                 </div>
 
-                <!-- Performance Chart -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h2><i class="fas fa-chart-line"></i> Performance Trend</h2>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-outline active" data-range="7">7d</button>
-                            <button class="btn btn-sm btn-outline" data-range="30">30d</button>
-                            <button class="btn btn-sm btn-outline" data-range="90">90d</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="performanceChart"></canvas>
-                    </div>
-                    <div class="chart-footer">
-                        <div class="chart-legend">
-                            <div class="legend-item">
-                                <span class="legend-color" style="background: #4f46e5;"></span>
-                                <span>Your Score</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color" style="background: #e2e8f0;"></span>
-                                <span>Average</span>
-                            </div>
-                        </div>
-                        <a href="#" class="btn-link">View Detailed Report <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-
-                <!-- Quick Actions & Continue Learning -->
-                <div class="dashboard-row">
-                    <!-- Quick Actions -->
-                    <div class="quick-actions">
-                        <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-                        <div class="action-grid">
-                            <a href="#" class="action-card primary">
-                                <div class="action-icon">
-                                    <i class="fas fa-plus"></i>
-                                </div>
-                                <h3>New Quiz</h3>
-                                <p>Create a custom quiz</p>
-                            </a>
-                            <a href="#" class="action-card success">
-                                <div class="action-icon">
-                                    <i class="fas fa-book"></i>
-                                </div>
-                                <h3>Study Materials</h3>
-                                <p>Access learning resources</p>
-                            </a>
-                            <a href="#" class="action-card warning">
-                                <div class="action-icon">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                                <h3>Challenges</h3>
-                                <p>Test your skills</p>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Continue Learning -->
-                    <div class="continue-learning">
-                        <div class="section-header">
-                            <h2><i class="fas fa-book-open"></i> Continue Learning</h2>
-                            <a href="#in-progress" class="btn btn-text">View All</a>
-                        </div>
-                        <div class="progress-cards" id="inProgressQuizzes">
-                            <!-- In-progress quizzes will be populated by JavaScript -->
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-book-reader"></i>
-                                </div>
-                                <h3>No active quizzes</h3>
-                                <p>Start a new quiz to see your progress here</p>
-                                <a href="#" class="btn btn-primary mt-2">Start Quiz</a>
-                            </div>
-                        </div>
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div id="recentQuizzes" class="quiz-list">
+                        <p class="empty-state">No quizzes yet. Create your first quiz!</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Quiz History Section -->
-            <section id="quiz-history" class="dashboard-section">
+            <!-- Quizzes Section -->
+            <section id="quizzes" class="section">
                 <div class="section-header">
-                    <div>
-                        <h2><i class="fas fa-history"></i> Quiz History</h2>
-                        <p class="section-subtitle">Your completed quizzes and scores</p>
-                    </div>
-                    <div class="table-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search quizzes..." id="quizSearch">
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-outline dropdown-toggle" type="button" id="filterDropdown">
-                                <i class="fas fa-filter"></i> Filter
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item active" href="#" data-filter="all">All Quizzes</a>
-                                <a class="dropdown-item" href="#" data-filter="recent">Last 30 Days</a>
-                                <a class="dropdown-item" href="#" data-filter="high">High Scores</a>
-                                <a class="dropdown-item" href="#" data-filter="low">Needs Improvement</a>
-                            </div>
-                        </div>
-                    </div>
+                    <h1>My Quizzes</h1>
+                    <p>View and manage all your quizzes</p>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="quiz-table" id="quizHistoryTable">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div class="table-header">
-                                        <span>Quiz Title</span>
-                                        <i class="fas fa-sort"></i>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="table-header">
-                                        <span>Category</span>
-                                        <i class="fas fa-sort"></i>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="table-header">
-                                        <span>Score</span>
-                                        <i class="fas fa-sort"></i>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="table-header">
-                                        <span>Time Spent</span>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="table-header">
-                                        <span>Date</span>
-                                        <i class="fas fa-sort"></i>
-                                    </div>
-                                </th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="empty-state">
-                                <td colspan="6">
-                                    <div class="empty-table">
-                                        <i class="fas fa-inbox"></i>
-                                        <p>No quiz history found</p>
-                                        <a href="#" class="btn btn-primary mt-2">Take a Quiz</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="table-footer">
-                    <div class="pagination">
-                        <button class="btn btn-icon" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span class="pagination-info">1-5 of 12</span>
-                        <button class="btn btn-icon">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- In Progress Section -->
-            <section id="in-progress" class="dashboard-section">
-                <h2>In Progress</h2>
-                <p class="section-subtitle">Quizzes you haven't completed yet</p>
-                <div class="progress-cards" id="inProgressSection">
-                    <!-- In-progress quizzes will be populated by JavaScript -->
-                </div>
-            </section>
-
-            <!-- Settings Section -->
-            <section id="settings" class="dashboard-section">
-                <h2>Settings</h2>
-                <p class="section-subtitle">Manage your account and preferences</p>
-
-                <div class="settings-group">
-                    <h3>Account</h3>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Edit Profile</h4>
-                            <p>Update your username and email</p>
-                        </div>
-                        <button class="btn btn-secondary btn-sm" disabled>Edit</button>
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <h3>Security</h3>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Change Password</h4>
-                            <p>Update your password regularly for security</p>
-                        </div>
-                        <button class="btn btn-secondary btn-sm" id="changePasswordBtn" disabled>Change</button>
-                    </div>
-                </div>
-
-                <div class="settings-group danger">
-                    <h3>Danger Zone</h3>
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h4>Delete Account</h4>
-                            <p>Permanently delete your account and all data</p>
-                        </div>
-                        <button class="btn btn-danger btn-sm" id="deleteAccountBtn" disabled>Delete</button>
-                    </div>
+                <div id="allQuizzes" class="quiz-list">
+                    <p class="empty-state">No quizzes found.</p>
                 </div>
             </section>
         </main>
     </div>
 
+    <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
