@@ -318,6 +318,39 @@ background-clip: text;
   font-weight: 500;
 }
 
+/* Avatar inside team card */
+.team-member .member-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  margin: 0 auto 1rem auto;
+  background-size: cover;
+  background-position: center;
+  border: 4px solid rgba(255,255,255,0.85);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.team-member:focus-within .member-avatar,
+.team-member:hover .member-avatar,
+.team-member.active .member-avatar {
+  transform: scale(1.06);
+  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.12);
+}
+
+/* Tighter card layout when avatar present */
+.team-member .member-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Active state for selected member */
+.team-member.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 12px 30px rgba(99,102,241,0.12);
+}
+
 /* Team Info Box */
 .team-info-box {
   flex: 1;
