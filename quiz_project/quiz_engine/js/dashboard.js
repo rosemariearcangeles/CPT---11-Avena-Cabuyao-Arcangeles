@@ -204,23 +204,7 @@ function setupNavigation() {
 }
 
 function setupLogout() {
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await fetch('logout.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                sessionStorage.removeItem('authState');
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Logout failed:', error);
-                window.location.href = 'index.html';
-            }
-        });
-    }
+    // Logout handled by navbar, Back to Home is just a link
 }
 
 async function viewQuizResults(quizId) {

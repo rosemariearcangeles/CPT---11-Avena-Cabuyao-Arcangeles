@@ -71,9 +71,14 @@ function renderTeacherClassDashboard() {
     <section id="quizzes" class="section active">
       <div class="section-header">
         <h1>Assigned Quizzes</h1>
-        <button class="btn-primary" onclick="assignQuiz()">
-          <i class="fas fa-plus"></i> Assign Quiz
-        </button>
+        <div style="display:flex;gap:0.5rem;">
+          <a href="create_class_quiz.html" class="btn-primary">
+            <i class="fas fa-plus"></i> Create Quiz
+          </a>
+          <button class="btn-primary" onclick="assignQuiz()" style="background:#10b981;">
+            <i class="fas fa-link"></i> Assign Existing
+          </button>
+        </div>
       </div>
       <div id="quizList" class="quiz-list"></div>
     </section>

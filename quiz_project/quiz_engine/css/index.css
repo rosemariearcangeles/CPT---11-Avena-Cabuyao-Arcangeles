@@ -647,8 +647,8 @@ background-clip: text;
 }
 
 .hero-overlay {
-  background: linear-gradient(135deg, rgba(93, 63, 211, 0.85) 0%, rgba(217, 70, 239, 0.75) 55%, rgba(16, 185, 129, 0.65) 100%);
-  mix-blend-mode: lighten;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(30, 41, 59, 0.3) 100%);
+  backdrop-filter: blur(2px);
 }
 
 .hero-inner {
@@ -682,23 +682,48 @@ background-clip: text;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: all 0.3s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-toggle-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.mode-toggle-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .mode-toggle-btn:hover {
   background: rgba(255,255,255,0.2);
   border-color: rgba(255,255,255,0.5);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .mode-toggle-btn.active {
   background: white;
   color: var(--primary-color);
   border-color: white;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  transform: scale(1.05);
+}
+
+.mode-toggle-btn.active::before {
+  display: none;
 }
 
 .role-buttons {
@@ -706,6 +731,10 @@ background-clip: text;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top: 0.5rem;
+}
+
+#role-selection {
+  transition: opacity 0.3s ease;
 }
 
 .role-btn {
@@ -756,16 +785,19 @@ background-clip: text;
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.03em;
-  text-shadow: 0 18px 45px rgba(0,0,0,0.35);
+  text-shadow: 0 4px 12px rgba(0,0,0,0.3);
   animation: fadeInUp 1s ease-out 0.5s both;
+  transition: opacity 0.3s ease;
 }
 
 .hero p {
   font-size: clamp(1.05rem, 2.4vw, 1.35rem);
   margin-bottom: 2rem;
   line-height: 1.7;
-  color: rgba(255,255,255,0.92);
+  color: rgba(255,255,255,0.95);
   animation: fadeInUp 1s ease-out 0.7s both;
+  transition: opacity 0.3s ease;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .hero-visual {

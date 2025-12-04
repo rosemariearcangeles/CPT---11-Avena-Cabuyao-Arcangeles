@@ -563,15 +563,29 @@
           btn.classList.toggle('active', btn.dataset.mode === mode);
         });
         
-        if (mode === 'education') {
-          if (heroTitle) heroTitle.textContent = 'Transform Your Classroom';
-          if (heroSubtitle) heroSubtitle.textContent = 'Create, assign, and track quizzes for your students.';
-          if (roleSelection) roleSelection.style.display = 'block';
-        } else {
-          if (heroTitle) heroTitle.textContent = 'Transform Your Learning Experience';
-          if (heroSubtitle) heroSubtitle.textContent = 'Interactive online quizzes that are easy, comprehensive, and reliable.';
-          if (roleSelection) roleSelection.style.display = 'none';
-        }
+        // Fade out content
+        if (heroTitle) heroTitle.style.opacity = '0';
+        if (heroSubtitle) heroSubtitle.style.opacity = '0';
+        
+        setTimeout(() => {
+          if (mode === 'education') {
+            if (heroTitle) heroTitle.textContent = 'Transform Your Classroom';
+            if (heroSubtitle) heroSubtitle.textContent = 'Create, assign, and track quizzes for your students.';
+            if (roleSelection) {
+              roleSelection.style.display = 'block';
+              roleSelection.style.opacity = '0';
+              setTimeout(() => roleSelection.style.opacity = '1', 50);
+            }
+          } else {
+            if (heroTitle) heroTitle.textContent = 'Transform Your Learning Experience';
+            if (heroSubtitle) heroSubtitle.textContent = 'Interactive online quizzes that are easy, comprehensive, and reliable.';
+            if (roleSelection) roleSelection.style.display = 'none';
+          }
+          
+          // Fade in content
+          if (heroTitle) heroTitle.style.opacity = '1';
+          if (heroSubtitle) heroSubtitle.style.opacity = '1';
+        }, 200);
       }
       
       modeButtons.forEach(btn => {
