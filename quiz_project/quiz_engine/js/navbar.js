@@ -256,7 +256,7 @@ class UnifiedNavbar {
     }
   }
 
-  async showLoggedInState(username) {
+  showLoggedInState(username) {
     // Instant state change without animations to prevent glitching
     if (this.authButtons) {
       this.authButtons.style.display = 'none';
@@ -271,24 +271,6 @@ class UnifiedNavbar {
     if (this.dashboardLink) {
       this.dashboardLink.style.display = 'block';
       this.dashboardLink.style.opacity = '1';
-      
-      // Update dashboard link based on user role
-      const dashboardAnchor = this.dashboardLink.querySelector('a');
-      if (dashboardAnchor) {
-        try {
-          const basePath = this.getBasePath();
-          const roleResponse = await fetch(`${basePath}api/get_user_role.php`);
-          const roleData = await roleResponse.json();
-          
-          if (roleData.success && (roleData.role === 'teacher' || roleData.role === 'student')) {
-            dashboardAnchor.href = `${basePath}education_dashboard.html`;
-          } else {
-            dashboardAnchor.href = `${basePath}dashboard.html`;
-          }
-        } catch (e) {
-          dashboardAnchor.href = `${basePath}dashboard.html`;
-        }
-      }
     }
 
     // Update username displays
@@ -298,24 +280,6 @@ class UnifiedNavbar {
     
     if (this.dropdownUsername) {
       this.dropdownUsername.textContent = username;
-    }
-    
-    // Update dropdown dashboard link
-    const dropdownDashboard = document.querySelector('.user-dropdown .dropdown-item[href*="dashboard"]');
-    if (dropdownDashboard) {
-      try {
-        const basePath = this.getBasePath();
-        const roleResponse = await fetch(`${basePath}api/get_user_role.php`);
-        const roleData = await roleResponse.json();
-        
-        if (roleData.success && (roleData.role === 'teacher' || roleData.role === 'student')) {
-          dropdownDashboard.href = `${basePath}education_dashboard.html`;
-        } else {
-          dropdownDashboard.href = `${basePath}dashboard.html`;
-        }
-      } catch (e) {
-        dropdownDashboard.href = `${basePath}dashboard.html`;
-      }
     }
   }
 
@@ -394,9 +358,7 @@ class UnifiedNavbar {
   }
 
   startAuthCheck() {
-    if (!sessionStorage.getItem('authState')) {
-      this.updateAuthUI();
-    }
+    // Do nothing - auth.js handles this
   }
 
   refresh() {

@@ -147,7 +147,7 @@
 
     <div class="page-wrapper hero-inner">
       <div class="hero-content">
-        <div class="mode-toggle-hero" id="mode-toggle-hero">
+        <div class="mode-toggle-hero" id="mode-toggle-hero" style="display:none;">
           <button class="mode-toggle-btn active" data-mode="personal">
             <i class="fas fa-user"></i> Personal Mode
           </button>
@@ -577,8 +577,8 @@
                 if (joinCard) joinCard.style.display = 'none';
               }
               
-              // Load classes with credentials
-              loadUserClasses(roleData.role);
+              // Load classes
+              await loadUserClasses(roleData.role);
             }
             return;
           }
@@ -587,25 +587,18 @@
         console.error('Error checking role:', e);
       }
       
-      // ===== HIDE MODE TOGGLE FOR LOGGED IN USERS =====
+      // ===== SHOW/HIDE MODE TOGGLE =====
       const toggle = document.getElementById('mode-toggle-hero');
       const indicator = document.getElementById('education-mode-indicator');
       
-      try {
-        const authData = window.AuthCache ? await window.AuthCache.getAuthState() : null;
-        
-        if (authData && authData.loggedIn) {
-          if (toggle) toggle.style.display = 'none';
-          if (authData.role === 'student' || authData.role === 'teacher') {
-            if (indicator) indicator.style.display = 'flex';
-          } else {
-            if (indicator) indicator.style.display = 'none';
-          }
-        } else {
-          if (toggle) toggle.style.display = 'flex';
-          if (indicator) indicator.style.display = 'none';
+      const authData = window.AuthCache ? await window.AuthCache.getAuthState() : null;
+      
+      if (authData && authData.loggedIn && authData.role) {
+        if (toggle) toggle.style.display = 'none';
+        if (authData.role === 'student' || authData.role === 'teacher') {
+          if (indicator) indicator.style.display = 'flex';
         }
-      } catch (e) {
+      } else {
         if (toggle) toggle.style.display = 'flex';
         if (indicator) indicator.style.display = 'none';
       }
@@ -774,7 +767,9 @@
             if (data.success) {
               alert('Successfully joined class!');
               codeInput.value = '';
-              loadStudentClasses();
+              const roleResp = await fetch('api/get_user_role.php');
+              const roleData = await roleResp.json();
+              if (roleData.success) await loadUserClasses(roleData.role);
             } else {
               alert(data.message || 'Failed to join class');
             }

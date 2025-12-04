@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await checkAuth();
   await loadUserData();
   renderDashboard();
+  setupModalHandlers();
 });
 
 async function checkAuth() {
@@ -141,7 +142,16 @@ async function loadTeacherClasses() {
         </div>
       `).join('');
     } else {
-      classList.innerHTML = '<p class="empty-state">No classes yet. Create your first class!</p>';
+      classList.innerHTML = `
+        <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
+          <div style="font-size:4rem;margin-bottom:1rem;">📚</div>
+          <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">No Classes Created Yet</h3>
+          <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Create your first class to start teaching!</p>
+          <button class="btn btn-primary" onclick="createClass()">
+            <i class="fas fa-plus"></i> Create Class
+          </button>
+        </div>
+      `;
     }
   } catch (error) {
     console.error('Failed to load classes:', error);
@@ -166,18 +176,28 @@ async function loadStudentClasses() {
         </div>
       `).join('');
     } else {
-      classList.innerHTML = '<p class="empty-state">No classes yet. Join a class to get started!</p>';
+      classList.innerHTML = `
+        <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
+          <div style="font-size:4rem;margin-bottom:1rem;">🎓</div>
+          <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">No Classes Joined Yet</h3>
+          <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Join a class using the code provided by your teacher.</p>
+          <button class="btn btn-primary" onclick="joinClass()">
+            <i class="fas fa-plus"></i> Join Class
+          </button>
+        </div>
+      `;
     }
   } catch (error) {
     console.error('Failed to load classes:', error);
   }
 }
 
-function createClass() {
+window.createClass = function() {
   const modal = document.getElementById('createClassModal');
   if (modal) {
     modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
 }
 
@@ -197,7 +217,10 @@ function handleCreateClass(e) {
     if (data.success) {
       if (window.DataCache) window.DataCache.invalidateClasses();
       const modal = document.getElementById('createClassModal');
-      if (modal) modal.classList.remove('show');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
       document.getElementById('createClassForm').reset();
       alert(`Class created! Code: ${data.class_code}`);
       loadTeacherClasses();
@@ -211,11 +234,12 @@ function handleCreateClass(e) {
   });
 }
 
-function joinClass() {
+window.joinClass = function() {
   const modal = document.getElementById('joinClassModal');
   if (modal) {
     modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
 }
 
@@ -234,7 +258,10 @@ function handleJoinClass(e) {
     if (data.success) {
       if (window.DataCache) window.DataCache.invalidateClasses();
       const modal = document.getElementById('joinClassModal');
-      if (modal) modal.classList.remove('show');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
       document.getElementById('joinClassForm').reset();
       alert('Successfully joined class!');
       loadStudentClasses();
@@ -264,8 +291,7 @@ function openClass(classId, className) {
   window.location.href = `class_dashboard.html?id=${classId}`;
 }
 
-// Modal handlers
-document.addEventListener('DOMContentLoaded', () => {
+function setupModalHandlers() {
   const createForm = document.getElementById('createClassForm');
   const joinForm = document.getElementById('joinClassForm');
   
@@ -275,13 +301,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.modal .close').forEach(btn => {
     btn.addEventListener('click', () => {
       const modal = btn.closest('.modal');
-      if (modal) modal.classList.remove('show');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
     });
   });
   
   document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('show');
+      if (e.target === modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
     });
   });
-});
+}
