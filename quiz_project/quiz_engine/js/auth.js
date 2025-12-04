@@ -438,11 +438,20 @@ async function updateLoginUI() {
     }
 
     const data = await response.json();
-    sessionStorage.setItem('authState', JSON.stringify(data));
+    
+    // Only cache if logged in
+    if (data.loggedIn && data.username) {
+      sessionStorage.setItem('authState', JSON.stringify(data));
+    } else {
+      sessionStorage.removeItem('authState');
+    }
+    
     applyAuthState(data);
     return data;
   } catch (error) {
     console.error('Error checking auth status:', error);
+    sessionStorage.removeItem('authState');
+    applyAuthState({ loggedIn: false });
     return { loggedIn: false };
   }
 }
@@ -534,8 +543,12 @@ function startAuthCheck() {
   if (cached) {
     try {
       const data = JSON.parse(cached);
-      applyAuthState(data);
-    } catch (e) {}
+      if (data.loggedIn && data.username) {
+        applyAuthState(data);
+      }
+    } catch (e) {
+      sessionStorage.removeItem('authState');
+    }
   }
   
   // Always check auth on page load to ensure fresh state

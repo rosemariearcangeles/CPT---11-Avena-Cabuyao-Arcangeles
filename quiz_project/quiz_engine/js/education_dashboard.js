@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function checkAuth() {
   try {
     const response = await fetch('check_auth.php', {
-      credentials: 'same-origin'
+      credentials: 'same-origin',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
     });
     const data = await response.json();
     if (!data.loggedIn) {
@@ -22,7 +26,8 @@ async function checkAuth() {
       return;
     }
     
-    if (data.role === 'personal') {
+    // Only allow education users (student/teacher)
+    if (data.role !== 'student' && data.role !== 'teacher') {
       window.location.href = 'dashboard.html';
       return;
     }
@@ -193,18 +198,27 @@ async function loadStudentClasses() {
 }
 
 window.createClass = function() {
+  console.log('Create class button clicked');
   const modal = document.getElementById('createClassModal');
   if (modal) {
     modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+  } else {
+    console.error('Create class modal not found');
   }
 }
 
 function handleCreateClass(e) {
   e.preventDefault();
+  console.log('Create class form submitted');
   const className = document.getElementById('class-name').value.trim();
   const description = document.getElementById('class-description').value.trim();
+  
+  if (!className) {
+    alert('Please enter a class name');
+    return;
+  }
   
   fetch('api/create_class.php', {
     method: 'POST',
@@ -214,38 +228,49 @@ function handleCreateClass(e) {
   })
   .then(res => res.json())
   .then(data => {
+    console.log('Create class response:', data);
     if (data.success) {
       if (window.DataCache) window.DataCache.invalidateClasses();
       const modal = document.getElementById('createClassModal');
       if (modal) {
         modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
       }
       document.getElementById('createClassForm').reset();
       alert(`Class created! Code: ${data.class_code}`);
       loadTeacherClasses();
     } else {
-      alert('Failed to create class: ' + data.message);
+      alert('Failed to create class: ' + (data.message || 'Unknown error'));
     }
   })
   .catch(err => {
     console.error('Create class error:', err);
-    alert('Failed to create class');
+    alert('Failed to create class. Please try again.');
   });
 }
 
 window.joinClass = function() {
+  console.log('Join class button clicked');
   const modal = document.getElementById('joinClassModal');
   if (modal) {
     modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+  } else {
+    console.error('Join class modal not found');
   }
 }
 
 function handleJoinClass(e) {
   e.preventDefault();
+  console.log('Join class form submitted');
   const classCode = document.getElementById('join-class-code').value.trim().toUpperCase();
+  
+  if (!classCode) {
+    alert('Please enter a class code');
+    return;
+  }
   
   fetch('api/join_class.php', {
     method: 'POST',
@@ -255,23 +280,25 @@ function handleJoinClass(e) {
   })
   .then(res => res.json())
   .then(data => {
+    console.log('Join class response:', data);
     if (data.success) {
       if (window.DataCache) window.DataCache.invalidateClasses();
       const modal = document.getElementById('joinClassModal');
       if (modal) {
         modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
       }
       document.getElementById('joinClassForm').reset();
       alert('Successfully joined class!');
       loadStudentClasses();
     } else {
-      alert('Failed to join class: ' + data.message);
+      alert('Failed to join class: ' + (data.message || 'Unknown error'));
     }
   })
   .catch(err => {
     console.error('Join class error:', err);
-    alert('Failed to join class');
+    alert('Failed to join class. Please try again.');
   });
 }
 

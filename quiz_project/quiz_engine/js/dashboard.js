@@ -9,7 +9,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function checkAuth() {
     try {
         const response = await fetch('check_auth.php', {
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         });
         const data = await response.json();
         
@@ -21,9 +25,16 @@ async function checkAuth() {
             return;
         }
         
-        // Personal dashboard only for personal users
+        // Personal dashboard only for personal users (role is 'personal' or null)
         if (data.role === 'student' || data.role === 'teacher') {
             console.warn('Education user accessing personal dashboard, redirecting...');
+            window.location.href = 'education_dashboard.html';
+            return;
+        }
+        
+        // Ensure personal users stay on personal dashboard
+        if (data.role !== 'personal' && data.role !== null && data.role !== undefined) {
+            console.warn('Invalid role for personal dashboard, redirecting...');
             window.location.href = 'education_dashboard.html';
             return;
         }

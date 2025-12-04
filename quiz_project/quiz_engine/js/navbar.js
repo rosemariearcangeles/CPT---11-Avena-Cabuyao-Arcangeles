@@ -212,9 +212,14 @@ class UnifiedNavbar {
     const cached = sessionStorage.getItem('authState');
     if (cached) {
       try {
-        this.applyAuthState(JSON.parse(cached));
+        const data = JSON.parse(cached);
+        if (data.loggedIn && data.username) {
+          this.applyAuthState(data);
+        }
       } catch (e) {}
     }
+    // Always check auth on init
+    this.updateAuthUI();
   }
 
   async updateAuthUI() {
@@ -236,6 +241,14 @@ class UnifiedNavbar {
       }
 
       const data = await response.json();
+      
+      // Cache the auth state
+      if (data.loggedIn && data.username) {
+        sessionStorage.setItem('authState', JSON.stringify(data));
+      } else {
+        sessionStorage.removeItem('authState');
+      }
+      
       this.applyAuthState(data);
       
       return data;
@@ -358,7 +371,9 @@ class UnifiedNavbar {
   }
 
   startAuthCheck() {
-    // Do nothing - auth.js handles this
+    // Check auth immediately and periodically
+    this.updateAuthUI();
+    setInterval(() => this.updateAuthUI(), 60000); // Check every minute
   }
 
   refresh() {
