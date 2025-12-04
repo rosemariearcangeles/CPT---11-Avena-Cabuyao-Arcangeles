@@ -606,13 +606,22 @@
           const roleData = await roleResponse.json();
           
           if (roleData.success && (roleData.role === 'student' || roleData.role === 'teacher')) {
-            // Hide toggle, show indicator
             const toggle = document.getElementById('mode-toggle-hero');
             const indicator = document.getElementById('education-mode-indicator');
             if (toggle) toggle.style.display = 'none';
             if (indicator) indicator.style.display = 'flex';
             localStorage.setItem('quizMode', 'education');
+          } else {
+            const toggle = document.getElementById('mode-toggle-hero');
+            const indicator = document.getElementById('education-mode-indicator');
+            if (toggle) toggle.style.display = 'flex';
+            if (indicator) indicator.style.display = 'none';
           }
+        } else {
+          const toggle = document.getElementById('mode-toggle-hero');
+          const indicator = document.getElementById('education-mode-indicator');
+          if (toggle) toggle.style.display = 'flex';
+          if (indicator) indicator.style.display = 'none';
         }
       } catch (e) {}
       
@@ -718,7 +727,10 @@
       async function loadUserClasses(role) {
         try {
           const endpoint = role === 'teacher' ? 'api/get_teacher_classes.php' : 'api/get_student_classes.php';
-          const response = await fetch(endpoint);
+          const response = await fetch(endpoint, {
+            credentials: 'same-origin',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
           const data = await response.json();
           const grid = document.getElementById('student-classes-grid');
           

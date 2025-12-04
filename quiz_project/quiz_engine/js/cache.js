@@ -67,14 +67,22 @@ const CacheManager = {
 
 // Auth Cache Helper
 const AuthCache = {
-  async getAuthState() {
-    let cached = CacheManager.get(CacheManager.KEYS.AUTH_STATE);
-    if (cached) return cached;
+  async getAuthState(forceRefresh = false) {
+    if (!forceRefresh) {
+      let cached = CacheManager.get(CacheManager.KEYS.AUTH_STATE);
+      if (cached) return cached;
+    }
 
     try {
-      const response = await fetch('check_auth.php');
+      const response = await fetch('check_auth.php', {
+        headers: { 'Cache-Control': 'no-cache' },
+        credentials: 'same-origin'
+      });
       const data = await response.json();
       CacheManager.set(CacheManager.KEYS.AUTH_STATE, data);
+      if (data.role) {
+        CacheManager.set(CacheManager.KEYS.USER_ROLE, { success: true, role: data.role });
+      }
       return data;
     } catch (e) {
       return { loggedIn: false };
@@ -122,14 +130,19 @@ const AuthCache = {
 
 // Data Cache Helper
 const DataCache = {
-  async getClasses(role) {
+  async getClasses(role, forceRefresh = false) {
     const cacheKey = `${CacheManager.KEYS.CLASSES}_${role}`;
-    let cached = CacheManager.get(cacheKey);
-    if (cached) return cached;
+    if (!forceRefresh) {
+      let cached = CacheManager.get(cacheKey);
+      if (cached) return cached;
+    }
 
     try {
       const endpoint = role === 'teacher' ? 'api/get_teacher_classes.php' : 'api/get_student_classes.php';
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, {
+        headers: { 'Cache-Control': 'no-cache' },
+        credentials: 'same-origin'
+      });
       const data = await response.json();
       if (data.success) {
         CacheManager.set(cacheKey, data);

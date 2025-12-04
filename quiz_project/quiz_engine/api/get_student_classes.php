@@ -18,7 +18,7 @@ $stmt = $conn->prepare("
     FROM classes c 
     JOIN class_members cm ON c.id = cm.class_id 
     JOIN users u ON c.teacher_id = u.id 
-    WHERE cm.student_id = ? 
+    WHERE cm.user_id = ? 
     ORDER BY cm.joined_at DESC
 ");
 $stmt->bind_param("i", $user_id);

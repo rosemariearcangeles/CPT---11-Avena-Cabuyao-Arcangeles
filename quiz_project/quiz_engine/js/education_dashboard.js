@@ -112,7 +112,10 @@ function renderStudentDashboard() {
 
 async function loadTeacherClasses() {
   try {
-    const response = await fetch('api/get_teacher_classes.php');
+    const response = await fetch('api/get_teacher_classes.php', {
+      credentials: 'same-origin',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
     const data = await response.json();
     const classList = $id('classList');
     
@@ -137,7 +140,10 @@ async function loadTeacherClasses() {
 
 async function loadStudentClasses() {
   try {
-    const response = await fetch('api/get_student_classes.php');
+    const response = await fetch('api/get_student_classes.php', {
+      credentials: 'same-origin',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
     const data = await response.json();
     const classList = $id('classList');
     
@@ -166,16 +172,22 @@ function createClass() {
   fetch('api/create_class.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     body: JSON.stringify({ class_name: className, description })
   })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
+      if (window.DataCache) window.DataCache.invalidateClasses();
       alert(`Class created! Code: ${data.class_code}`);
       loadTeacherClasses();
     } else {
       alert('Failed to create class: ' + data.message);
     }
+  })
+  .catch(err => {
+    console.error('Create class error:', err);
+    alert('Failed to create class');
   });
 }
 
@@ -186,16 +198,22 @@ function joinClass() {
   fetch('api/join_class.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     body: JSON.stringify({ class_code: classCode })
   })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
+      if (window.DataCache) window.DataCache.invalidateClasses();
       alert('Successfully joined class!');
       loadStudentClasses();
     } else {
       alert('Failed to join class: ' + data.message);
     }
+  })
+  .catch(err => {
+    console.error('Join class error:', err);
+    alert('Failed to join class');
   });
 }
 

@@ -13,6 +13,7 @@ $session = SessionManager::getInstance();
 $isLoggedIn = false;
 $username = null;
 $userId = null;
+$role = null;
 
 if ($session->isLoggedIn()) {
     // Verify the user still exists in the database
@@ -20,14 +21,16 @@ if ($session->isLoggedIn()) {
     $username = $session->getUsername();
 
     if ($userId && $username) {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE id = ? AND username = ?");
+        $stmt = $conn->prepare("SELECT id, role FROM users WHERE id = ? AND username = ?");
         if ($stmt) {
             $stmt->bind_param("is", $userId, $username);
             $stmt->execute();
             $result = $stmt->get_result();
 
             if ($result->num_rows === 1) {
+                $row = $result->fetch_assoc();
                 $isLoggedIn = true;
+                $role = $row['role'];
             } else {
                 $session->logout();
             }
@@ -41,7 +44,8 @@ echo json_encode([
     'status' => 'success',
     'loggedIn' => $isLoggedIn,
     'username' => $isLoggedIn ? $username : null,
-    'userId' => $isLoggedIn ? $userId : null
+    'userId' => $isLoggedIn ? $userId : null,
+    'role' => $isLoggedIn ? $role : null
 ]);
 
 exit;

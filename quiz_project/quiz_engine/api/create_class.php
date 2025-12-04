@@ -28,7 +28,8 @@ $stmt = $conn->prepare("INSERT INTO classes (teacher_id, class_name, class_code,
 $stmt->bind_param("isss", $user_id, $class_name, $class_code, $description);
 
 if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'class_code' => $class_code]);
+    $class_id = $conn->insert_id;
+    echo json_encode(['success' => true, 'class_code' => $class_code, 'class_id' => $class_id]);
 } else {
     echo json_encode(['success' => false, 'message' => $stmt->error]);
 }

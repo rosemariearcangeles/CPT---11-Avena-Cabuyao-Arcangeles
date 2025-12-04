@@ -36,7 +36,7 @@ $class = $result->fetch_assoc();
 $class_id = $class['id'];
 $stmt->close();
 
-$stmt = $conn->prepare("INSERT INTO class_members (class_id, student_id) VALUES (?, ?)");
+$stmt = $conn->prepare("INSERT INTO class_members (class_id, user_id) VALUES (?, ?)");
 $stmt->bind_param("ii", $class_id, $user_id);
 
 if ($stmt->execute()) {

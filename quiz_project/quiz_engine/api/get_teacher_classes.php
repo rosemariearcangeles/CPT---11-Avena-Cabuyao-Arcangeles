@@ -1,15 +1,17 @@
 <?php
-session_start();
+require_once '../session_utils.php';
+require_once '../config.php';
+
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
+$session = SessionManager::getInstance();
+
+if (!$session->isLoggedIn()) {
     echo json_encode(['success' => false, 'message' => 'Not authenticated']);
     exit;
 }
 
-require_once '../db_connection.php';
-
-$user_id = $_SESSION['user_id'];
+$user_id = $session->getUserId();
 
 $stmt = $conn->prepare("
     SELECT 
