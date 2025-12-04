@@ -495,6 +495,10 @@ function applyAuthState(data) {
         dashboardLinkElement.href = dashboardUrl;
         dashboardLinkElement.onclick = null;
       }
+      const dropdownDashboardLink = document.getElementById('nav-dropdown-dashboard');
+      if (dropdownDashboardLink) {
+        dropdownDashboardLink.href = dashboardUrl;
+      }
     }
     
     // Keep navbar role badge in sync and always visible for education users
@@ -553,7 +557,14 @@ function updateAuthenticatedUI(isAuthenticated) {
 // Check if current page requires authentication
 function isProtectedPage() {
   // Add paths that require authentication
-  const protectedPaths = ['/dashboard.html', '/profile.html'];
+  const protectedPaths = [
+    '/dashboard.html',
+    '/education_dashboard.html',
+    '/class_dashboard.html',
+    '/create_class_quiz.html',
+    '/take_quiz.html',
+    '/profile.html'
+  ];
   return protectedPaths.some(path => window.location.pathname.endsWith(path));
 }
 
