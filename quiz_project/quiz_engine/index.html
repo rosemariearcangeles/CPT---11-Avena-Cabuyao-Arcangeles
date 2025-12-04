@@ -125,13 +125,6 @@
                 <div class="user-status">Logged in</div>
               </div>
               <hr class="dropdown-divider">
-              <a href="dashboard.html" class="dropdown-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9,22 9,12 15,12 15,22"></polyline>
-                </svg>
-                Dashboard
-              </a>
               <button class="dropdown-item logout-btn" id="nav-logout-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -584,24 +577,24 @@
                 if (joinCard) joinCard.style.display = 'none';
               }
               
-              // Load classes
+              // Load classes with credentials
               loadUserClasses(roleData.role);
             }
             return;
           }
         }
       } catch (e) {
-        console.log('Not logged in or error checking role');
+        console.error('Error checking role:', e);
       }
       
       // ===== HIDE MODE TOGGLE FOR LOGGED IN USERS =====
+      const toggle = document.getElementById('mode-toggle-hero');
+      const indicator = document.getElementById('education-mode-indicator');
+      
       try {
-        const authResponse = await fetch('check_auth.php', { credentials: 'same-origin' });
-        const authData = await authResponse.json();
-        const toggle = document.getElementById('mode-toggle-hero');
-        const indicator = document.getElementById('education-mode-indicator');
+        const authData = window.AuthCache ? await window.AuthCache.getAuthState() : null;
         
-        if (authData.loggedIn) {
+        if (authData && authData.loggedIn) {
           if (toggle) toggle.style.display = 'none';
           if (authData.role === 'student' || authData.role === 'teacher') {
             if (indicator) indicator.style.display = 'flex';
@@ -612,7 +605,10 @@
           if (toggle) toggle.style.display = 'flex';
           if (indicator) indicator.style.display = 'none';
         }
-      } catch (e) {}
+      } catch (e) {
+        if (toggle) toggle.style.display = 'flex';
+        if (indicator) indicator.style.display = 'none';
+      }
       
       // ===== EDUCATION MODE TOGGLE =====
       let currentMode = localStorage.getItem('quizMode') || 'personal';

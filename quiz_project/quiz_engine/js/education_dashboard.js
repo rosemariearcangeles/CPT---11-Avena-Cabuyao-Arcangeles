@@ -174,10 +174,17 @@ async function loadStudentClasses() {
 }
 
 function createClass() {
-  const className = prompt('Enter class name:');
-  if (!className) return;
-  
-  const description = prompt('Enter class description (optional):');
+  const modal = document.getElementById('createClassModal');
+  if (modal) {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function handleCreateClass(e) {
+  e.preventDefault();
+  const className = document.getElementById('class-name').value.trim();
+  const description = document.getElementById('class-description').value.trim();
   
   fetch('api/create_class.php', {
     method: 'POST',
@@ -189,6 +196,9 @@ function createClass() {
   .then(data => {
     if (data.success) {
       if (window.DataCache) window.DataCache.invalidateClasses();
+      const modal = document.getElementById('createClassModal');
+      if (modal) modal.classList.remove('show');
+      document.getElementById('createClassForm').reset();
       alert(`Class created! Code: ${data.class_code}`);
       loadTeacherClasses();
     } else {
@@ -202,8 +212,16 @@ function createClass() {
 }
 
 function joinClass() {
-  const classCode = prompt('Enter class code:');
-  if (!classCode) return;
+  const modal = document.getElementById('joinClassModal');
+  if (modal) {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function handleJoinClass(e) {
+  e.preventDefault();
+  const classCode = document.getElementById('join-class-code').value.trim().toUpperCase();
   
   fetch('api/join_class.php', {
     method: 'POST',
@@ -215,6 +233,9 @@ function joinClass() {
   .then(data => {
     if (data.success) {
       if (window.DataCache) window.DataCache.invalidateClasses();
+      const modal = document.getElementById('joinClassModal');
+      if (modal) modal.classList.remove('show');
+      document.getElementById('joinClassForm').reset();
       alert('Successfully joined class!');
       loadStudentClasses();
     } else {
@@ -238,9 +259,29 @@ function attachNavListeners() {
 }
 
 function openClass(classId, className) {
-  // Store class info in sessionStorage
   sessionStorage.setItem('currentClassId', classId);
   sessionStorage.setItem('currentClassName', className);
-  // Redirect to class dashboard
   window.location.href = `class_dashboard.html?id=${classId}`;
 }
+
+// Modal handlers
+document.addEventListener('DOMContentLoaded', () => {
+  const createForm = document.getElementById('createClassForm');
+  const joinForm = document.getElementById('joinClassForm');
+  
+  if (createForm) createForm.addEventListener('submit', handleCreateClass);
+  if (joinForm) joinForm.addEventListener('submit', handleJoinClass);
+  
+  document.querySelectorAll('.modal .close').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modal = btn.closest('.modal');
+      if (modal) modal.classList.remove('show');
+    });
+  });
+  
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('show');
+    });
+  });
+});

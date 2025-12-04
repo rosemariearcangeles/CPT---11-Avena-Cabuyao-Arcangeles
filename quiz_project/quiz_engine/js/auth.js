@@ -470,9 +470,6 @@ function applyAuthState(data) {
       const dashboardUrl = (data.role === 'student' || data.role === 'teacher') ? 'education_dashboard.html' : 'dashboard.html';
       const dashboardLinkElement = dashboardLink.querySelector('a');
       if (dashboardLinkElement) dashboardLinkElement.href = dashboardUrl;
-      
-      const dropdownDashboard = document.querySelector('.user-dropdown a[href="dashboard.html"]');
-      if (dropdownDashboard) dropdownDashboard.href = dashboardUrl;
     }
     
     const modeBadge = (data.role === 'student' || data.role === 'teacher') ? ' <span style="display:inline-block;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;padding:0.15rem 0.5rem;border-radius:0.25rem;font-size:0.7rem;font-weight:600;margin-left:0.25rem;">EDU</span>' : '';
