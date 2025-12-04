@@ -176,17 +176,18 @@ function createQuizCard(quiz) {
 
 async function deleteQuiz(quizId) {
     if (!confirm('Are you sure you want to delete this quiz?')) return;
-    
     try {
+        const csrfToken = await getCSRFToken();
         const response = await fetch('api/delete_quiz.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
             credentials: 'same-origin',
             body: JSON.stringify({ quiz_id: quizId })
         });
-        
         const data = await response.json();
-        
         if (data.success) {
             showToast('Quiz deleted successfully', true);
             await loadDashboardData();
