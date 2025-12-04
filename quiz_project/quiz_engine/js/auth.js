@@ -216,8 +216,7 @@ async function handleLogin(event) {
       
       await updateLoginUI();
       
-      const mode = localStorage.getItem('quizMode') || 'personal';
-      const redirectUrl = mode === 'education' ? 'education_dashboard.html' : 'dashboard.html';
+      const redirectUrl = data.redirect || 'dashboard.html';
       
       setTimeout(() => {
         window.location.href = redirectUrl;

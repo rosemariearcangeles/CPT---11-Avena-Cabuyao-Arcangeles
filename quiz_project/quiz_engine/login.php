@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Prepare SQL
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $stmt->store_result();
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt->bind_result($user_id, $db_username, $hashed);
+    $stmt->bind_result($user_id, $db_username, $hashed, $role);
     $stmt->fetch();
     $stmt->close();
 
@@ -60,11 +60,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Successful login → set session
     $session->login($user_id, $db_username);
 
+    // Redirect based on role
+    $redirect = ($role === 'student' || $role === 'teacher') ? 'education_dashboard.html' : 'dashboard.html';
+
     $response = [
         'status' => 'success',
         'message' => 'Login successful',
         'username' => $db_username,
-        'redirect' => 'dashboard.html'
+        'role' => $role,
+        'redirect' => $redirect
     ];
 
     echo json_encode($response);
