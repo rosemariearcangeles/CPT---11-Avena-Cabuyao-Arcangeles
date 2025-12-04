@@ -70,16 +70,24 @@ function renderTeacherClassDashboard() {
   $id('mainContent').innerHTML = `
     <section id="quizzes" class="section active">
       <div class="section-header">
-        <h1>Class Quizzes</h1>
-        <a href="index.html" class="btn-primary">
-          <i class="fas fa-plus"></i> Create Quiz
-        </a>
+        <h1>Assigned Quizzes</h1>
+        <button class="btn-primary" onclick="assignQuiz()">
+          <i class="fas fa-plus"></i> Assign Quiz
+        </button>
       </div>
-      <div id="quizList" class="quiz-list">
-        <p class="empty-state">No quizzes yet. Create a quiz to assign to this class!</p>
+      <div id="quizList" class="quiz-list"></div>
+    </section>
+    <section id="students" class="section">
+      <div class="section-header">
+        <h1>Students</h1>
       </div>
+      <div id="studentList" class="student-list"></div>
     </section>
   `;
+
+  attachNavListeners();
+  loadAssignments();
+  loadStudents();
 }
 
 function renderStudentClassDashboard() {
@@ -99,9 +107,163 @@ function renderStudentClassDashboard() {
       <div class="section-header">
         <h1>Available Quizzes</h1>
       </div>
-      <div id="quizList" class="quiz-list">
-        <p class="empty-state">No quizzes available yet.</p>
+      <div id="quizList" class="quiz-list"></div>
+    </section>
+    <section id="grades" class="section">
+      <div class="section-header">
+        <h1>My Grades</h1>
       </div>
+      <div id="gradesList" class="grades-list"></div>
     </section>
   `;
+
+  attachNavListeners();
+  loadAssignments();
+  loadGrades();
+}
+
+function attachNavListeners() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = item.dataset.section;
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      item.classList.add('active');
+      $id(section)?.classList.add('active');
+    });
+  });
+}
+
+async function loadStudents() {
+  try {
+    const response = await fetch('api/get_class_students.php?class_id=' + classId);
+    const data = await response.json();
+    const list = $id('studentList');
+    
+    if (data.success && data.students.length > 0) {
+      list.innerHTML = data.students.map(s => `
+        <div class="student-item">
+          <div class="student-avatar">${s.username.charAt(0).toUpperCase()}</div>
+          <div class="student-info">
+            <h4>${s.username}</h4>
+            <p>${s.email}</p>
+          </div>
+          <div class="student-date">Joined ${new Date(s.joined_at).toLocaleDateString()}</div>
+        </div>
+      `).join('');
+    } else {
+      list.innerHTML = '<p class="empty-state">No students enrolled yet.</p>';
+    }
+  } catch (error) {
+    console.error('Failed to load students:', error);
+  }
+}
+
+async function loadAssignments() {
+  try {
+    const response = await fetch('api/get_class_assignments.php?class_id=' + classId);
+    const data = await response.json();
+    const list = $id('quizList');
+    
+    if (data.success && data.assignments.length > 0) {
+      list.innerHTML = data.assignments.map(a => `
+        <div class="quiz-item" onclick="${userRole === 'student' ? `takeQuiz(${a.id}, '${a.quiz_name}')` : ''}" style="${userRole === 'student' ? 'cursor:pointer' : ''}">
+          <div class="quiz-info">
+            <h3>${a.title || a.quiz_name}</h3>
+            <div class="quiz-meta">
+              <span><i class="fas fa-question-circle"></i> ${a.total_questions} questions</span>
+              ${a.due_date ? `<span><i class="fas fa-calendar"></i> Due ${new Date(a.due_date).toLocaleDateString()}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      list.innerHTML = '<p class="empty-state">No quizzes assigned yet.</p>';
+    }
+  } catch (error) {
+    console.error('Failed to load assignments:', error);
+  }
+}
+
+async function loadGrades() {
+  try {
+    const response = await fetch('api/get_student_grades.php?class_id=' + classId);
+    const data = await response.json();
+    const list = $id('gradesList');
+    
+    if (data.success && data.grades.length > 0) {
+      list.innerHTML = data.grades.map(g => {
+        const percentage = g.total_questions > 0 ? Math.round((g.score / g.total_questions) * 100) : 0;
+        return `
+          <div class="grade-item">
+            <div class="grade-info">
+              <h4>${g.title || g.quiz_name}</h4>
+              <p>Submitted ${new Date(g.submitted_at).toLocaleDateString()}</p>
+            </div>
+            <div class="grade-score">
+              <span class="score-badge ${percentage >= 80 ? 'high' : percentage >= 60 ? 'medium' : 'low'}">${percentage}%</span>
+              <p>${g.score}/${g.total_questions}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      list.innerHTML = '<p class="empty-state">No grades yet.</p>';
+    }
+  } catch (error) {
+    console.error('Failed to load grades:', error);
+  }
+}
+
+async function assignQuiz() {
+  try {
+    const response = await fetch('api/get_teacher_quizzes.php');
+    const data = await response.json();
+    
+    if (!data.success || data.quizzes.length === 0) {
+      alert('No completed quizzes available. Create a quiz first!');
+      return;
+    }
+    
+    const quizOptions = data.quizzes.map((q, i) => `${i + 1}. ${q.quiz_name} (${q.total_questions} questions)`).join('\n');
+    const selection = prompt(`Select quiz to assign:\n${quizOptions}\n\nEnter number:`);
+    
+    if (!selection) return;
+    
+    const index = parseInt(selection) - 1;
+    if (index < 0 || index >= data.quizzes.length) {
+      alert('Invalid selection');
+      return;
+    }
+    
+    const quiz = data.quizzes[index];
+    const title = prompt('Assignment title:', quiz.quiz_name);
+    
+    if (!title) return;
+    
+    const assignResponse = await fetch('api/assign_quiz.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ class_id: classId, quiz_id: quiz.id, title })
+    });
+    
+    const assignData = await assignResponse.json();
+    
+    if (assignData.success) {
+      alert('Quiz assigned successfully!');
+      loadAssignments();
+    } else {
+      alert('Failed to assign quiz: ' + assignData.message);
+    }
+  } catch (error) {
+    console.error('Failed to assign quiz:', error);
+    alert('Error assigning quiz');
+  }
+}
+
+function takeQuiz(assignmentId, quizName) {
+  sessionStorage.setItem('currentAssignmentId', assignmentId);
+  sessionStorage.setItem('currentAssignmentName', quizName);
+  window.location.href = 'take_quiz.html?assignment=' + assignmentId;
 }
