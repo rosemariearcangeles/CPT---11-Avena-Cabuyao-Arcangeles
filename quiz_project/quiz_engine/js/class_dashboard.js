@@ -199,8 +199,15 @@ async function loadAssignments() {
     const list = $id('quizList');
     
     if (data.success && data.assignments.length > 0) {
-      list.innerHTML = data.assignments.map(a => `
-        <div class="quiz-item" onclick="${userRole === 'student' ? `takeQuiz(${a.id}, '${a.quiz_name}')` : ''}" style="${userRole === 'student' ? 'cursor:pointer' : ''}">
+      list.innerHTML = data.assignments.map(a => {
+        const completed = !!a.submission_id || !!a.submitted;
+        const clickable = userRole === 'student' ? !completed : false;
+        const onClick = clickable ? `takeQuiz(${a.id}, '${a.quiz_name}')` : '';
+        const itemClass = `quiz-item${clickable ? ' clickable' : completed ? ' disabled' : ''}`;
+        const completedBadge = (userRole === 'student' && completed) ? `<div class="quiz-actions"><span class="score-badge high"><i class="fas fa-check"></i> Completed</span></div>` : '';
+        const teacherActions = userRole === 'teacher' ? `<div class="quiz-actions"><button class="btn btn-danger btn-sm btn-delete" data-quiz-id="${a.quiz_id}" data-title="${a.title || a.quiz_name}"><i class="fas fa-trash"></i></button></div>` : '';
+        return `
+        <div class="${itemClass}" onclick="${onClick}">
           <div class="quiz-info">
             <h3>${a.title || a.quiz_name}</h3>
             <div class="quiz-meta">
@@ -208,9 +215,10 @@ async function loadAssignments() {
               ${a.due_date ? `<span><i class="fas fa-calendar"></i> Due ${new Date(a.due_date).toLocaleDateString()}</span>` : ''}
             </div>
           </div>
-          ${userRole === 'teacher' ? `<div class="quiz-actions"><button class="btn btn-danger btn-sm btn-delete" data-quiz-id="${a.quiz_id}" data-title="${a.title || a.quiz_name}"><i class="fas fa-trash"></i></button></div>` : ''}
-        </div>
-      `).join('');
+          ${completedBadge}
+          ${teacherActions}
+        </div>`;
+      }).join('');
       if (userRole === 'teacher') {
         document.querySelectorAll('#quizList .btn-delete').forEach(btn => {
           btn.addEventListener('click', async (e) => {

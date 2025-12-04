@@ -885,3 +885,10 @@ body {
     font-size: 1.75rem;
   }
 }
+
+.section-actions { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center }
+.empty-state.full { grid-column:1/-1; padding:3rem 1rem; text-align:center }
+.empty-state .emoji { font-size:4rem; margin-bottom:1rem }
+.class-card.clickable { cursor:pointer }
+.card-action-top-right { position:absolute; top:1rem; right:1rem }
+.quiz-item.disabled { opacity:0.7; cursor:not-allowed }

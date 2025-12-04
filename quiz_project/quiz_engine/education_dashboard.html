@@ -43,45 +43,54 @@
 
     <!-- Create Class Modal -->
     <div id="createClassModal" class="modal" aria-hidden="true">
-        <div class="modal-content" style="position: relative;">
-            <button class="close" aria-label="Close">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon">📚</div>
-                <h2>Create New Class</h2>
+        <div class="modal-content">
+          <button class="close" aria-label="Close">&times;</button>
+          <div class="modal-header">
+            <div class="modal-icon">📚</div>
+            <h2>Create New Class</h2>
+          </div>
+          <form id="createClassForm">
+            <div class="form-group">
+              <label for="class-name">Class Name</label>
+              <div class="input-wrapper">
+                <i class="fas fa-chalkboard input-icon"></i>
+                <input type="text" id="class-name" required placeholder="e.g., Math 101">
+              </div>
             </div>
-            <form id="createClassForm">
-                <div class="form-group">
-                    <label for="class-name">Class Name</label>
-                    <input type="text" id="class-name" required placeholder="e.g., Math 101" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem;">
-                </div>
-                <div class="form-group">
-                    <label for="class-description">Description (Optional)</label>
-                    <textarea id="class-description" rows="3" placeholder="Brief description of the class" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem; font-family: inherit;"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-block">Create Class</button>
-                </div>
-            </form>
+            <div class="form-group">
+              <label for="class-description">Description (Optional)</label>
+              <div class="input-wrapper">
+                <i class="fas fa-font input-icon"></i>
+                <textarea id="class-description" rows="3" placeholder="Brief description of the class"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">Create Class</button>
+            </div>
+          </form>
         </div>
     </div>
 
     <!-- Join Class Modal -->
     <div id="joinClassModal" class="modal" aria-hidden="true">
-        <div class="modal-content" style="position: relative;">
-            <button class="close" aria-label="Close">&times;</button>
-            <div class="modal-header">
-                <div class="modal-icon">🎓</div>
-                <h2>Join Class</h2>
+        <div class="modal-content">
+          <button class="close" aria-label="Close">&times;</button>
+          <div class="modal-header">
+            <div class="modal-icon">🎓</div>
+            <h2>Join Class</h2>
+          </div>
+          <form id="joinClassForm">
+            <div class="form-group">
+              <label for="join-class-code">Class Code</label>
+              <div class="input-wrapper">
+                <i class="fas fa-key input-icon"></i>
+                <input type="text" id="join-class-code" required placeholder="Enter 6-digit code" maxlength="10">
+              </div>
             </div>
-            <form id="joinClassForm">
-                <div class="form-group">
-                    <label for="join-class-code">Class Code</label>
-                    <input type="text" id="join-class-code" required placeholder="Enter 6-digit code" maxlength="10" style="text-transform:uppercase; width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem;">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-block">Join Class</button>
-                </div>
-            </form>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">Join Class</button>
+            </div>
+          </form>
         </div>
     </div>
 

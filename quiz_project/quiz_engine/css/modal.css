@@ -31,6 +31,7 @@
   transform: scale(0.92);
   transition: opacity .28s ease, transform .28s ease;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
 }
 
 .modal.show .modal-content {
@@ -125,6 +126,25 @@
 .input-wrapper input:invalid:not(:placeholder-shown) {
   border-color: var(--error-color);
 }
+
+.input-wrapper textarea {
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: var(--surface);
+  font-family: inherit;
+}
+
+.input-wrapper textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+#join-class-code { text-transform: uppercase }
 
 .error-message {
   color: var(--error-color);

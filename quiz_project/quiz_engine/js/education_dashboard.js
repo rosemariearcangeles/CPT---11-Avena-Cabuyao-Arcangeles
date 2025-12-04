@@ -77,7 +77,7 @@ function renderTeacherDashboard() {
     <section id="classes" class="section active">
       <div class="section-header">
         <h1>My Classes</h1>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <div class="section-actions">
           <button class="btn-primary" onclick="createClass()">
             <i class="fas fa-plus"></i> Create Class
           </button>
@@ -134,7 +134,7 @@ async function loadTeacherClasses() {
 
     if (data.success && data.classes && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
-        <div class="class-card" style="cursor: pointer; position:relative;">
+        <div class="class-card clickable" style="position:relative;">
           <div onclick="openClass(${cls.id}, '${cls.class_name}')">
             <h3>${cls.class_name}</h3>
             <p>${cls.description || 'No description'}</p>
@@ -143,7 +143,7 @@ async function loadTeacherClasses() {
               <span><i class="fas fa-users"></i> ${cls.student_count || 0} students</span>
             </div>
           </div>
-          <button class="btn btn-danger btn-sm" style="position:absolute;top:1rem;right:1rem;"
+          <button class="btn btn-danger btn-sm card-action-top-right"
             onclick="event.stopPropagation(); deleteClass(${cls.id}, '${cls.class_name}');">
             <i class="fas fa-trash"></i>
           </button>
@@ -153,10 +153,10 @@ async function loadTeacherClasses() {
     } else {
       console.log('No classes found, showing empty state');
       classList.innerHTML = `
-        <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
-          <div style="font-size:4rem;margin-bottom:1rem;">📚</div>
-          <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">No Classes Created Yet</h3>
-          <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Create your first class to start teaching!</p>
+        <div class="empty-state full">
+          <div class="emoji">📚</div>
+          <h3>No Classes Created Yet</h3>
+          <p>Create your first class to start teaching!</p>
           <button class="btn btn-primary" onclick="createClass()">
             <i class="fas fa-plus"></i> Create Class
           </button>
@@ -168,10 +168,10 @@ async function loadTeacherClasses() {
     // Show error state to user
     const classList = $id('classList');
     classList.innerHTML = `
-      <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
-        <div style="font-size:4rem;margin-bottom:1rem;">⚠️</div>
-        <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">Error Loading Classes</h3>
-        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Please refresh the page or try again.</p>
+      <div class="empty-state full">
+        <div class="emoji">⚠️</div>
+        <h3>Error Loading Classes</h3>
+        <p>Please refresh the page or try again.</p>
         <button class="btn btn-primary" onclick="loadTeacherClasses()">
           <i class="fas fa-refresh"></i> Retry
         </button>
@@ -199,7 +199,7 @@ async function loadStudentClasses() {
 
     if (data.success && data.classes && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
-        <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor: pointer;">
+        <div class="class-card clickable" onclick="openClass(${cls.id}, '${cls.class_name}')">
           <h3>${cls.class_name}</h3>
           <p>${cls.description || 'No description'}</p>
           <div class="class-teacher">Teacher: ${cls.teacher_name}</div>
@@ -209,10 +209,10 @@ async function loadStudentClasses() {
     } else {
       console.log('No student classes found, showing empty state');
       classList.innerHTML = `
-        <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
-          <div style="font-size:4rem;margin-bottom:1rem;">🎓</div>
-          <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">No Classes Joined Yet</h3>
-          <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Join a class using the code provided by your teacher.</p>
+        <div class="empty-state full">
+          <div class="emoji">🎓</div>
+          <h3>No Classes Joined Yet</h3>
+          <p>Join a class using the code provided by your teacher.</p>
           <button class="btn btn-primary" onclick="joinClass()">
             <i class="fas fa-plus"></i> Join Class
           </button>
@@ -224,10 +224,10 @@ async function loadStudentClasses() {
     // Show error state to user
     const classList = $id('classList');
     classList.innerHTML = `
-      <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
-        <div style="font-size:4rem;margin-bottom:1rem;">⚠️</div>
-        <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">Error Loading Classes</h3>
-        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Please refresh the page or try again.</p>
+      <div class="empty-state full">
+        <div class="emoji">⚠️</div>
+        <h3>Error Loading Classes</h3>
+        <p>Please refresh the page or try again.</p>
         <button class="btn btn-primary" onclick="loadStudentClasses()">
           <i class="fas fa-refresh"></i> Retry
         </button>

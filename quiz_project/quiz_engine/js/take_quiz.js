@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   await loadAssignment(assignmentId);
+  if (assignment && (assignment.submission_id || assignment.submitted)) {
+    alert('You have already completed this quiz.');
+    window.location.href = 'class_dashboard.html?id=' + sessionStorage.getItem('currentClassId');
+    return;
+  }
   renderQuestion();
   
   document.getElementById('nextBtn').onclick = nextQuestion;
