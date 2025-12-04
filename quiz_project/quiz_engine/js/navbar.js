@@ -295,12 +295,7 @@ class UnifiedNavbar {
       this.dropdownUsername.textContent = username;
     }
 
-    // Update education badge
-    const badge = document.getElementById('edu-mode-badge');
-    if (badge) {
-      const isEducationMode = role === 'student' || role === 'teacher';
-      badge.style.display = isEducationMode ? 'inline-block' : 'none';
-    }
+    // Badge is now handled by PHP, no JS manipulation needed
   }
 
   showLoggedOutState() {

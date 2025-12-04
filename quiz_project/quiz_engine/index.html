@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     (function() {
       const cached = sessionStorage.getItem('authState');
@@ -563,18 +564,18 @@
             if (studentJoinSection) {
               studentJoinSection.style.display = 'block';
               
-              // Update heading and description based on role
+              // Update UI based on role
               const heading = document.getElementById('classes-heading');
               const description = document.getElementById('classes-description');
+              const joinCard = studentJoinSection.querySelector('.join-class-card');
+              
               if (roleData.role === 'teacher') {
                 if (heading) heading.textContent = 'My Classes';
-                if (description) description.textContent = 'Manage your classes and assignments.';
-              }
-              
-              // Hide join class input for teachers
-              if (roleData.role === 'teacher') {
-                const joinCard = studentJoinSection.querySelector('.join-class-card');
+                if (description) description.textContent = 'Manage your classes and create assignments.';
                 if (joinCard) joinCard.style.display = 'none';
+              } else {
+                if (heading) heading.textContent = 'My Classes';
+                if (description) description.textContent = 'Join classes and complete assignments.';
               }
               
               // Load classes
@@ -714,21 +715,21 @@
           
           if (data.success && data.classes.length > 0) {
             grid.innerHTML = data.classes.map(cls => `
-              <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor:pointer;">
-                <h3>${cls.class_name}</h3>
-                <p>${cls.description || 'No description'}</p>
-                ${role === 'student' ? `<div class="class-teacher">Teacher: ${cls.teacher_name}</div>` : `<div class="class-students">${cls.student_count || 0} students</div>`}
+              <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor:pointer;background:white;border:1px solid #e2e8f0;border-radius:12px;padding:1.5rem;transition:all 0.2s;">
+                <h3 style="margin-bottom:0.5rem;color:#1e293b;">${cls.class_name}</h3>
+                <p style="color:#64748b;margin-bottom:1rem;">${cls.description || 'No description'}</p>
+                ${role === 'student' ? `<div style="font-size:0.875rem;color:#6366f1;"><i class="fas fa-chalkboard-teacher"></i> ${cls.teacher_name}</div>` : `<div style="font-size:0.875rem;color:#10b981;"><i class="fas fa-users"></i> ${cls.student_count || 0} students</div>`}
               </div>
             `).join('');
           } else {
             const emptyIcon = role === 'teacher' ? '📚' : '🎓';
             const emptyTitle = role === 'teacher' ? 'No Classes Created Yet' : 'No Classes Joined Yet';
-            const emptyMsg = role === 'teacher' ? 'Create your first class to start teaching!' : 'Join a class using the code provided by your teacher.';
-            const emptyAction = role === 'teacher' ? '<a href="education_dashboard.html" class="btn btn-primary" style="margin-top:1rem;"><i class="fas fa-plus"></i> Create Class</a>' : '';
+            const emptyMsg = role === 'teacher' ? 'Go to your dashboard to create your first class!' : 'Use the class code above to join your first class.';
+            const emptyAction = role === 'teacher' ? '<a href="education_dashboard.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:#6366f1;color:white;text-decoration:none;border-radius:8px;margin-top:1rem;"><i class="fas fa-plus"></i> Go to Dashboard</a>' : '';
             grid.innerHTML = `<div class="empty-state" style="text-align:center;padding:3rem 1rem;">
               <div style="font-size:4rem;margin-bottom:1rem;">${emptyIcon}</div>
-              <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">${emptyTitle}</h3>
-              <p style="color:var(--text-secondary);margin-bottom:1rem;">${emptyMsg}</p>
+              <h3 style="margin-bottom:0.5rem;color:#1e293b;">${emptyTitle}</h3>
+              <p style="color:#64748b;margin-bottom:1rem;">${emptyMsg}</p>
               ${emptyAction}
             </div>`;
           }
@@ -765,14 +766,8 @@
             const data = await response.json();
             
             if (data.success) {
-              sessionStorage.removeItem('userClasses_student');
               alert('Successfully joined class!');
-              codeInput.value = '';
-              const roleResp = await fetch('api/get_user_role.php');
-              const roleData = await roleResp.json();
-              if (roleData.success) {
-                setTimeout(() => loadUserClasses(roleData.role), 200);
-              }
+              window.location.reload();
             } else {
               alert(data.message || 'Failed to join class');
             }
