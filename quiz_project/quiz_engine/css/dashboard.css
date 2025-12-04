@@ -50,12 +50,192 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .sidebar-header h2 {
   font-size: 1.25rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.mode-badge {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.mode-toggle {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text-light);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mode-btn:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-color: var(--primary);
+}
+
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.class-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.class-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.class-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.class-card p {
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+.class-code {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--bg);
+  border: 1px dashed var(--primary);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.class-stats, .class-teacher {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.join-class-section {
+  text-align: center;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.join-class-section h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.join-description {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.join-class-card {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  background: var(--surface-secondary);
+  padding: 2rem;
+  border-radius: var(--radius);
+  border: 2px dashed var(--primary-color);
+}
+
+.class-code-input-wrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+#class-code-input {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1.25rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+#class-code-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+#join-class-btn {
+  padding: 1rem 2rem;
+  white-space: nowrap;
+}
+
+.student-classes {
+  margin-top: 3rem;
+}
+
+.student-classes h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .class-code-input-wrapper {
+    flex-direction: column;
+  }
+  
+  #join-class-btn {
+    width: 100%;
+  }
 }
 
 .user-profile {

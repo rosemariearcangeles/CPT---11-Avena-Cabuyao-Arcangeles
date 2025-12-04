@@ -155,8 +155,16 @@
 
     <div class="page-wrapper hero-inner">
       <div class="hero-content">
-        <h1>Transform Your Learning Experience</h1>
-        <p>Interactive online quizzes that are easy, comprehensive, and reliable.</p>
+        <div class="mode-toggle-hero">
+          <button class="mode-toggle-btn active" data-mode="personal">
+            <i class="fas fa-user"></i> Personal Mode
+          </button>
+          <button class="mode-toggle-btn" data-mode="education">
+            <i class="fas fa-graduation-cap"></i> Education Mode
+          </button>
+        </div>
+        <h1 id="hero-title">Transform Your Learning Experience</h1>
+        <p id="hero-subtitle">Interactive online quizzes that are easy, comprehensive, and reliable.</p>
         <a href="#main" class="cta-button">Get Started</a>
       </div>
 
@@ -172,7 +180,7 @@
       <!-- Main Content Area -->
       <main class="main-content" id="main">
         <!-- Generation Settings -->
-        <section class="generation-settings">
+        <section class="generation-settings" id="quiz-generation-section">
           <h2 class="section-title">Quiz Settings</h2>
           
           <div class="settings-grid">
@@ -187,7 +195,7 @@
           </div>
         </section>
         <!-- File Upload Section -->
-        <section class="upload-section">
+        <section class="upload-section" id="quiz-upload-section">
           <h1>Generate Quiz from Learning Material</h1>
           <p class="upload-description">Upload your study materials and get a customized quiz in seconds.</p>
           
@@ -229,6 +237,26 @@
                 <span class="btn-icon" aria-hidden="true">→</span>
               </button>
             </div>
+          </div>
+        </section>
+        
+        <!-- Student Join Class Section -->
+        <section class="join-class-section" id="student-join-section" style="display:none;">
+          <h1>Join Your Class</h1>
+          <p class="join-description">Enter the class code provided by your teacher to join.</p>
+          
+          <div class="join-class-card">
+            <div class="class-code-input-wrapper">
+              <input type="text" id="class-code-input" placeholder="Enter Class Code" maxlength="10">
+              <button id="join-class-btn" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Join Class
+              </button>
+            </div>
+          </div>
+          
+          <div id="student-classes-list" class="student-classes">
+            <h2>My Classes</h2>
+            <div id="student-classes-grid" class="class-grid"></div>
           </div>
         </section>
         
@@ -351,6 +379,19 @@
 
       <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)" novalidate>
         <input type="hidden" id="register-csrf" name="csrf_token">
+        <input type="hidden" id="register-role" name="role" value="student">
+
+        <div class="form-group" id="role-selection" style="display:none;">
+          <label>I am a:</label>
+          <div class="role-buttons">
+            <button type="button" class="role-btn active" data-role="student">
+              <i class="fas fa-user-graduate"></i> Student
+            </button>
+            <button type="button" class="role-btn" data-role="teacher">
+              <i class="fas fa-chalkboard-teacher"></i> Teacher
+            </button>
+          </div>
+        </div>
 
         <div class="form-group">
           <label for="register-username">Username</label>
@@ -447,6 +488,148 @@
   <script>
     // Page-specific initialization
     document.addEventListener('DOMContentLoaded', function() {
+      // ===== EDUCATION MODE TOGGLE =====
+      let currentMode = localStorage.getItem('quizMode') || 'personal';
+      
+      const modeButtons = document.querySelectorAll('.mode-toggle-btn');
+      const roleSelection = document.getElementById('role-selection');
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      
+      function updateMode(mode) {
+        currentMode = mode;
+        localStorage.setItem('quizMode', mode);
+        
+        modeButtons.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+        
+        if (mode === 'education') {
+          if (heroTitle) heroTitle.textContent = 'Transform Your Classroom';
+          if (heroSubtitle) heroSubtitle.textContent = 'Create, assign, and track quizzes for your students.';
+          if (roleSelection) roleSelection.style.display = 'block';
+        } else {
+          if (heroTitle) heroTitle.textContent = 'Transform Your Learning Experience';
+          if (heroSubtitle) heroSubtitle.textContent = 'Interactive online quizzes that are easy, comprehensive, and reliable.';
+          if (roleSelection) roleSelection.style.display = 'none';
+        }
+      }
+      
+      modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => updateMode(btn.dataset.mode));
+      });
+      
+      // Role selection buttons
+      const roleButtons = document.querySelectorAll('.role-btn');
+      const roleInput = document.getElementById('register-role');
+      
+      roleButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          roleButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          if (roleInput) roleInput.value = btn.dataset.role;
+        });
+      });
+      
+      updateMode(currentMode);
+      
+      // ===== CHECK USER ROLE AND UPDATE UI =====
+      async function updateUIBasedOnRole() {
+        try {
+          const authResponse = await fetch('check_auth.php');
+          const authData = await authResponse.json();
+          
+          if (authData.loggedIn) {
+            const roleResponse = await fetch('api/get_user_role.php');
+            const roleData = await roleResponse.json();
+            
+            if (roleData.success) {
+              const userRole = roleData.role;
+              const mode = localStorage.getItem('quizMode') || 'personal';
+              
+              const quizGenSection = document.getElementById('quiz-generation-section');
+              const quizUploadSection = document.getElementById('quiz-upload-section');
+              const studentJoinSection = document.getElementById('student-join-section');
+              
+              if (mode === 'education' && userRole === 'student') {
+                // Student in education mode: hide quiz generation, show join class
+                if (quizGenSection) quizGenSection.style.display = 'none';
+                if (quizUploadSection) quizUploadSection.style.display = 'none';
+                if (studentJoinSection) {
+                  studentJoinSection.style.display = 'block';
+                  loadStudentClasses();
+                }
+              } else {
+                // Teacher or personal mode: show quiz generation
+                if (quizGenSection) quizGenSection.style.display = 'block';
+                if (quizUploadSection) quizUploadSection.style.display = 'block';
+                if (studentJoinSection) studentJoinSection.style.display = 'none';
+              }
+            }
+          }
+        } catch (error) {
+          console.log('Not logged in or error checking role');
+        }
+      }
+      
+      // Load student classes
+      async function loadStudentClasses() {
+        try {
+          const response = await fetch('api/get_student_classes.php');
+          const data = await response.json();
+          const grid = document.getElementById('student-classes-grid');
+          
+          if (data.success && data.classes.length > 0) {
+            grid.innerHTML = data.classes.map(cls => `
+              <div class="class-card">
+                <h3>${cls.class_name}</h3>
+                <p>${cls.description || 'No description'}</p>
+                <div class="class-teacher">Teacher: ${cls.teacher_name}</div>
+              </div>
+            `).join('');
+          } else {
+            grid.innerHTML = '<p class="empty-state">No classes yet. Join a class to get started!</p>';
+          }
+        } catch (error) {
+          console.error('Failed to load classes:', error);
+        }
+      }
+      
+      // Join class button
+      const joinClassBtn = document.getElementById('join-class-btn');
+      if (joinClassBtn) {
+        joinClassBtn.addEventListener('click', async () => {
+          const codeInput = document.getElementById('class-code-input');
+          const classCode = codeInput.value.trim().toUpperCase();
+          
+          if (!classCode) {
+            alert('Please enter a class code');
+            return;
+          }
+          
+          try {
+            const response = await fetch('api/join_class.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ class_code: classCode })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+              alert('Successfully joined class!');
+              codeInput.value = '';
+              loadStudentClasses();
+            } else {
+              alert(data.message || 'Failed to join class');
+            }
+          } catch (error) {
+            alert('Error joining class. Please try again.');
+          }
+        });
+      }
+      
+      updateUIBasedOnRole();
+      
       // ===== PRESET BUTTONS WITH INDICATOR =====
       const presetFast = document.getElementById('preset-fast');
       const presetFull = document.getElementById('preset-full');

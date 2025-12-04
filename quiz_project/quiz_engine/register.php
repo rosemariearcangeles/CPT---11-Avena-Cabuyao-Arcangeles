@@ -27,6 +27,7 @@ $username = isset($_POST['username']) ? trim($_POST['username']) : '';
 $email    = isset($_POST['email']) ? trim($_POST['email']) : '';
 $password = $_POST['password'] ?? '';
 $confirm  = $_POST['confirmPassword'] ?? '';
+$role     = isset($_POST['role']) && in_array($_POST['role'], ['personal', 'student', 'teacher']) ? $_POST['role'] : 'personal';
 
 // VALIDATION
 if ($username === '' || $email === '' || $password === '' || $confirm === '') {
@@ -88,7 +89,7 @@ if (!$hashed) {
 }
 
 // INSERT USER
-$stmt = $conn->prepare("INSERT INTO users (username, email, password, created_at) VALUES (?, ?, ?, NOW())");
+$stmt = $conn->prepare("INSERT INTO users (username, email, password, role, created_at) VALUES (?, ?, ?, ?, NOW())");
 if (!$stmt) {
     echo json_encode([
         'status' => 'error',
@@ -96,7 +97,7 @@ if (!$stmt) {
     ]);
     exit;
 }
-$stmt->bind_param("sss", $username, $email, $hashed);
+$stmt->bind_param("ssss", $username, $email, $hashed, $role);
 
 if (!$stmt->execute()) {
     echo json_encode([

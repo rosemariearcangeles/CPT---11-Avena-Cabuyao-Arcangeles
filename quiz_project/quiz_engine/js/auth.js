@@ -216,11 +216,13 @@ async function handleLogin(event) {
       
       await updateLoginUI();
       
-      if (data.redirect) {
-        setTimeout(() => {
-          window.location.href = data.redirect;
-        }, 500);
-      }
+      const mode = localStorage.getItem('quizMode') || 'personal';
+      const redirectUrl = mode === 'education' ? 'education_dashboard.html' : 'dashboard.html';
+      
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 500);
+    }
     } else {
       showToast(data.message || 'Invalid username or password', false);
     }
@@ -255,6 +257,12 @@ async function handleRegister(event) {
   const email = document.getElementById('register-email')?.value.trim();
   const password = document.getElementById('register-password')?.value;
   const confirmPassword = document.getElementById('register-confirm-password')?.value;
+  
+  const mode = localStorage.getItem('quizMode') || 'personal';
+  let role = 'personal';
+  if (mode === 'education') {
+    role = document.getElementById('register-role')?.value || 'student';
+  }
   
   // Validation
   if (!username || !email || !password || !confirmPassword) {
@@ -299,6 +307,7 @@ async function handleRegister(event) {
     formBody.append('email', email);
     formBody.append('password', password);
     formBody.append('confirmPassword', confirmPassword);
+    formBody.append('role', role);
     formBody.append('csrf_token', csrfToken);
     
     // Make the request

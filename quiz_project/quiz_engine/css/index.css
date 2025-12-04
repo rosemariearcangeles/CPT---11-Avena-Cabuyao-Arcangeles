@@ -666,6 +666,79 @@ background-clip: text;
   animation: fadeInUp 1s ease-out 0.3s both;
 }
 
+.mode-toggle-hero {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.mode-toggle-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mode-toggle-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+}
+
+.mode-toggle-btn.active {
+  background: white;
+  color: var(--primary-color);
+  border-color: white;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.role-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.role-btn {
+  padding: 1rem;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.role-btn i {
+  font-size: 2rem;
+}
+
+.role-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.role-btn.active {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: white;
+  border-color: var(--primary-color);
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -703,32 +776,37 @@ background-clip: text;
 
 .hero-dots {
   position: absolute;
-  bottom: clamp(1.5rem, 4vw, 3rem);
+  bottom: clamp(4rem, 6vw, 5rem);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  z-index: 10;
 }
 
-.hero-dot {
-  width: 10px;
-  height: 10px;
+.hero-dots .dot {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.5);
+  border: 2px solid rgba(255,255,255,0.7);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.hero-dot:hover {
+.hero-dots .dot:hover {
   background: rgba(255,255,255,0.8);
-  transform: scale(1.3);
+  border-color: rgba(255,255,255,0.9);
+  transform: scale(1.2);
 }
 
-.hero-dot.is-active {
-  transform: scale(1.5);
-  opacity: 1;
+.hero-dots .dot.active {
+  transform: scale(1.3);
   background: #fff;
-  box-shadow: 0 0 10px rgba(255,255,255,0.8);
+  border-color: #fff;
+  box-shadow: 0 0 12px rgba(255,255,255,0.9);
 }
 
 @media (max-width: 992px) {
@@ -774,6 +852,7 @@ background-clip: text;
   animation: fadeInUp 1s ease-out 0.9s both;
   position: relative;
   overflow: hidden;
+  z-index: 5;
 }
 
 .hero .cta-button::before {
@@ -800,36 +879,7 @@ background-clip: text;
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 
-/* Hero Dots (Carousel Indicators) */
-.hero-dots {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.75rem;
-  z-index: 3;
-}
 
-.hero-dots .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  background: transparent;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.hero-dots .dot:hover {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-.hero-dots .dot.active {
-  background: #fff;
-  border-color: #fff;
-}
 
 /* Toast Notifications */
 .toast {
