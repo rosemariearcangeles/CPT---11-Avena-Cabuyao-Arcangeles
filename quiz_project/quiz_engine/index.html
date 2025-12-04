@@ -20,7 +20,7 @@
       if (cached) {
         try {
           const data = JSON.parse(cached);
-          if (data.loggedIn) {
+          if (data.loggedIn && data.username) {
             document.write('<style>.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}#nav-dashboard-link,.dashboard-link{display:block!important;opacity:1!important}</style>');
           } else {
             document.write('<style>.auth-buttons{display:flex!important;opacity:1!important}.user-menu{display:none!important;opacity:0!important}#nav-dashboard-link,.dashboard-link{display:none!important;opacity:0!important}</style>');
@@ -596,30 +596,22 @@
         console.log('Not logged in or error checking role');
       }
       
-      // ===== CHECK IF USER IS LOGGED IN EDUCATION MODE =====
+      // ===== HIDE MODE TOGGLE FOR LOGGED IN USERS =====
       try {
         const authResponse = await fetch('check_auth.php');
         const authData = await authResponse.json();
+        const toggle = document.getElementById('mode-toggle-hero');
+        const indicator = document.getElementById('education-mode-indicator');
         
-        if (authData.loggedIn) {
-          const roleResponse = await fetch('api/get_user_role.php');
-          const roleData = await roleResponse.json();
-          
-          if (roleData.success && (roleData.role === 'student' || roleData.role === 'teacher')) {
-            const toggle = document.getElementById('mode-toggle-hero');
-            const indicator = document.getElementById('education-mode-indicator');
+        if (authData.loggedIn && authData.role) {
+          if (authData.role === 'student' || authData.role === 'teacher') {
             if (toggle) toggle.style.display = 'none';
             if (indicator) indicator.style.display = 'flex';
-            localStorage.setItem('quizMode', 'education');
           } else {
-            const toggle = document.getElementById('mode-toggle-hero');
-            const indicator = document.getElementById('education-mode-indicator');
-            if (toggle) toggle.style.display = 'flex';
+            if (toggle) toggle.style.display = 'none';
             if (indicator) indicator.style.display = 'none';
           }
         } else {
-          const toggle = document.getElementById('mode-toggle-hero');
-          const indicator = document.getElementById('education-mode-indicator');
           if (toggle) toggle.style.display = 'flex';
           if (indicator) indicator.style.display = 'none';
         }

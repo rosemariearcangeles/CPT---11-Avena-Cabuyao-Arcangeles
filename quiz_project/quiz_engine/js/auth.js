@@ -501,15 +501,14 @@ function startAuthCheck() {
   const cached = sessionStorage.getItem('authState');
   if (cached) {
     try {
-      applyAuthState(JSON.parse(cached));
+      const data = JSON.parse(cached);
+      applyAuthState(data);
     } catch (e) {}
   }
   
-  // Debounce initial check to prevent race with navbar.js
-  setTimeout(() => {
-    updateLoginUI();
-    authCheckInterval = setInterval(updateLoginUI, AUTH_CHECK_INTERVAL);
-  }, 100);
+  // Always check auth on page load to ensure fresh state
+  updateLoginUI();
+  authCheckInterval = setInterval(updateLoginUI, AUTH_CHECK_INTERVAL);
 }
 
 /* ===============================

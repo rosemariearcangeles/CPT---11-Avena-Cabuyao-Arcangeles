@@ -60,8 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Successful login → set session
     $session->login($user_id, $db_username);
 
-    // Redirect based on role
-    $redirect = ($role === 'student' || $role === 'teacher') ? 'education_dashboard.html' : 'dashboard.html';
+    // Redirect based on role - personal users go to index.html
+    if ($role === 'student' || $role === 'teacher') {
+        $redirect = 'education_dashboard.html';
+    } else {
+        $redirect = 'index.html';
+    }
 
     $response = [
         'status' => 'success',
