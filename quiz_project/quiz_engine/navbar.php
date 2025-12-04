@@ -28,10 +28,11 @@ $isEducationMode = $isLoggedIn && ($role === 'student' || $role === 'teacher');
       <li><a href="FAQ/FAQ.html" class="nav-link">FAQ</a></li>
 
       <?php if ($isLoggedIn): ?>
-        <li id="nav-profile-dashboard">
+        <li id="nav-profile-dashboard" class="dashboard-link">
           <a href="<?php echo $isEducationMode ? 'education_dashboard.html' : 'dashboard.html'; ?>" class="nav-link">
             Dashboard
             <span 
+              id="nav-role-badge"
               class="mode-badge" 
               style="margin-left: 0.5rem; font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 4px; <?php echo $isEducationMode ? '' : 'display:none;'; ?>"
             >

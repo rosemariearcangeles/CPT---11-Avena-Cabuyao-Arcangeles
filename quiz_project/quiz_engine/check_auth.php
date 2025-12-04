@@ -24,21 +24,42 @@ if ($session->isLoggedIn()) {
     $role = $session->getRole();
 
     if ($userId && $username) {
-        $stmt = $conn->prepare("SELECT id, role, email FROM users WHERE id = ? AND username = ?");
-        if ($stmt) {
-            $stmt->bind_param("is", $userId, $username);
-            $stmt->execute();
-            $result = $stmt->get_result();
+        try {
+            $stmt = $conn->prepare("SELECT id, role, email FROM users WHERE id = ? AND username = ?");
+            if ($stmt) {
+                $stmt->bind_param("is", $userId, $username);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            if ($result->num_rows === 1) {
-                $row = $result->fetch_assoc();
-                $isLoggedIn = true;
-                $role = $row['role'] ?? 'personal';
-                $email = $row['email'] ?? null;
+                if ($result->num_rows === 1) {
+                    $row = $result->fetch_assoc();
+                    $isLoggedIn = true;
+                    $role = $row['role'] ?? 'personal';
+                    $email = $row['email'] ?? null;
+                } else {
+                    // User not found in database, invalidate session
+                    $session->logout();
+                    $isLoggedIn = false;
+                    $username = null;
+                    $userId = null;
+                    $role = null;
+                    $email = null;
+                }
+                $stmt->close();
             } else {
+                // Database error, log out for security
+                error_log('check_auth.php: Failed to prepare statement');
                 $session->logout();
             }
-            $stmt->close();
+        } catch (Exception $e) {
+            // Database error, log and return logged out state
+            error_log('check_auth.php: Database error - ' . $e->getMessage());
+            $session->logout();
+            $isLoggedIn = false;
+            $username = null;
+            $userId = null;
+            $role = null;
+            $email = null;
         }
     }
 }

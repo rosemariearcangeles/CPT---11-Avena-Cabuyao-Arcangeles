@@ -15,12 +15,18 @@ const CacheManager = {
 
   // Set cache with timestamp
   set(key, data, duration = this.CACHE_DURATION) {
-    const cacheData = {
-      data,
-      timestamp: Date.now(),
-      expires: Date.now() + duration
-    };
-    sessionStorage.setItem(key, JSON.stringify(cacheData));
+    try {
+      const cacheData = {
+        data,
+        timestamp: Date.now(),
+        expires: Date.now() + duration
+      };
+      sessionStorage.setItem(key, JSON.stringify(cacheData));
+      return true;
+    } catch (e) {
+      console.error('CacheManager.set error:', e);
+      return false;
+    }
   },
 
   // Get cache if not expired
@@ -43,12 +49,24 @@ const CacheManager = {
 
   // Remove cache
   remove(key) {
-    sessionStorage.removeItem(key);
+    try {
+      sessionStorage.removeItem(key);
+      return true;
+    } catch (e) {
+      console.error('CacheManager.remove error:', e);
+      return false;
+    }
   },
 
   // Clear all cache
   clear() {
-    Object.values(this.KEYS).forEach(key => this.remove(key));
+    try {
+      Object.values(this.KEYS).forEach(key => this.remove(key));
+      return true;
+    } catch (e) {
+      console.error('CacheManager.clear error:', e);
+      return false;
+    }
   },
 
   // Check if cache is valid
@@ -60,7 +78,27 @@ const CacheManager = {
       const { expires } = JSON.parse(cached);
       return Date.now() < expires;
     } catch (e) {
+      this.remove(key); // Clean up corrupted cache
       return false;
+    }
+  },
+
+  // Get cache metadata without retrieving data
+  getMetadata(key) {
+    const cached = sessionStorage.getItem(key);
+    if (!cached) return null;
+
+    try {
+      const { timestamp, expires } = JSON.parse(cached);
+      return {
+        timestamp,
+        expires,
+        isValid: Date.now() < expires,
+        age: Date.now() - timestamp
+      };
+    } catch (e) {
+      this.remove(key);
+      return null;
     }
   }
 };
@@ -68,6 +106,7 @@ const CacheManager = {
 // Auth Cache Helper
 const AuthCache = {
   async getAuthState(forceRefresh = false) {
+    // Always check cache first unless force refresh
     if (!forceRefresh) {
       let cached = CacheManager.get(CacheManager.KEYS.AUTH_STATE);
       if (cached && cached.loggedIn && cached.username && cached.role) {
@@ -77,22 +116,46 @@ const AuthCache = {
 
     try {
       const response = await fetch('check_auth.php', {
-        headers: { 'Cache-Control': 'no-cache' },
+        method: 'GET',
+        headers: { 
+          'Cache-Control': 'no-cache',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
         credentials: 'same-origin'
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       
+      // Cache valid auth state
       if (data.loggedIn && data.username && data.role) {
         CacheManager.set(CacheManager.KEYS.AUTH_STATE, data);
-        CacheManager.set(CacheManager.KEYS.USER_ROLE, { success: true, role: data.role, username: data.username });
+        CacheManager.set(CacheManager.KEYS.USER_ROLE, { 
+          success: true, 
+          role: data.role, 
+          username: data.username 
+        });
       } else {
-        CacheManager.clear();
+        // Clear cache on logged out state
+        this.invalidate();
       }
       
       return data;
     } catch (e) {
-      CacheManager.clear();
-      return { loggedIn: false };
+      console.error('AuthCache.getAuthState error:', e);
+      // On error, clear cache and return logged out state
+      this.invalidate();
+      return { 
+        status: 'error',
+        loggedIn: false,
+        username: null,
+        userId: null,
+        role: null,
+        email: null
+      };
     }
   },
 
@@ -135,10 +198,21 @@ const AuthCache = {
   },
 
   setAuthState(data) {
-    if (data.loggedIn && data.username && data.role) {
+    if (data && data.loggedIn && data.username && data.role) {
       CacheManager.set(CacheManager.KEYS.AUTH_STATE, data);
-      CacheManager.set(CacheManager.KEYS.USER_ROLE, { success: true, role: data.role, username: data.username });
+      CacheManager.set(CacheManager.KEYS.USER_ROLE, { 
+        success: true, 
+        role: data.role, 
+        username: data.username 
+      });
+      return true;
     }
+    return false;
+  },
+
+  // Get cached state synchronously (for immediate UI rendering)
+  getCachedState() {
+    return CacheManager.get(CacheManager.KEYS.AUTH_STATE);
   }
 };
 

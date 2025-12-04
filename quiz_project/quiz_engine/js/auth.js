@@ -114,6 +114,7 @@ let activeToasts = [];
 let lastToastMessage = '';
 let lastToastTime = 0;
 const TOAST_DUPLICATE_THRESHOLD = 1000; // 1 second
+const MAX_ACTIVE_TOASTS = 3;
 
 function showToast(message, success = true) {
   // Prevent duplicate toasts within threshold
@@ -124,25 +125,35 @@ function showToast(message, success = true) {
   lastToastMessage = message;
   lastToastTime = now;
 
-  // Remove existing toasts if more than 3
-  if (activeToasts.length >= 3) {
+  // Remove oldest toast if we've reached the limit
+  if (activeToasts.length >= MAX_ACTIVE_TOASTS) {
     const oldToast = activeToasts.shift();
-    if (oldToast && oldToast.parentNode) oldToast.remove();
+    if (oldToast && oldToast.parentNode) {
+      oldToast.classList.remove('visible');
+      setTimeout(() => {
+        if (oldToast.parentNode) oldToast.remove();
+      }, 300);
+    }
   }
 
+  // Create toast element
   const toast = document.createElement('div');
   toast.className = `toast ${success ? 'toast-success' : 'toast-error'}`;
   toast.setAttribute('role', 'alert');
   toast.setAttribute('aria-live', 'polite');
+  toast.setAttribute('aria-atomic', 'true');
   toast.textContent = message;
 
+  // Add to DOM and track
   document.body.appendChild(toast);
   activeToasts.push(toast);
 
+  // Trigger animation
   requestAnimationFrame(() => {
     toast.classList.add('visible');
   });
 
+  // Auto-dismiss after 3 seconds
   setTimeout(() => {
     toast.classList.remove('visible');
     setTimeout(() => {
@@ -153,6 +164,9 @@ function showToast(message, success = true) {
     }, 300);
   }, 3000);
 }
+
+// Export for global access
+window.showToast = showToast;
 
 /* ===============================
    LOGIN HANDLER
@@ -572,15 +586,18 @@ function startAuthCheck() {
    =============================== */
 async function handleLogout() {
   try {
+    // Get CSRF token
     const csrfToken = await getCSRFToken();
     if (!csrfToken) {
       showToast('Failed to get security token. Please refresh the page and try again.', false);
       return;
     }
     
+    // Prepare logout request
     const formData = new FormData();
     formData.append('csrf_token', csrfToken);
     
+    // Send logout request
     const response = await fetch(`${BASE_PATH}logout.php`, {
       method: 'POST',
       headers: {
@@ -591,16 +608,31 @@ async function handleLogout() {
       body: new URLSearchParams(formData)
     });
 
-    // Clear all cache immediately for better UX
-    if (window.CacheManager) window.CacheManager.clear();
+    // Clear ALL cached authentication data immediately
+    if (window.CacheManager) {
+      window.CacheManager.clear();
+    }
+    if (window.AuthCache) {
+      window.AuthCache.invalidate();
+    }
     sessionStorage.removeItem('authState');
+    
+    // Update UI to logged-out state immediately
+    applyAuthState({ loggedIn: false, username: null, role: null });
     updateAuthenticatedUI(false);
     
-    // Show success message and redirect
+    // Notify navbar instance if available
+    if (window.navbarInstance && typeof window.navbarInstance.applyAuthState === 'function') {
+      window.navbarInstance.applyAuthState({ loggedIn: false, username: null, role: null });
+    }
+    
+    // Show success message
     showToast('You have been logged out successfully', true);
     
+    // Redirect after short delay
     setTimeout(() => {
-      if (!window.location.pathname.endsWith('index.html')) {
+      const currentPath = window.location.pathname;
+      if (!currentPath.endsWith('index.html') && !currentPath.endsWith('index.php') && !currentPath.endsWith('/')) {
         window.location.href = `${BASE_PATH}index.html`;
       } else {
         // Force a full page reload to ensure all state is cleared
@@ -610,14 +642,27 @@ async function handleLogout() {
     
   } catch (error) {
     console.error('Logout error:', error);
-    // Don't show error message if we've already logged out
-    if (!sessionStorage.getItem('authState')) {
+    
+    // Even on error, clear local state for security
+    if (window.CacheManager) window.CacheManager.clear();
+    if (window.AuthCache) window.AuthCache.invalidate();
+    sessionStorage.removeItem('authState');
+    
+    // Check if we're already logged out
+    const stillLoggedIn = sessionStorage.getItem('authState');
+    if (!stillLoggedIn) {
       showToast('Logged out successfully', true);
+      setTimeout(() => {
+        window.location.href = `${BASE_PATH}index.html`;
+      }, 500);
     } else {
       showToast('Network error during logout. Please refresh the page.', false);
     }
   }
 }
+
+// Export for global access
+window.handleLogout = handleLogout;
 
 /* ===============================
    EVENT LISTENERS

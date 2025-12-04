@@ -208,54 +208,89 @@ class UnifiedNavbar {
 
   // Authentication functions
   initializeAuth() {
-    // Apply cached state immediately to prevent flicker
-    const cached = sessionStorage.getItem('authState');
-    if (cached) {
-      try {
-        const data = JSON.parse(cached);
-        if (data.loggedIn && data.username) {
-          this.applyAuthState(data);
+    // Apply cached state SYNCHRONOUSLY to prevent any flicker
+    if (window.AuthCache && typeof window.AuthCache.getCachedState === 'function') {
+      const cached = window.AuthCache.getCachedState();
+      if (cached && cached.loggedIn && cached.username && cached.role) {
+        this.applyAuthState(cached);
+      }
+    } else {
+      // Fallback to direct sessionStorage read
+      const cached = sessionStorage.getItem('authState');
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          if (data.loggedIn && data.username && data.role) {
+            this.applyAuthState(data);
+          }
+        } catch (e) {
+          console.error('Error parsing cached auth state:', e);
         }
-      } catch (e) {}
+      }
     }
-    // Always check auth on init
+    
+    // Then validate with server in background
     this.updateAuthUI();
   }
 
   async updateAuthUI() {
+    // Prevent duplicate simultaneous requests
+    if (this._authCheckInProgress) {
+      return this._lastAuthResult || { loggedIn: false };
+    }
+    
+    this._authCheckInProgress = true;
+    
     try {
-      // Determine base path for API calls
-      const basePath = this.getBasePath();
-      
-      const response = await fetch(`${basePath}check_auth.php`, {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        credentials: 'same-origin'
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      
-      // Cache the auth state
-      if (data.loggedIn && data.username) {
-        sessionStorage.setItem('authState', JSON.stringify(data));
+      // Use AuthCache if available for consistent caching
+      let data;
+      if (window.AuthCache && typeof window.AuthCache.getAuthState === 'function') {
+        data = await window.AuthCache.getAuthState();
       } else {
-        sessionStorage.removeItem('authState');
+        // Fallback to direct fetch
+        const basePath = this.getBasePath();
+        const response = await fetch(`${basePath}check_auth.php`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        data = await response.json();
+        
+        // Cache the auth state
+        if (data.loggedIn && data.username && data.role) {
+          sessionStorage.setItem('authState', JSON.stringify(data));
+        } else {
+          sessionStorage.removeItem('authState');
+        }
       }
       
-      this.applyAuthState(data);
+      // Only update UI if state actually changed
+      const currentState = this._lastAuthResult;
+      if (!currentState || 
+          currentState.loggedIn !== data.loggedIn || 
+          currentState.username !== data.username ||
+          currentState.role !== data.role) {
+        this.applyAuthState(data);
+      }
       
+      this._lastAuthResult = data;
       return data;
     } catch (error) {
       console.error('Error checking auth status:', error);
-      this.applyAuthState({ loggedIn: false });
-      return { loggedIn: false };
+      const loggedOutState = { loggedIn: false, username: null, role: null };
+      this.applyAuthState(loggedOutState);
+      this._lastAuthResult = loggedOutState;
+      return loggedOutState;
+    } finally {
+      this._authCheckInProgress = false;
     }
   }
 
@@ -270,50 +305,78 @@ class UnifiedNavbar {
   }
 
   showLoggedInState(username, role) {
-    // Instant state change without animations to prevent glitching
-    if (this.authButtons) {
-      this.authButtons.style.display = 'none';
-      this.authButtons.style.opacity = '0';
-    }
+    // Use opacity transitions for smooth, glitch-free state changes
+    // Update all elements atomically
+    requestAnimationFrame(() => {
+      if (this.authButtons) {
+        this.authButtons.style.display = 'none';
+        this.authButtons.style.opacity = '0';
+      }
 
-    if (this.userMenu) {
-      this.userMenu.style.display = 'block';
-      this.userMenu.style.opacity = '1';
-    }
+      if (this.userMenu) {
+        this.userMenu.style.display = 'block';
+        this.userMenu.style.opacity = '1';
+      }
 
-    if (this.dashboardLink) {
-      this.dashboardLink.style.display = 'block';
-      this.dashboardLink.style.opacity = '1';
-    }
+      if (this.dashboardLink) {
+        this.dashboardLink.style.display = 'block';
+        this.dashboardLink.style.opacity = '1';
+        
+        // Update dashboard link href based on role
+        const isEducationUser = (role === 'student' || role === 'teacher');
+        const dashboardUrl = isEducationUser ? 'education_dashboard.html' : 'dashboard.html';
+        const basePath = this.getBasePath();
+        const dashboardLinkElement = this.dashboardLink.querySelector('a');
+        if (dashboardLinkElement) {
+          dashboardLinkElement.href = `${basePath}${dashboardUrl}`;
+        }
+      }
 
-    // Update username displays
-    if (this.usernameSpan) {
-      this.usernameSpan.textContent = username;
-    }
-    
-    if (this.dropdownUsername) {
-      this.dropdownUsername.textContent = username;
-    }
+      // Update username displays
+      if (this.usernameSpan) {
+        this.usernameSpan.textContent = username;
+      }
+      
+      if (this.dropdownUsername) {
+        this.dropdownUsername.textContent = username;
+      }
 
-    // Badge is now handled by PHP, no JS manipulation needed
+      // Update role badge if present
+      const roleBadge = document.querySelector('.mode-badge');
+      if (roleBadge && (role === 'student' || role === 'teacher')) {
+        roleBadge.style.display = 'inline-flex';
+        roleBadge.textContent = role === 'teacher' ? 'Teacher' : 'Student';
+      } else if (roleBadge) {
+        roleBadge.style.display = 'none';
+      }
+    });
   }
 
   showLoggedOutState() {
-    // Instant state change without animations to prevent glitching
-    if (this.authButtons) {
-      this.authButtons.style.display = 'flex';
-      this.authButtons.style.opacity = '1';
-    }
+    // Use opacity transitions for smooth, glitch-free state changes
+    // Update all elements atomically
+    requestAnimationFrame(() => {
+      if (this.authButtons) {
+        this.authButtons.style.display = 'flex';
+        this.authButtons.style.opacity = '1';
+      }
 
-    if (this.userMenu) {
-      this.userMenu.style.display = 'none';
-      this.userMenu.style.opacity = '0';
-    }
+      if (this.userMenu) {
+        this.userMenu.style.display = 'none';
+        this.userMenu.style.opacity = '0';
+      }
 
-    if (this.dashboardLink) {
-      this.dashboardLink.style.display = 'none';
-      this.dashboardLink.style.opacity = '0';
-    }
+      if (this.dashboardLink) {
+        this.dashboardLink.style.display = 'none';
+        this.dashboardLink.style.opacity = '0';
+      }
+      
+      // Hide role badge
+      const roleBadge = document.querySelector('.mode-badge');
+      if (roleBadge) {
+        roleBadge.style.display = 'none';
+      }
+    });
   }
 
   // Event handlers
@@ -373,15 +436,24 @@ class UnifiedNavbar {
   }
 
   startAuthCheck() {
-    // Check auth immediately and periodically
+    // Check auth immediately (but cache was already applied synchronously)
     this.updateAuthUI();
-    setInterval(() => this.updateAuthUI(), 30000); // Check every 30 seconds
-    // Also check on page visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        this.updateAuthUI();
-      }
-    });
+    
+    // Set up periodic checks (every 30 seconds)
+    if (this._authCheckInterval) {
+      clearInterval(this._authCheckInterval);
+    }
+    this._authCheckInterval = setInterval(() => this.updateAuthUI(), 30000);
+    
+    // Check on page visibility change
+    if (!this._visibilityHandler) {
+      this._visibilityHandler = () => {
+        if (!document.hidden) {
+          this.updateAuthUI();
+        }
+      };
+      document.addEventListener('visibilitychange', this._visibilityHandler);
+    }
   }
 
   refresh() {

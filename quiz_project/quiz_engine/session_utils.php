@@ -10,28 +10,42 @@ class SessionManager {
             $sessionName = 'quiz_engine_sid';
             $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
             $httponly = true;
+            
+            // Get proper domain for cookie (empty string for current domain)
+            $domain = '';
+            if (isset($_SERVER['HTTP_HOST'])) {
+                $host = $_SERVER['HTTP_HOST'];
+                // Remove port if present
+                $domain = preg_replace('/:\d+$/', '', $host);
+            }
 
             session_set_cookie_params([
-                'lifetime' => 86400,
+                'lifetime' => 86400, // 24 hours
                 'path' => '/',
-                'domain' => $_SERVER['HTTP_HOST'] ?? '',
+                'domain' => $domain,
                 'secure' => $secure,
                 'httponly' => $httponly,
                 'samesite' => 'Lax'
             ]);
 
             session_name($sessionName);
-            session_start();
+            
+            // Start session with error handling
+            if (!@session_start()) {
+                error_log('Failed to start session');
+                return;
+            }
+            
             $this->sessionStarted = true;
         } else {
             $this->sessionStarted = true;
         }
 
-        // Regenerate session ID periodically
+        // Regenerate session ID periodically (every 30 minutes)
         if (!isset($_SESSION['last_regeneration'])) {
             $this->regenerateSession();
         } else {
-            $interval = 1800;
+            $interval = 1800; // 30 minutes
             if (time() - $_SESSION['last_regeneration'] > $interval) {
                 $this->regenerateSession();
             }
@@ -56,11 +70,15 @@ class SessionManager {
         $_SESSION['role'] = $role;
         $_SESSION['logged_in'] = true;
         $_SESSION['login_time'] = time();
+        $_SESSION['last_activity'] = time(); // Initialize activity timestamp
         $this->regenerateSession();
     }
 
     public function logout() {
+        // Clear all session variables
         $_SESSION = [];
+        
+        // Delete the session cookie
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
             setcookie(session_name(), '', [
@@ -72,7 +90,11 @@ class SessionManager {
                 'samesite' => $params['samesite'] ?? 'Lax'
             ]);
         }
-        session_destroy();
+        
+        // Destroy the session
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
     }
 
     public function isLoggedIn() {
