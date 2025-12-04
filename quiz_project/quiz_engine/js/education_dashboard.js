@@ -239,7 +239,7 @@ function handleCreateClass(e) {
       }
       document.getElementById('createClassForm').reset();
       alert(`Class created! Code: ${data.class_code}`);
-      setTimeout(() => loadTeacherClasses(), 100);
+      loadTeacherClasses();
     } else {
       alert('Failed to create class: ' + (data.message || 'Unknown error'));
     }
@@ -291,7 +291,7 @@ function handleJoinClass(e) {
       }
       document.getElementById('joinClassForm').reset();
       alert('Successfully joined class!');
-      setTimeout(() => loadStudentClasses(), 100);
+      loadStudentClasses();
     } else {
       alert('Failed to join class: ' + (data.message || 'Unknown error'));
     }
