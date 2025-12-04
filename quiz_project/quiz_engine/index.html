@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="csrf-token" content="">
   <title>Online Quiz Engine</title>
+  <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/index.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/modal.css" />
@@ -155,13 +156,16 @@
 
     <div class="page-wrapper hero-inner">
       <div class="hero-content">
-        <div class="mode-toggle-hero">
+        <div class="mode-toggle-hero" id="mode-toggle-hero">
           <button class="mode-toggle-btn active" data-mode="personal">
             <i class="fas fa-user"></i> Personal Mode
           </button>
           <button class="mode-toggle-btn" data-mode="education">
             <i class="fas fa-graduation-cap"></i> Education Mode
           </button>
+        </div>
+        <div class="education-mode-indicator" id="education-mode-indicator" style="display:none;">
+          <i class="fas fa-graduation-cap"></i> Education Mode
         </div>
         <h1 id="hero-title">Transform Your Learning Experience</h1>
         <p id="hero-subtitle">Interactive online quizzes that are easy, comprehensive, and reliable.</p>
@@ -546,7 +550,45 @@
     }, 100);
     
     // Page-specific initialization
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      // ===== REDIRECT TEACHERS TO EDUCATION DASHBOARD =====
+      try {
+        const authResponse = await fetch('check_auth.php');
+        const authData = await authResponse.json();
+        
+        if (authData.loggedIn) {
+          const roleResponse = await fetch('api/get_user_role.php');
+          const roleData = await roleResponse.json();
+          
+          if (roleData.success && roleData.role === 'teacher') {
+            window.location.href = 'education_dashboard.html';
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('Not logged in or error checking role');
+      }
+      
+      // ===== CHECK IF USER IS LOGGED IN EDUCATION MODE =====
+      try {
+        const authResponse = await fetch('check_auth.php');
+        const authData = await authResponse.json();
+        
+        if (authData.loggedIn) {
+          const roleResponse = await fetch('api/get_user_role.php');
+          const roleData = await roleResponse.json();
+          
+          if (roleData.success && (roleData.role === 'student' || roleData.role === 'teacher')) {
+            // Hide toggle, show indicator
+            const toggle = document.getElementById('mode-toggle-hero');
+            const indicator = document.getElementById('education-mode-indicator');
+            if (toggle) toggle.style.display = 'none';
+            if (indicator) indicator.style.display = 'flex';
+            localStorage.setItem('quizMode', 'education');
+          }
+        }
+      } catch (e) {}
+      
       // ===== EDUCATION MODE TOGGLE =====
       let currentMode = localStorage.getItem('quizMode') || 'personal';
       
@@ -654,7 +696,7 @@
           
           if (data.success && data.classes.length > 0) {
             grid.innerHTML = data.classes.map(cls => `
-              <div class="class-card">
+              <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor:pointer;">
                 <h3>${cls.class_name}</h3>
                 <p>${cls.description || 'No description'}</p>
                 <div class="class-teacher">Teacher: ${cls.teacher_name}</div>
@@ -667,6 +709,13 @@
           console.error('Failed to load classes:', error);
         }
       }
+      
+      // Open class function
+      window.openClass = function(classId, className) {
+        sessionStorage.setItem('currentClassId', classId);
+        sessionStorage.setItem('currentClassName', className);
+        window.location.href = `class_dashboard.html?id=${classId}`;
+      };
       
       // Join class button
       const joinClassBtn = document.getElementById('join-class-btn');
