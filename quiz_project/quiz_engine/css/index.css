@@ -741,6 +741,12 @@ background-clip: text;
   margin-bottom: 2rem;
 }
 
+.class-students {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
 .role-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;

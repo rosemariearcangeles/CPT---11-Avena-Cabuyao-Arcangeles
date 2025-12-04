@@ -246,8 +246,8 @@
         
         <!-- Student Join Class Section -->
         <section class="join-class-section" id="student-join-section" style="display:none;">
-          <h1>Join Your Class</h1>
-          <p class="join-description">Enter the class code provided by your teacher to join.</p>
+          <h1 id="classes-heading">Join Your Class</h1>
+          <p class="join-description" id="classes-description">Enter the class code provided by your teacher to join.</p>
           
           <div class="join-class-card">
             <div class="class-code-input-wrapper">
@@ -551,7 +551,7 @@
     
     // Page-specific initialization
     document.addEventListener('DOMContentLoaded', async function() {
-      // ===== REDIRECT TEACHERS TO EDUCATION DASHBOARD =====
+      // ===== SHOW CLASSES FOR TEACHERS/STUDENTS =====
       try {
         const authResponse = await fetch('check_auth.php');
         const authData = await authResponse.json();
@@ -560,8 +560,34 @@
           const roleResponse = await fetch('api/get_user_role.php');
           const roleData = await roleResponse.json();
           
-          if (roleData.success && roleData.role === 'teacher') {
-            window.location.href = 'education_dashboard.html';
+          if (roleData.success && (roleData.role === 'teacher' || roleData.role === 'student')) {
+            // Hide quiz creation, show classes
+            const quizGenSection = document.getElementById('quiz-generation-section');
+            const quizUploadSection = document.getElementById('quiz-upload-section');
+            const studentJoinSection = document.getElementById('student-join-section');
+            
+            if (quizGenSection) quizGenSection.style.display = 'none';
+            if (quizUploadSection) quizUploadSection.style.display = 'none';
+            if (studentJoinSection) {
+              studentJoinSection.style.display = 'block';
+              
+              // Update heading and description based on role
+              const heading = document.getElementById('classes-heading');
+              const description = document.getElementById('classes-description');
+              if (roleData.role === 'teacher') {
+                if (heading) heading.textContent = 'My Classes';
+                if (description) description.textContent = 'Manage your classes and assignments.';
+              }
+              
+              // Hide join class input for teachers
+              if (roleData.role === 'teacher') {
+                const joinCard = studentJoinSection.querySelector('.join-class-card');
+                if (joinCard) joinCard.style.display = 'none';
+              }
+              
+              // Load classes
+              loadUserClasses(roleData.role);
+            }
             return;
           }
         }
@@ -687,10 +713,11 @@
         }
       }
       
-      // Load student classes
-      async function loadStudentClasses() {
+      // Load classes based on role
+      async function loadUserClasses(role) {
         try {
-          const response = await fetch('api/get_student_classes.php');
+          const endpoint = role === 'teacher' ? 'api/get_teacher_classes.php' : 'api/get_student_classes.php';
+          const response = await fetch(endpoint);
           const data = await response.json();
           const grid = document.getElementById('student-classes-grid');
           
@@ -699,11 +726,11 @@
               <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor:pointer;">
                 <h3>${cls.class_name}</h3>
                 <p>${cls.description || 'No description'}</p>
-                <div class="class-teacher">Teacher: ${cls.teacher_name}</div>
+                ${role === 'student' ? `<div class="class-teacher">Teacher: ${cls.teacher_name}</div>` : `<div class="class-students">${cls.student_count || 0} students</div>`}
               </div>
             `).join('');
           } else {
-            grid.innerHTML = '<p class="empty-state">No classes yet. Join a class to get started!</p>';
+            grid.innerHTML = `<p class="empty-state">${role === 'teacher' ? 'No classes yet. Create one from your dashboard!' : 'No classes yet. Join a class to get started!'}</p>`;
           }
         } catch (error) {
           console.error('Failed to load classes:', error);

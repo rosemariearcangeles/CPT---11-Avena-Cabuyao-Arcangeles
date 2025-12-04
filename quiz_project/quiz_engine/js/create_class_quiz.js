@@ -79,6 +79,7 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
     }
     
     const numQuestions = parseInt(document.getElementById('num-questions').value);
+    const quizType = document.getElementById('quiz-type').value;
     
     const btn = document.getElementById('generate-quiz-btn');
     btn.disabled = true;
@@ -86,7 +87,7 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
     
     try {
         // Generate quiz using AI (placeholder - integrate with your AI service)
-        const quizData = await generateQuizFromText(window.fileContent, numQuestions);
+        const quizData = await generateQuizFromText(window.fileContent, numQuestions, quizType);
         
         // Save quiz to database
         const saveResponse = await fetch('api/save_quiz.php', {
@@ -135,16 +136,52 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
 };
 
 // Placeholder AI function - replace with your actual AI integration
-async function generateQuizFromText(text, numQuestions) {
+async function generateQuizFromText(text, numQuestions, quizType) {
     // This should call your AI service
-    // For now, return dummy data
+    // For now, return dummy data based on quiz type
     const questions = [];
     for (let i = 0; i < numQuestions; i++) {
-        questions.push({
-            question: `Sample question ${i + 1} from text`,
-            options: ['Option A', 'Option B', 'Option C', 'Option D'],
-            answer: 'Option A'
-        });
+        if (quizType === 'true-false') {
+            questions.push({
+                question: `Sample true/false question ${i + 1} from text`,
+                options: ['True', 'False'],
+                answer: 'True'
+            });
+        } else if (quizType === 'fill-blank') {
+            questions.push({
+                question: `Complete the sentence: Sample _____ question ${i + 1}`,
+                options: ['blank', 'word', 'answer', 'text'],
+                answer: 'blank'
+            });
+        } else if (quizType === 'mixed') {
+            const types = ['multiple', 'true-false', 'fill-blank'];
+            const randomType = types[Math.floor(Math.random() * types.length)];
+            if (randomType === 'true-false') {
+                questions.push({
+                    question: `Sample true/false question ${i + 1}`,
+                    options: ['True', 'False'],
+                    answer: 'True'
+                });
+            } else if (randomType === 'fill-blank') {
+                questions.push({
+                    question: `Complete: Sample _____ ${i + 1}`,
+                    options: ['blank', 'word', 'answer', 'text'],
+                    answer: 'blank'
+                });
+            } else {
+                questions.push({
+                    question: `Sample multiple choice question ${i + 1}`,
+                    options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                    answer: 'Option A'
+                });
+            }
+        } else {
+            questions.push({
+                question: `Sample question ${i + 1} from text`,
+                options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                answer: 'Option A'
+            });
+        }
     }
     return questions;
 }
