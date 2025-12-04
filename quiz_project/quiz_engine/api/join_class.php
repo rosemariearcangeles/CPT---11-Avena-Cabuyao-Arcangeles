@@ -40,18 +40,24 @@ $class = $result->fetch_assoc();
 $class_id = $class['id'];
 $stmt->close();
 
-$stmt = $conn->prepare("INSERT INTO class_members (class_id, user_id) VALUES (?, ?)");
-$stmt->bind_param("ii", $class_id, $user_id);
+// education_mode.sql defines class_members.student_id, not user_id
+$stmt = $conn->prepare("INSERT INTO class_members (class_id, student_id) VALUES (?, ?)");
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true]);
-} else {
-    if ($stmt->errno === 1062) {
-        echo json_encode(['success' => false, 'message' => 'Already joined this class']);
+if ($stmt) {
+    $stmt->bind_param("ii", $class_id, $user_id);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true]);
     } else {
-        echo json_encode(['success' => false, 'message' => $stmt->error]);
+        if ($stmt->errno === 1062) {
+            echo json_encode(['success' => false, 'message' => 'Already joined this class']);
+        } else {
+            echo json_encode(['success' => false, 'message' => $stmt->error]);
+        }
     }
-}
 
-$stmt->close();
+    $stmt->close();
+} else {
+    echo json_encode(['success' => false, 'message' => 'Failed to prepare join_class statement.']);
+}
 ?>

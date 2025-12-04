@@ -20,23 +20,30 @@ if (!$session->isLoggedIn()) {
 
 $user_id = $session->getUserId();
 
+// NOTE: education_mode.sql creates class_members.student_id (not user_id)
+// so we must query via student_id here.
 $stmt = $conn->prepare("
     SELECT c.*, u.username as teacher_name 
     FROM classes c 
     JOIN class_members cm ON c.id = cm.class_id 
     JOIN users u ON c.teacher_id = u.id 
-    WHERE cm.user_id = ? 
+    WHERE cm.student_id = ? 
     ORDER BY cm.joined_at DESC
 ");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
 
-$classes = [];
-while ($row = $result->fetch_assoc()) {
-    $classes[] = $row;
+if ($stmt) {
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $classes = [];
+    while ($row = $result->fetch_assoc()) {
+        $classes[] = $row;
+    }
+    $stmt->close();
+
+    echo json_encode(['success' => true, 'classes' => $classes]);
+} else {
+    echo json_encode(['success' => false, 'classes' => [], 'message' => 'Failed to prepare statement for student classes.']);
 }
-
-echo json_encode(['success' => true, 'classes' => $classes]);
-$stmt->close();
 ?>

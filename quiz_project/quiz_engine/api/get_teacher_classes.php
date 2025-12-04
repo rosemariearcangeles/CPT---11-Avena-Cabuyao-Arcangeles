@@ -20,6 +20,8 @@ if (!$session->isLoggedIn()) {
 
 $user_id = $session->getUserId();
 
+// NOTE: education_mode.sql creates class_members.student_id (not user_id)
+// so we must join on student_id for counts to work reliably.
 $stmt = $conn->prepare("
     SELECT 
         c.id,
@@ -27,7 +29,7 @@ $stmt = $conn->prepare("
         c.description,
         c.class_code,
         c.created_at,
-        COUNT(DISTINCT cm.user_id) as student_count
+        COUNT(DISTINCT cm.student_id) as student_count
     FROM classes c
     LEFT JOIN class_members cm ON c.id = cm.class_id
     WHERE c.teacher_id = ?
@@ -35,16 +37,24 @@ $stmt = $conn->prepare("
     ORDER BY c.created_at DESC
 ");
 
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
+if ($stmt) {
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$classes = [];
-while ($row = $result->fetch_assoc()) {
-    $classes[] = $row;
+    $classes = [];
+    while ($row = $result->fetch_assoc()) {
+        $classes[] = $row;
+    }
+    $stmt->close();
+
+    echo json_encode([
+        'success' => true,
+        'classes' => $classes
+    ]);
+} else {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to prepare statement for teacher classes.'
+    ]);
 }
-
-echo json_encode([
-    'success' => true,
-    'classes' => $classes
-]);

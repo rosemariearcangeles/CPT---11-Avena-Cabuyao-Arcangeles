@@ -462,6 +462,7 @@ function applyAuthState(data) {
   const dashboardLink = document.querySelector('.dashboard-link, #nav-dashboard-link');
   const usernameSpan = document.getElementById('nav-username');
   const dropdownUsername = document.getElementById('dropdown-username');
+  const navRoleBadge = document.querySelector('#nav-profile-dashboard .mode-badge');
 
   if (data.loggedIn && data.username) {
     if (authButtons) {
@@ -477,7 +478,8 @@ function applyAuthState(data) {
       dashboardLink.style.opacity = '1';
       
       const basePath = BASE_PATH || '';
-      const dashboardUrl = (data.role === 'student' || data.role === 'teacher') ? `${basePath}education_dashboard.html` : `${basePath}dashboard.html`;
+      const isEducationUser = (data.role === 'student' || data.role === 'teacher');
+      const dashboardUrl = isEducationUser ? `${basePath}education_dashboard.html` : `${basePath}dashboard.html`;
       const dashboardLinkElement = dashboardLink.querySelector('a');
       if (dashboardLinkElement) {
         dashboardLinkElement.href = dashboardUrl;
@@ -485,8 +487,21 @@ function applyAuthState(data) {
       }
     }
     
-    const modeBadge = (data.role === 'student' || data.role === 'teacher') ? ' <span style="display:inline-block;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;padding:0.15rem 0.5rem;border-radius:0.25rem;font-size:0.7rem;font-weight:600;margin-left:0.25rem;">EDU</span>' : '';
-    if (usernameSpan) usernameSpan.innerHTML = data.username + modeBadge;
+    // Keep navbar role badge in sync and always visible for education users
+    if (navRoleBadge) {
+      const role = data.role;
+      const isEducationUser = role === 'student' || role === 'teacher';
+      if (isEducationUser) {
+        navRoleBadge.style.display = 'inline-block';
+        navRoleBadge.textContent = role === 'teacher' ? 'Teacher' : 'Student';
+      } else {
+        navRoleBadge.style.display = 'none';
+      }
+    }
+
+    if (usernameSpan) {
+      usernameSpan.textContent = data.username;
+    }
     if (dropdownUsername) dropdownUsername.textContent = data.username;
     updateAuthenticatedUI(true);
   } else {
