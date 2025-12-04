@@ -12,10 +12,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function checkAuth() {
   try {
-    const response = await fetch('check_auth.php');
+    const response = await fetch('check_auth.php', {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     if (!data.loggedIn) {
       window.location.href = 'index.html';
+      return;
+    }
+    
+    if (data.role === 'personal') {
+      window.location.href = 'dashboard.html';
+      return;
     }
   } catch (error) {
     console.error('Auth check failed:', error);
@@ -25,7 +33,9 @@ async function checkAuth() {
 
 async function loadUserData() {
   try {
-    const response = await fetch('api/get_user_role.php');
+    const response = await fetch('api/get_user_role.php', {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     if (data.success) {
       userRole = data.role;

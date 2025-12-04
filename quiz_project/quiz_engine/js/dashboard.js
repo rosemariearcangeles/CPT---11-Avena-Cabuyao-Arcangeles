@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function checkAuth() {
     try {
-        const response = await fetch('check_auth.php');
+        const response = await fetch('check_auth.php', {
+            credentials: 'same-origin'
+        });
         const data = await response.json();
         
         console.log('Auth check:', data);
@@ -19,10 +21,17 @@ async function checkAuth() {
             return;
         }
         
-        document.getElementById('userName').textContent = data.username;
-        document.getElementById('userEmail').textContent = data.email || '';
-        document.getElementById('welcomeName').textContent = data.username;
-        document.getElementById('userAvatar').textContent = data.username.charAt(0).toUpperCase();
+        // Personal dashboard only for personal users
+        if (data.role === 'student' || data.role === 'teacher') {
+            console.warn('Education user accessing personal dashboard, redirecting...');
+            window.location.href = 'education_dashboard.html';
+            return;
+        }
+        
+        if (document.getElementById('userName')) document.getElementById('userName').textContent = data.username;
+        if (document.getElementById('userEmail')) document.getElementById('userEmail').textContent = data.email || '';
+        if (document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = data.username;
+        if (document.getElementById('userAvatar')) document.getElementById('userAvatar').textContent = data.username.charAt(0).toUpperCase();
     } catch (error) {
         console.error('Auth check failed:', error);
         window.location.href = 'index.html';
@@ -32,7 +41,9 @@ async function checkAuth() {
 async function loadDashboardData() {
     console.log('Loading dashboard data...');
     try {
-        const response = await fetch('api/get_quizzes.php');
+        const response = await fetch('api/get_quizzes.php', {
+            credentials: 'same-origin'
+        });
         console.log('API response status:', response.status);
         
         const data = await response.json();
@@ -163,6 +174,7 @@ async function deleteQuiz(quizId) {
         const response = await fetch('api/delete_quiz.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify({ quiz_id: quizId })
         });
         
@@ -212,6 +224,7 @@ async function viewQuizResults(quizId) {
         const response = await fetch('api/get_quiz_details.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify({ quiz_id: quizId })
         });
         

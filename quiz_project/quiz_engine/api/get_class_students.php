@@ -21,7 +21,7 @@ if (!$class_id) {
 $stmt = $conn->prepare("
     SELECT u.id, u.username, u.email, cm.joined_at
     FROM class_members cm
-    JOIN users u ON cm.student_id = u.id
+    JOIN users u ON cm.user_id = u.id
     WHERE cm.class_id = ?
     ORDER BY cm.joined_at DESC
 ");

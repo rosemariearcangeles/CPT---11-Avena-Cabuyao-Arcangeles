@@ -70,7 +70,9 @@ const AuthCache = {
   async getAuthState(forceRefresh = false) {
     if (!forceRefresh) {
       let cached = CacheManager.get(CacheManager.KEYS.AUTH_STATE);
-      if (cached) return cached;
+      if (cached && cached.loggedIn && cached.username && cached.role) {
+        return cached;
+      }
     }
 
     try {
@@ -79,12 +81,17 @@ const AuthCache = {
         credentials: 'same-origin'
       });
       const data = await response.json();
-      CacheManager.set(CacheManager.KEYS.AUTH_STATE, data);
-      if (data.role) {
-        CacheManager.set(CacheManager.KEYS.USER_ROLE, { success: true, role: data.role });
+      
+      if (data.loggedIn && data.username && data.role) {
+        CacheManager.set(CacheManager.KEYS.AUTH_STATE, data);
+        CacheManager.set(CacheManager.KEYS.USER_ROLE, { success: true, role: data.role, username: data.username });
+      } else {
+        CacheManager.clear();
       }
+      
       return data;
     } catch (e) {
+      CacheManager.clear();
       return { loggedIn: false };
     }
   },
@@ -125,6 +132,13 @@ const AuthCache = {
     CacheManager.remove(CacheManager.KEYS.AUTH_STATE);
     CacheManager.remove(CacheManager.KEYS.USER_ROLE);
     CacheManager.remove(CacheManager.KEYS.USER_DATA);
+  },
+
+  setAuthState(data) {
+    if (data.loggedIn && data.username && data.role) {
+      CacheManager.set(CacheManager.KEYS.AUTH_STATE, data);
+      CacheManager.set(CacheManager.KEYS.USER_ROLE, { success: true, role: data.role, username: data.username });
+    }
   }
 };
 
@@ -179,10 +193,14 @@ const DataCache = {
 
 // Preload critical data
 async function preloadCriticalData() {
-  const authState = await AuthCache.getAuthState();
-  if (authState.loggedIn) {
-    AuthCache.getUserRole();
-    AuthCache.getUserData();
+  try {
+    const authState = await AuthCache.getAuthState(true);
+    if (authState.loggedIn) {
+      AuthCache.getUserRole();
+      AuthCache.getUserData();
+    }
+  } catch (e) {
+    console.error('Preload failed:', e);
   }
 }
 

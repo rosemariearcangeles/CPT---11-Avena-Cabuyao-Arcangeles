@@ -214,6 +214,14 @@ async function handleLogin(event) {
       closeLoginModal();
       form.reset();
       
+      if (window.AuthCache && data.role) {
+        window.AuthCache.setAuthState({
+          loggedIn: true,
+          username: data.username,
+          role: data.role
+        });
+      }
+      
       await updateLoginUI();
       
       const redirectUrl = data.redirect || 'dashboard.html';
@@ -444,6 +452,15 @@ function applyAuthState(data) {
     if (dashboardLink) {
       dashboardLink.style.display = 'block';
       dashboardLink.style.opacity = '1';
+      
+      // Update dashboard link based on role
+      const dashboardUrl = (data.role === 'student' || data.role === 'teacher') ? 'education_dashboard.html' : 'dashboard.html';
+      const dashboardLinkElement = dashboardLink.querySelector('a');
+      if (dashboardLinkElement) dashboardLinkElement.href = dashboardUrl;
+      
+      // Update dropdown dashboard link
+      const dropdownDashboard = document.querySelector('.user-dropdown a[href="dashboard.html"]');
+      if (dropdownDashboard) dropdownDashboard.href = dashboardUrl;
     }
     if (usernameSpan) usernameSpan.textContent = data.username;
     if (dropdownUsername) dropdownUsername.textContent = data.username;

@@ -14,10 +14,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function checkAuth() {
   try {
-    const response = await fetch('check_auth.php');
+    const response = await fetch('check_auth.php', {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     if (!data.loggedIn) {
       window.location.href = 'index.html';
+      return;
+    }
+    
+    if (data.role === 'personal') {
+      window.location.href = 'dashboard.html';
+      return;
     }
   } catch (error) {
     console.error('Auth check failed:', error);
@@ -27,7 +35,9 @@ async function checkAuth() {
 
 async function loadUserData() {
   try {
-    const response = await fetch('api/get_user_role.php');
+    const response = await fetch('api/get_user_role.php', {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     if (data.success) {
       userRole = data.role;
@@ -43,6 +53,13 @@ async function loadUserData() {
 function loadClassInfo() {
   const urlParams = new URLSearchParams(window.location.search);
   classId = urlParams.get('id') || sessionStorage.getItem('currentClassId');
+  
+  if (!classId) {
+    alert('No class selected');
+    window.location.href = 'education_dashboard.html';
+    return;
+  }
+  
   className = sessionStorage.getItem('currentClassName') || 'Class';
   $id('className').textContent = className;
 }
@@ -142,7 +159,9 @@ function attachNavListeners() {
 
 async function loadStudents() {
   try {
-    const response = await fetch('api/get_class_students.php?class_id=' + classId);
+    const response = await fetch('api/get_class_students.php?class_id=' + encodeURIComponent(classId), {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     const list = $id('studentList');
     
@@ -167,7 +186,9 @@ async function loadStudents() {
 
 async function loadAssignments() {
   try {
-    const response = await fetch('api/get_class_assignments.php?class_id=' + classId);
+    const response = await fetch('api/get_class_assignments.php?class_id=' + encodeURIComponent(classId), {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     const list = $id('quizList');
     
@@ -193,7 +214,9 @@ async function loadAssignments() {
 
 async function loadGrades() {
   try {
-    const response = await fetch('api/get_student_grades.php?class_id=' + classId);
+    const response = await fetch('api/get_student_grades.php?class_id=' + encodeURIComponent(classId), {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     const list = $id('gradesList');
     
@@ -223,7 +246,9 @@ async function loadGrades() {
 
 async function assignQuiz() {
   try {
-    const response = await fetch('api/get_teacher_quizzes.php');
+    const response = await fetch('api/get_teacher_quizzes.php', {
+      credentials: 'same-origin'
+    });
     const data = await response.json();
     
     if (!data.success || data.quizzes.length === 0) {
@@ -250,6 +275,7 @@ async function assignQuiz() {
     const assignResponse = await fetch('api/assign_quiz.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
       body: JSON.stringify({ class_id: classId, quiz_id: quiz.id, title })
     });
     
