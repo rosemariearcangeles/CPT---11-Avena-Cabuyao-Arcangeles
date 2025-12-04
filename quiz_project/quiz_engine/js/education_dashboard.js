@@ -71,14 +71,6 @@ function renderTeacherDashboard() {
       <i class="fas fa-chalkboard"></i>
       <span>My Classes</span>
     </a>
-    <a href="#" class="nav-item" data-section="assignments">
-      <i class="fas fa-tasks"></i>
-      <span>Assignments</span>
-    </a>
-    <a href="#" class="nav-item" data-section="students">
-      <i class="fas fa-users"></i>
-      <span>Students</span>
-    </a>
   `;
 
   $id('mainContent').innerHTML = `
@@ -102,14 +94,6 @@ function renderStudentDashboard() {
     <a href="#" class="nav-item active" data-section="classes">
       <i class="fas fa-chalkboard"></i>
       <span>My Classes</span>
-    </a>
-    <a href="#" class="nav-item" data-section="assignments">
-      <i class="fas fa-clipboard-list"></i>
-      <span>Assignments</span>
-    </a>
-    <a href="#" class="nav-item" data-section="grades">
-      <i class="fas fa-chart-line"></i>
-      <span>Grades</span>
     </a>
   `;
 

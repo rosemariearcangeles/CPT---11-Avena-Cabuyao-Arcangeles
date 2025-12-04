@@ -401,3 +401,169 @@ body {
 .toast-error {
   background-color: var(--error-color) !important;    /* RED */
 }
+
+/* =========================================
+   Education "Take Quiz" Page Styles
+   Used by take_quiz.html + js/take_quiz.js
+   ========================================= */
+
+.quiz-container {
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 1.5rem;
+}
+
+.quiz-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  padding: 1.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quiz-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.quiz-progress {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.quiz-content {
+  margin-top: 1.75rem;
+}
+
+.question-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.5rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.question-card h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.question-card .question-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.5rem 0 1.25rem 0;
+  color: var(--text-primary);
+}
+
+.options {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.option-label input[type="radio"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.option-label span {
+  flex: 1;
+}
+
+.option-label:hover {
+  border-color: var(--primary-color);
+  background: #eef2ff;
+  box-shadow: var(--shadow-sm);
+}
+
+.option-label input[type="radio"]:checked + span {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.quiz-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.quiz-actions .btn {
+  flex: 1;
+  padding: 0.8rem 1.25rem;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.quiz-actions .btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.quiz-actions .btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow);
+}
+
+.quiz-actions .btn-secondary {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.quiz-actions .btn-secondary:hover {
+  background: #e5e7eb;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 640px) {
+  .quiz-container {
+    margin: 1.25rem auto;
+    padding: 1rem;
+  }
+
+  .quiz-header {
+    padding: 1.25rem 1rem;
+  }
+
+  .question-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .quiz-actions {
+    flex-direction: column;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
