@@ -86,8 +86,7 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
     btn.textContent = 'Generating...';
     
     try {
-        // Generate quiz using AI (placeholder - integrate with your AI service)
-        const quizData = await generateQuizFromText(window.fileContent, numQuestions, quizType);
+        const quizData = generateLocalQuestions(window.fileContent || '', numQuestions, quizType, 'medium');
 
         // Save quiz to database with CSRF protection
         const csrfToken = await getCSRFToken();
@@ -144,53 +143,156 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
     }
 };
 
-// Placeholder AI function - replace with your actual AI integration
-async function generateQuizFromText(text, numQuestions, quizType) {
-    // This should call your AI service
-    // For now, return dummy data based on quiz type
+function shuffleArray(arr) {
+    const a = Array.isArray(arr) ? arr.slice() : [];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function generateLocalQuestions(text, count = 5, type = 'multiple', difficulty = 'medium') {
+    const sentences = (text || "").split(/[.!?]\s+/).map(s => s.trim()).filter(Boolean);
+    const uniqueSentences = [...new Set(sentences)];
+    const shuffledSentences = shuffleArray(uniqueSentences);
+    const stopWords = new Set(['the','and','or','but','in','on','at','to','for','of','with','by','an','a','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','can','this','that','these','those','i','you','he','she','it','we','they','me','him','her','us','them']);
+    const allWords = (text || "").toLowerCase().split(/[^a-z]+/).filter(w => w.length > 3 && w.length < 15 && !stopWords.has(w));
+    const wordFreq = {};
+    allWords.forEach(w => wordFreq[w] = (wordFreq[w] || 0) + 1);
+    const words = Array.from(new Set(allWords));
     const questions = [];
-    for (let i = 0; i < numQuestions; i++) {
-        if (quizType === 'true-false') {
-            questions.push({
-                question: `Sample true/false question ${i + 1} from text`,
-                options: ['True', 'False'],
-                answer: 'True'
-            });
-        } else if (quizType === 'fill-blank') {
-            questions.push({
-                question: `Complete the sentence: Sample _____ question ${i + 1}`,
-                options: ['blank', 'word', 'answer', 'text'],
-                answer: 'blank'
-            });
-        } else if (quizType === 'mixed') {
-            const types = ['multiple', 'true-false', 'fill-blank'];
-            const randomType = types[Math.floor(Math.random() * types.length)];
-            if (randomType === 'true-false') {
-                questions.push({
-                    question: `Sample true/false question ${i + 1}`,
-                    options: ['True', 'False'],
-                    answer: 'True'
-                });
-            } else if (randomType === 'fill-blank') {
-                questions.push({
-                    question: `Complete: Sample _____ ${i + 1}`,
-                    options: ['blank', 'word', 'answer', 'text'],
-                    answer: 'blank'
-                });
+    const usedKeywords = new Set();
+    const usedQuestions = new Set();
+    const usedSentences = new Set();
+
+    for (let i = 0; i < shuffledSentences.length && questions.length < count; i++) {
+        const s = shuffledSentences[i];
+        const sNorm = s.toLowerCase().trim();
+        if (usedSentences.has(sNorm)) continue;
+        const sentenceWords = s.split(/\s+/).filter(w => w.length > 3);
+        if (!sentenceWords.length || s.length < 30 || sentenceWords.length < 5) continue;
+        let candidateWords = sentenceWords.filter(w => words.includes(w.toLowerCase()) && !usedKeywords.has(w.toLowerCase()));
+        if (!candidateWords.length) candidateWords = sentenceWords.filter(w => !usedKeywords.has(w.toLowerCase()));
+        if (!candidateWords.length) continue;
+        let keyword;
+        if (difficulty === 'easy') {
+            const freqSorted = candidateWords.sort((a, b) => (wordFreq[b.toLowerCase()] || 0) - (wordFreq[a.toLowerCase()] || 0));
+            keyword = freqSorted[0] || candidateWords[0];
+        } else if (difficulty === 'hard') {
+            const freqSorted = candidateWords.sort((a, b) => (wordFreq[a.toLowerCase()] || 0) - (wordFreq[b.toLowerCase()] || 0));
+            keyword = freqSorted[0] || candidateWords[0];
+        } else {
+            keyword = candidateWords[Math.floor(Math.random() * candidateWords.length)] || sentenceWords[Math.floor(Math.random() * sentenceWords.length)];
+        }
+        const keywordLower = keyword.toLowerCase();
+        usedKeywords.add(keywordLower);
+        const keywordFreq = wordFreq[keywordLower] || 1;
+        const similarFreqWords = words.filter(w => w !== keywordLower && !usedKeywords.has(w) && Math.abs((wordFreq[w] || 1) - keywordFreq) <= 2);
+        const distractors = shuffleArray(similarFreqWords.length ? similarFreqWords : words.filter(w => w !== keywordLower && !usedKeywords.has(w))).slice(0, 3);
+        while (distractors.length < 3) distractors.push("Option" + (distractors.length + 1));
+
+        let question, options, answer;
+        if (type === 'fill-blank') {
+            question = `Complete the sentence: ${s.replace(new RegExp(`\\b${keyword}\\b`, 'i'), "_____")}`;
+            options = shuffleArray([keyword, ...distractors.slice(0, 3)]);
+            answer = keyword;
+        } else if (type === 'true-false') {
+            const isTrue = Math.random() > 0.5;
+            if (isTrue) {
+                question = `True or False: ${s}`;
+                answer = 'True';
             } else {
-                questions.push({
-                    question: `Sample multiple choice question ${i + 1}`,
-                    options: ['Option A', 'Option B', 'Option C', 'Option D'],
-                    answer: 'Option A'
-                });
+                question = `True or False: ${s.replace(new RegExp(`\\b${keyword}\\b`, 'i'), distractors[0] || "something else")}`;
+                answer = 'False';
+            }
+            options = ['True','False'];
+        } else if (type === 'mixed') {
+            const randType = ['multiple','fill-blank','true-false'][Math.floor(Math.random() * 3)];
+            if (randType === 'fill-blank') {
+                question = `Complete the sentence: ${s.replace(new RegExp(`\\b${keyword}\\b`, 'i'), "_____")}`;
+                options = shuffleArray([keyword, ...distractors.slice(0, 3)]);
+                answer = keyword;
+            } else if (randType === 'true-false') {
+                const isTrue2 = Math.random() > 0.5;
+                if (isTrue2) {
+                    question = `True or False: ${s}`;
+                    answer = 'True';
+                } else {
+                    question = `True or False: ${s.replace(new RegExp(`\\b${keyword}\\b`, 'i'), distractors[0] || "something else")}`;
+                    answer = 'False';
+                }
+                options = ['True','False'];
+            } else {
+                const questionTypes = [
+                    `In the sentence "${s}", what is the key term?`,
+                    `In this sentence: "${s}", identify the main word.`,
+                    `In the sentence "${s}", which word is central?`
+                ];
+                question = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                options = shuffleArray([keyword, ...distractors.slice(0, 3)]);
+                answer = keyword;
             }
         } else {
-            questions.push({
-                question: `Sample question ${i + 1} from text`,
-                options: ['Option A', 'Option B', 'Option C', 'Option D'],
-                answer: 'Option A'
-            });
+            const questionTypes = [
+                `In the sentence "${s}", what is the key term?`,
+                `In this sentence: "${s}", identify the main word.`,
+                `In the sentence "${s}", which word is central?`,
+                `In the sentence "${s}", what term best describes the focus?`
+            ];
+            question = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+            options = shuffleArray([keyword, ...distractors.slice(0, 3)]);
+            answer = keyword;
+        }
+        const qNorm = question.toLowerCase().replace(/\s+/g, ' ').trim();
+        if (!usedQuestions.has(qNorm)) {
+            usedQuestions.add(qNorm);
+            usedSentences.add(sNorm);
+            questions.push({ question, options, answer });
         }
     }
+
+    if (!questions.length && words.length) {
+        const shuffledWords = shuffleArray(words);
+        for (let i = 0; i < Math.min(count, shuffledWords.length); i++) {
+            const keyword = shuffledWords[i];
+            if (usedKeywords.has(keyword)) continue;
+            usedKeywords.add(keyword);
+            const distractors = shuffleArray(words.filter(w => w !== keyword && !usedKeywords.has(w))).slice(0, 3);
+            while (distractors.length < 3) distractors.push("Choice" + (distractors.length + 1));
+
+            let question, options, answer;
+            if (type === 'fill-blank') {
+                question = `What word is this? _____`;
+                options = shuffleArray([keyword, ...distractors]);
+                answer = keyword;
+            } else if (type === 'true-false') {
+                question = `Is "${keyword}" a word?`;
+                options = ['True','False'];
+                answer = 'True';
+            } else if (type === 'mixed') {
+                const randType2 = ['multiple','fill-blank','true-false'][Math.floor(Math.random() * 3)];
+                if (randType2 === 'fill-blank') {
+                    question = `What word is this? _____`;
+                    options = shuffleArray([keyword, ...distractors]);
+                    answer = keyword;
+                } else if (randType2 === 'true-false') {
+                    question = `Is "${keyword}" a word?`;
+                    options = ['True','False'];
+                    answer = 'True';
+                } else {
+                    question = `What is the word?`;
+                    options = shuffleArray([keyword, ...distractors]);
+                    answer = keyword;
+                }
+            } else {
+                question = `What is the word?`;
+                options = shuffleArray([keyword, ...distractors]);
+                answer = keyword;
+            }
+            questions.push({ question, options, answer });
+        }
+    }
+
     return questions;
 }
