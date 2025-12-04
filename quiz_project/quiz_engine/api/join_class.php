@@ -15,6 +15,14 @@ if (!$session->isLoggedIn()) {
     exit;
 }
 
+// CSRF protection for state-changing request
+$csrfHeader = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+if (!$csrfHeader || !$session->validateCSRFToken($csrfHeader)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+    exit;
+}
+
 $user_id = $session->getUserId();
 
 $input = json_decode(file_get_contents('php://input'), true);

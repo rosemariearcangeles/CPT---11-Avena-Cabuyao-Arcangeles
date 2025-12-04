@@ -93,11 +93,16 @@ async function submitQuiz() {
     const correctIndex = q.options.indexOf(q.answer);
     if (answers[i] === correctIndex) score++;
   });
-  
+
   try {
+    const csrfToken = await getCSRFToken();
     const response = await fetch('api/submit_assignment.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin',
       body: JSON.stringify({
         assignment_id: assignment.id,
         answers: answers,

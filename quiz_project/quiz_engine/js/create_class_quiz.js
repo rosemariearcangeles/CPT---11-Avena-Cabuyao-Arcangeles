@@ -88,11 +88,16 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
     try {
         // Generate quiz using AI (placeholder - integrate with your AI service)
         const quizData = await generateQuizFromText(window.fileContent, numQuestions, quizType);
-        
-        // Save quiz to database
+
+        // Save quiz to database with CSRF protection
+        const csrfToken = await getCSRFToken();
         const saveResponse = await fetch('api/save_quiz.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            credentials: 'same-origin',
             body: JSON.stringify({
                 quiz_name: title,
                 quiz_data: quizData,
@@ -103,17 +108,21 @@ document.getElementById('generate-quiz-btn').onclick = async () => {
         
         const saveData = await saveResponse.json();
         
-        if (saveData.success) {
-            // Auto-assign to class
-            const assignResponse = await fetch('api/assign_quiz.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    class_id: classId,
-                    quiz_id: saveData.quiz_id,
-                    title: title
-                })
-            });
+            if (saveData.success) {
+                // Auto-assign to class with CSRF protection
+                const assignResponse = await fetch('api/assign_quiz.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        class_id: classId,
+                        quiz_id: saveData.quiz_id,
+                        title: title
+                    })
+                });
             
             const assignData = await assignResponse.json();
             

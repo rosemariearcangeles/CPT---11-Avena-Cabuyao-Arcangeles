@@ -249,13 +249,18 @@ function handleCreateClass(e) {
     alert('Please enter a class name');
     return;
   }
-  
-  fetch('api/create_class.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin',
-    body: JSON.stringify({ class_name: className, description })
-  })
+
+  // Use CSRF token for state-changing request
+  getCSRFToken().then(csrfToken => {
+    fetch('api/create_class.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ class_name: className, description })
+    })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
@@ -267,6 +272,7 @@ function handleCreateClass(e) {
   })
   .catch(err => {
     alert('Failed to create class. Please try again.');
+  });
   });
 }
 
@@ -290,13 +296,18 @@ function handleJoinClass(e) {
     alert('Please enter a class code');
     return;
   }
-  
-  fetch('api/join_class.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin',
-    body: JSON.stringify({ class_code: classCode })
-  })
+
+  // Use CSRF token for state-changing request
+  getCSRFToken().then(csrfToken => {
+    fetch('api/join_class.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ class_code: classCode })
+    })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
@@ -308,6 +319,7 @@ function handleJoinClass(e) {
   })
   .catch(err => {
     alert('Failed to join class. Please try again.');
+  });
   });
 }
 

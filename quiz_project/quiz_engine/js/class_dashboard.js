@@ -275,9 +275,13 @@ async function assignQuiz() {
     
     if (!title) return;
     
+    const csrfToken = await getCSRFToken();
     const assignResponse = await fetch('api/assign_quiz.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
       credentials: 'same-origin',
       body: JSON.stringify({ class_id: classId, quiz_id: quiz.id, title })
     });
