@@ -469,7 +469,7 @@
   // HERO carousel implementation (robust image loading + fallback)
   function initHeroCarousel() {
     const slides = [
-      { type: 'color', value: 'linear-gradient(135deg,#5A67D8,#805AD5)', ready: true },
+      { type: 'color', value: 'linear-gradient(135deg, #6366f1, #4f46e5)', ready: true },
       { type: 'image', value: 'images/mm.jpeg', ready: false },
       { type: 'image', value: 'images/nn.jpeg', ready: false },
       { type: 'image', value: 'images/oo.jpeg', ready: false }
@@ -519,8 +519,10 @@
           heroSectionEl.style.backgroundRepeat = 'no-repeat';
           heroSectionEl.style.backgroundColor = '';
         } else if (s.type === 'color') {
-          heroSectionEl.style.backgroundImage = '';
-          heroSectionEl.style.background = s.value;
+          heroSectionEl.style.backgroundImage = s.value;
+          heroSectionEl.style.backgroundSize = 'cover';
+          heroSectionEl.style.backgroundPosition = 'center';
+          heroSectionEl.style.backgroundRepeat = 'no-repeat';
         }
         
         heroSectionEl.style.opacity = '1';

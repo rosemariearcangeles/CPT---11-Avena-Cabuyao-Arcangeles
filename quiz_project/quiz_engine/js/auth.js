@@ -394,6 +394,14 @@ let authCheckInterval;
 // Update UI based on authentication state
 async function updateLoginUI() {
   try {
+    // Use cache if available
+    if (window.AuthCache) {
+      const data = await window.AuthCache.getAuthState();
+      applyAuthState(data);
+      return data;
+    }
+    
+    // Fallback to direct fetch
     const response = await fetch(`${BASE_PATH}check_auth.php`, {
       method: 'GET',
       headers: {
@@ -408,10 +416,7 @@ async function updateLoginUI() {
     }
 
     const data = await response.json();
-    
-    // Cache the auth state
     sessionStorage.setItem('authState', JSON.stringify(data));
-    
     applyAuthState(data);
     return data;
   } catch (error) {
@@ -531,7 +536,8 @@ async function handleLogout() {
       body: new URLSearchParams(formData)
     });
 
-    // Clear auth state immediately for better UX
+    // Clear all cache immediately for better UX
+    if (window.CacheManager) window.CacheManager.clear();
     sessionStorage.removeItem('authState');
     updateAuthenticatedUI(false);
     
