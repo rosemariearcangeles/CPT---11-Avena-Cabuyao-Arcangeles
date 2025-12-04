@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Successful login → set session
-    $session->login($user_id, $db_username);
+    $session->login($user_id, $db_username, $role);
 
     // Redirect based on role - personal users go to index.html
     if ($role === 'student' || $role === 'teacher') {

@@ -128,14 +128,22 @@ function renderStudentDashboard() {
 
 async function loadTeacherClasses() {
   try {
+    console.log('Loading teacher classes...');
     const response = await fetch('api/get_teacher_classes.php?t=' + Date.now(), {
       credentials: 'same-origin',
       headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
     });
+
+    if (!response.ok) {
+      console.error('API responded with error:', response.status, response.statusText);
+      return;
+    }
+
     const data = await response.json();
+    console.log('Classes data received:', data);
     const classList = $id('classList');
-    
-    if (data.success && data.classes.length > 0) {
+
+    if (data.success && data.classes && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
         <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor: pointer;">
           <h3>${cls.class_name}</h3>
@@ -146,7 +154,9 @@ async function loadTeacherClasses() {
           </div>
         </div>
       `).join('');
+      console.log('Classes rendered:', data.classes.length);
     } else {
+      console.log('No classes found, showing empty state');
       classList.innerHTML = `
         <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
           <div style="font-size:4rem;margin-bottom:1rem;">📚</div>
@@ -160,6 +170,18 @@ async function loadTeacherClasses() {
     }
   } catch (error) {
     console.error('Failed to load classes:', error);
+    // Show error state to user
+    const classList = $id('classList');
+    classList.innerHTML = `
+      <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
+        <div style="font-size:4rem;margin-bottom:1rem;">⚠️</div>
+        <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">Error Loading Classes</h3>
+        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Please refresh the page or try again.</p>
+        <button class="btn btn-primary" onclick="loadTeacherClasses()">
+          <i class="fas fa-refresh"></i> Retry
+        </button>
+      </div>
+    `;
   }
 }
 
