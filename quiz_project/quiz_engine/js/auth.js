@@ -64,7 +64,7 @@ function clearFormErrors(modal) {
 }
 
 // Modal toggles
-async function openLogin() {
+window.openLogin = async function openLogin() {
   closeRegisterModal();
   const modal = document.getElementById('loginModal');
   
@@ -82,7 +82,7 @@ function closeLoginModal() {
   closeModal(modal);
 }
 
-async function openRegister() {
+window.openRegister = async function openRegister() {
   closeLoginModal();
   const modal = document.getElementById('registerModal');
   
@@ -637,3 +637,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
