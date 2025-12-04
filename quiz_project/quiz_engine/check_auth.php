@@ -1,5 +1,4 @@
 <?php
-// Enable CORS if needed
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, must-revalidate');
@@ -9,19 +8,19 @@ require_once 'config.php';
 
 $session = SessionManager::getInstance();
 
-// Check if user is logged in and the session is still valid
 $isLoggedIn = false;
 $username = null;
 $userId = null;
 $role = null;
+$email = null;
 
 if ($session->isLoggedIn()) {
-    // Verify the user still exists in the database
     $userId = $session->getUserId();
     $username = $session->getUsername();
+    $role = $session->getRole();
 
     if ($userId && $username) {
-        $stmt = $conn->prepare("SELECT id, role FROM users WHERE id = ? AND username = ?");
+        $stmt = $conn->prepare("SELECT id, role, email FROM users WHERE id = ? AND username = ?");
         if ($stmt) {
             $stmt->bind_param("is", $userId, $username);
             $stmt->execute();
@@ -30,7 +29,8 @@ if ($session->isLoggedIn()) {
             if ($result->num_rows === 1) {
                 $row = $result->fetch_assoc();
                 $isLoggedIn = true;
-                $role = $row['role'];
+                $role = $row['role'] ?? 'personal';
+                $email = $row['email'] ?? null;
             } else {
                 $session->logout();
             }
@@ -39,13 +39,13 @@ if ($session->isLoggedIn()) {
     }
 }
 
-// Return the authentication status
 echo json_encode([
     'status' => 'success',
     'loggedIn' => $isLoggedIn,
     'username' => $isLoggedIn ? $username : null,
     'userId' => $isLoggedIn ? $userId : null,
-    'role' => $isLoggedIn ? $role : null
+    'role' => $isLoggedIn ? $role : null,
+    'email' => $isLoggedIn ? $email : null
 ]);
 
 exit;

@@ -322,25 +322,39 @@ function setupModalHandlers() {
   const createForm = document.getElementById('createClassForm');
   const joinForm = document.getElementById('joinClassForm');
   
-  if (createForm) createForm.addEventListener('submit', handleCreateClass);
-  if (joinForm) joinForm.addEventListener('submit', handleJoinClass);
+  if (createForm) {
+    createForm.removeEventListener('submit', handleCreateClass);
+    createForm.addEventListener('submit', handleCreateClass);
+  }
+  if (joinForm) {
+    joinForm.removeEventListener('submit', handleJoinClass);
+    joinForm.addEventListener('submit', handleJoinClass);
+  }
   
   document.querySelectorAll('.modal .close').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const modal = btn.closest('.modal');
-      if (modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
-      }
-    });
+    btn.removeEventListener('click', closeModalHandler);
+    btn.addEventListener('click', closeModalHandler);
   });
   
   document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
-      }
-    });
+    modal.removeEventListener('click', closeOnBackdropClick);
+    modal.addEventListener('click', closeOnBackdropClick);
   });
+}
+
+function closeModalHandler(e) {
+  const modal = e.target.closest('.modal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+}
+
+function closeOnBackdropClick(e) {
+  if (e.target === this) {
+    this.classList.remove('show');
+    this.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
 }

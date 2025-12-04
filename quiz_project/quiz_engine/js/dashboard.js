@@ -32,13 +32,6 @@ async function checkAuth() {
             return;
         }
         
-        // Ensure personal users stay on personal dashboard
-        if (data.role !== 'personal' && data.role !== null && data.role !== undefined) {
-            console.warn('Invalid role for personal dashboard, redirecting...');
-            window.location.href = 'education_dashboard.html';
-            return;
-        }
-        
         if (document.getElementById('userName')) document.getElementById('userName').textContent = data.username;
         if (document.getElementById('userEmail')) document.getElementById('userEmail').textContent = data.email || '';
         if (document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = data.username;

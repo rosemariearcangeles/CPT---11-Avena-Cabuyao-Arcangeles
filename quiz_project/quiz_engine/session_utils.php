@@ -5,34 +5,35 @@ class SessionManager {
     private $sessionStarted = false;
 
     private function __construct() {
+        // Always ensure session is started
         if (session_status() === PHP_SESSION_NONE) {
-            // Set secure session parameters
             $sessionName = 'quiz_engine_sid';
-            $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'; // Enable HTTPS security
-            $httponly = true; // Prevent JavaScript access to session cookie
+            $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
+            $httponly = true;
 
-            // Set session cookie parameters
             session_set_cookie_params([
-                'lifetime' => 86400, // 24 hours
+                'lifetime' => 86400,
                 'path' => '/',
                 'domain' => $_SERVER['HTTP_HOST'] ?? '',
                 'secure' => $secure,
                 'httponly' => $httponly,
-                'samesite' => 'Lax' // CSRF protection
+                'samesite' => 'Lax'
             ]);
 
             session_name($sessionName);
             session_start();
             $this->sessionStarted = true;
+        } else {
+            $this->sessionStarted = true;
+        }
 
-            // Regenerate session ID periodically to prevent session fixation
-            if (!isset($_SESSION['last_regeneration'])) {
+        // Regenerate session ID periodically
+        if (!isset($_SESSION['last_regeneration'])) {
+            $this->regenerateSession();
+        } else {
+            $interval = 1800;
+            if (time() - $_SESSION['last_regeneration'] > $interval) {
                 $this->regenerateSession();
-            } else {
-                $interval = 1800; // 30 minutes
-                if (time() - $_SESSION['last_regeneration'] > $interval) {
-                    $this->regenerateSession();
-                }
             }
         }
     }
@@ -49,9 +50,10 @@ class SessionManager {
         return self::$instance;
     }
 
-    public function login($userId, $username) {
+    public function login($userId, $username, $role = 'personal') {
         $_SESSION['user_id'] = $userId;
         $_SESSION['username'] = $username;
+        $_SESSION['role'] = $role;
         $_SESSION['logged_in'] = true;
         $_SESSION['login_time'] = time();
         $this->regenerateSession();
@@ -75,14 +77,14 @@ class SessionManager {
 
     public function isLoggedIn() {
         // Check if session has expired due to total login time (24 hours)
-        $maxLoginTime = 86400; // 24 hours
+        $maxLoginTime = 86400;
         if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time'] > $maxLoginTime)) {
             $this->logout();
             return false;
         }
 
         // Check if session has expired due to inactivity (2 hours)
-        $maxIdleTime = 7200; // 2 hours
+        $maxIdleTime = 7200;
         if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $maxIdleTime)) {
             $this->logout();
             return false;
@@ -102,6 +104,10 @@ class SessionManager {
 
     public function getUsername() {
         return isset($_SESSION['username']) ? $_SESSION['username'] : null;
+    }
+
+    public function getRole() {
+        return isset($_SESSION['role']) ? $_SESSION['role'] : null;
     }
 
     public function generateCSRFToken() {

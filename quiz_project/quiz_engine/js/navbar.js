@@ -373,7 +373,13 @@ class UnifiedNavbar {
   startAuthCheck() {
     // Check auth immediately and periodically
     this.updateAuthUI();
-    setInterval(() => this.updateAuthUI(), 60000); // Check every minute
+    setInterval(() => this.updateAuthUI(), 30000); // Check every 30 seconds
+    // Also check on page visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        this.updateAuthUI();
+      }
+    });
   }
 
   refresh() {
