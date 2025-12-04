@@ -46,12 +46,13 @@ body {
 .hero {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
   color: #fff;
-  padding: 8rem 2rem 6rem;
+  padding: 0 2rem;
   text-align: center;
   margin-top: 70px;
   position: relative;
   overflow: hidden;
   min-height: 60vh;
+  max-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,7 +334,9 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero {
-    padding: 6rem 1rem 4rem;
+    padding: 0 1rem;
+    min-height: 50vh;
+    max-height: 50vh;
   }
 
   .hero h1 {

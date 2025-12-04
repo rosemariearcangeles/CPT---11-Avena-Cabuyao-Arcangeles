@@ -612,8 +612,9 @@ background-clip: text;
 /* Hero Section */
 .hero {
   position: relative;
-  margin-top: 80px;
-  min-height: clamp(420px, 60vh, 640px);
+  margin-top: 70px;
+  min-height: 60vh;
+  max-height: 60vh;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -743,7 +744,8 @@ background-clip: text;
 
 @media (max-width: 600px) {
   .hero {
-    min-height: clamp(420px, 65vh, 520px);
+    min-height: 50vh;
+    max-height: 50vh;
   }
 
   .hero h1 {
