@@ -3,6 +3,8 @@ require_once "session_utils.php";
 $session = SessionManager::getInstance();
 $isLoggedIn = $session->isLoggedIn();
 $username = $isLoggedIn ? $session->getUsername() : '';
+$role = $isLoggedIn ? $session->getRole() : '';
+$isEducationMode = $isLoggedIn && ($role === 'student' || $role === 'teacher');
 ?>
 
 <nav class="navbar" role="navigation" aria-label="Main navigation">
@@ -27,7 +29,10 @@ $username = $isLoggedIn ? $session->getUsername() : '';
 
       <?php if ($isLoggedIn): ?>
         <li id="nav-profile-dashboard">
-          <a href="dashboard.php" class="nav-link">Dashboard</a>
+          <a href="<?php echo $isEducationMode ? 'education_dashboard.html' : 'dashboard.php'; ?>" class="nav-link">Dashboard</a>
+          <?php if ($isEducationMode): ?>
+            <span class="mode-badge" style="margin-left: 0.5rem; font-size: 0.75rem; padding: 0.25rem 0.5rem; background: var(--primary-color); color: white; border-radius: 4px; display: inline-block;">Education</span>
+          <?php endif; ?>
         </li>
         <li id="nav-user-menu" class="user-menu">
           <div class="user-greeting">
