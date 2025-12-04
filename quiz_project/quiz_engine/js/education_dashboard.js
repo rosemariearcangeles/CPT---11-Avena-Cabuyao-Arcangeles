@@ -128,9 +128,9 @@ function renderStudentDashboard() {
 
 async function loadTeacherClasses() {
   try {
-    const response = await fetch('api/get_teacher_classes.php', {
+    const response = await fetch('api/get_teacher_classes.php?t=' + Date.now(), {
       credentials: 'same-origin',
-      headers: { 'Cache-Control': 'no-cache' }
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
     });
     const data = await response.json();
     const classList = $id('classList');
@@ -165,9 +165,9 @@ async function loadTeacherClasses() {
 
 async function loadStudentClasses() {
   try {
-    const response = await fetch('api/get_student_classes.php', {
+    const response = await fetch('api/get_student_classes.php?t=' + Date.now(), {
       credentials: 'same-origin',
-      headers: { 'Cache-Control': 'no-cache' }
+      headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
     });
     const data = await response.json();
     const classList = $id('classList');

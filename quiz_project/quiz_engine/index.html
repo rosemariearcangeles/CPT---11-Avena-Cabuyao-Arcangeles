@@ -705,9 +705,9 @@
       async function loadUserClasses(role) {
         try {
           const endpoint = role === 'teacher' ? 'api/get_teacher_classes.php' : 'api/get_student_classes.php';
-          const response = await fetch(endpoint, {
+          const response = await fetch(endpoint + '?t=' + Date.now(), {
             credentials: 'same-origin',
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
           });
           const data = await response.json();
           const grid = document.getElementById('student-classes-grid');
