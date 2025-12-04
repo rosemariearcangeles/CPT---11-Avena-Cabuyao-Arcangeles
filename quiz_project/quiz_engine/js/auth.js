@@ -462,7 +462,7 @@ function applyAuthState(data) {
   const dashboardLink = document.querySelector('.dashboard-link, #nav-dashboard-link');
   const usernameSpan = document.getElementById('nav-username');
   const dropdownUsername = document.getElementById('dropdown-username');
-  const navRoleBadge = document.querySelector('#nav-profile-dashboard .mode-badge');
+  const navRoleBadge = document.getElementById('nav-role-badge');
 
   if (data.loggedIn && data.username) {
     if (authButtons) {
@@ -492,7 +492,7 @@ function applyAuthState(data) {
       const role = data.role;
       const isEducationUser = role === 'student' || role === 'teacher';
       if (isEducationUser) {
-        navRoleBadge.style.display = 'inline-block';
+        navRoleBadge.style.display = 'inline-flex';
         navRoleBadge.textContent = role === 'teacher' ? 'Teacher' : 'Student';
       } else {
         navRoleBadge.style.display = 'none';

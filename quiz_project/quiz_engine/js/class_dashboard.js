@@ -309,8 +309,11 @@ function takeQuiz(assignmentId, quizName) {
 function updateSidebarBadge(role) {
   const badgeElement = document.querySelector('.sidebar .mode-badge');
   if (badgeElement) {
-    // Determine the correct badge text based on user role
-    const isEducationMode = role === 'student' || role === 'teacher';
-    badgeElement.textContent = isEducationMode ? 'Education' : 'Personal';
+    const isEducationUser = role === 'student' || role === 'teacher';
+    if (isEducationUser) {
+      badgeElement.textContent = role === 'teacher' ? 'Teacher' : 'Student';
+    } else {
+      badgeElement.textContent = 'Personal';
+    }
   }
 }
