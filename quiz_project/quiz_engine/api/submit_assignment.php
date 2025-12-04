@@ -23,7 +23,6 @@ $user_id = $session->getUserId();
 $input = json_decode(file_get_contents('php://input'), true);
 
 $assignment_id = $input['assignment_id'] ?? null;
-$answers = $input['answers'] ?? [];
 $score = $input['score'] ?? 0;
 
 if (!$assignment_id) {
@@ -31,10 +30,8 @@ if (!$assignment_id) {
     exit;
 }
 
-$answers_json = json_encode($answers);
-
-$stmt = $conn->prepare("INSERT INTO submissions (assignment_id, student_id, score, answers) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE score = ?, answers = ?");
-$stmt->bind_param("iiisis", $assignment_id, $user_id, $score, $answers_json, $score, $answers_json);
+$stmt = $conn->prepare("INSERT INTO submissions (assignment_id, student_id, score) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE score = ?, submitted_at = CURRENT_TIMESTAMP");
+$stmt->bind_param("iiii", $assignment_id, $user_id, $score, $score);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true]);

@@ -1,14 +1,10 @@
 // auth.js - Authentication functionality for all pages
 
-// Determine base path relative to site root based on script src
-const authScript = document.currentScript;
+// Determine base path relative to current page location
 const BASE_PATH = (() => {
-  if (!authScript) return '';
-  const src = authScript.getAttribute('src') || '';
-  // Count directory separators to determine how many levels up we need to go
-  const pathParts = src.split('/').filter(part => part && part !== '.');
-  const depth = pathParts.length - 1; // Subtract 1 for the filename
-  return depth > 0 ? '../'.repeat(depth) : '';
+  const segments = window.location.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  const numDirs = Math.max(segments.length - 1, 0);
+  return numDirs > 0 ? '../'.repeat(numDirs) : '';
 })();
 
 // Utility function to get CSRF token from server

@@ -208,13 +208,50 @@ async function loadAssignments() {
               ${a.due_date ? `<span><i class="fas fa-calendar"></i> Due ${new Date(a.due_date).toLocaleDateString()}</span>` : ''}
             </div>
           </div>
+          ${userRole === 'teacher' ? `<div class="quiz-actions"><button class="btn btn-danger btn-sm btn-delete" data-quiz-id="${a.quiz_id}" data-title="${a.title || a.quiz_name}"><i class="fas fa-trash"></i></button></div>` : ''}
         </div>
       `).join('');
+      if (userRole === 'teacher') {
+        document.querySelectorAll('#quizList .btn-delete').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const quizId = parseInt(btn.dataset.quizId, 10);
+            const title = btn.dataset.title || 'this quiz';
+            await deleteQuizFromClass(quizId, title);
+          });
+        });
+      }
     } else {
       list.innerHTML = '<p class="empty-state">No quizzes assigned yet.</p>';
     }
   } catch (error) {
     console.error('Failed to load assignments:', error);
+  }
+}
+
+async function deleteQuizFromClass(quizId, title) {
+  if (!confirm(`Delete quiz "${title}"? This will remove its assignments and submissions.`)) return;
+  try {
+    const csrfToken = await getCSRFToken();
+    const response = await fetch('api/delete_quiz.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ quiz_id: quizId })
+    });
+    const data = await response.json();
+    if (data.success) {
+      alert('Quiz deleted.');
+      loadAssignments();
+    } else {
+      alert('Failed to delete quiz: ' + (data.message || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error('Delete quiz error:', err);
+    alert('Error deleting quiz. Please try again.');
   }
 }
 
