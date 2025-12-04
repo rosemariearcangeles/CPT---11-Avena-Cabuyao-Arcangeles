@@ -15,23 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!question.hasAttribute('tabindex')) question.setAttribute('tabindex', '0');
     question.setAttribute('aria-expanded', 'false');
 
-    function open() {
-      answer.classList.add('show');
-      if (icon) icon.classList.add('rotate');
-      question.setAttribute('aria-expanded', 'true');
-    }
-
-    function close() {
-      answer.classList.remove('show');
-      if (icon) icon.classList.remove('rotate');
-      question.setAttribute('aria-expanded', 'false');
-    }
-
     function toggle() {
-      if (answer.classList.contains('show')) {
-        close();
+      const isActive = item.classList.contains('active');
+      
+      if (isActive) {
+        item.classList.remove('active');
+        question.setAttribute('aria-expanded', 'false');
       } else {
-        open();
+        item.classList.add('active');
+        question.setAttribute('aria-expanded', 'true');
       }
     }
 

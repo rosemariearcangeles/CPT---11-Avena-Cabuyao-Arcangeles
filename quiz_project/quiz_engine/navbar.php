@@ -8,7 +8,7 @@ $username = $isLoggedIn ? $session->getUsername() : '';
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="nav-container">
     <div class="logo">
-      <h1>Online Quiz Engine</h1>
+      <h1 class="logo-text">Online Quiz Engine</h1>
     </div>
 
     <!-- Mobile menu toggle -->

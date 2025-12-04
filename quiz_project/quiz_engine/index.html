@@ -173,21 +173,9 @@
       <main class="main-content" id="main">
         <!-- Generation Settings -->
         <section class="generation-settings">
-          <h2 class="section-title">Generation Settings</h2>
+          <h2 class="section-title">Quiz Settings</h2>
           
           <div class="settings-grid">
-            <div class="generation-cards">
-              <button class="generation-card selected" id="gen-local-btn" aria-pressed="true">
-                <h3>Local Generation</h3>
-                <p>Generate quizzes instantly using your browser</p>
-              </button>
-              
-              <button class="generation-card" id="gen-ai-btn" aria-pressed="false">
-                <h3>AI Generation</h3>
-                <p>Use AI for higher-quality quiz generation</p>
-              </button>
-            </div>
-            
             <div class="preset-section">
               <h3 class="section-subtitle">Quick Presets</h3>
               <div class="preset-buttons">
@@ -459,28 +447,6 @@
   <script>
     // Page-specific initialization
     document.addEventListener('DOMContentLoaded', function() {
-      // ===== GENERATION MODE BUTTONS =====
-      const genLocalBtn = document.getElementById('gen-local-btn');
-      const genAiBtn = document.getElementById('gen-ai-btn');
-      const generationModeSelect = document.getElementById('generation-mode');
-
-      if (genLocalBtn) {
-        genLocalBtn.addEventListener('click', () => {
-          genLocalBtn.classList.add('selected');
-          genAiBtn.classList.remove('selected');
-          if (generationModeSelect) generationModeSelect.value = 'local';
-        });
-      }
-
-      if (genAiBtn) {
-        genAiBtn.addEventListener('click', () => {
-          alert('AI Generation is not available yet. Please use Local Generation.');
-          genLocalBtn.classList.add('selected');
-          genAiBtn.classList.remove('selected');
-          if (generationModeSelect) generationModeSelect.value = 'local';
-        });
-      }
-
       // ===== PRESET BUTTONS WITH INDICATOR =====
       const presetFast = document.getElementById('preset-fast');
       const presetFull = document.getElementById('preset-full');
