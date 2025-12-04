@@ -24,8 +24,12 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("issi", $user_id, $quiz_name, $quiz_data, $total_questions);
 
 if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'quiz_id' => $stmt->insert_id]);
+    $quiz_id = $stmt->insert_id;
+    $stmt->close();
+    echo json_encode(['success' => true, 'quiz_id' => $quiz_id]);
 } else {
-    echo json_encode(['success' => false, 'message' => $stmt->error]);
+    $error = $stmt->error;
+    $stmt->close();
+    echo json_encode(['success' => false, 'message' => $error]);
 }
 ?>

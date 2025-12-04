@@ -92,28 +92,27 @@
 
   function generateLocalQuestions(text, count = 5, type = 'multiple', difficulty = 'medium') {
     const sentences = (text || "").split(/[.!?]\s+/).map(s => s.trim()).filter(Boolean);
-    // Deduplicate sentences to avoid duplicate questions
     const uniqueSentences = [...new Set(sentences)];
-    // Shuffle to randomize selection
     const shuffledSentences = shuffleArray(uniqueSentences);
     const stopWords = new Set(['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'an', 'a', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them']);
     const allWords = (text || "").toLowerCase().split(/[^a-z]+/).filter(w => w.length > 3 && w.length < 15 && !stopWords.has(w));
     const wordFreq = {};
     allWords.forEach(w => wordFreq[w] = (wordFreq[w] || 0) + 1);
-    const sortedWords = Object.keys(wordFreq).sort((a, b) => wordFreq[b] - wordFreq[a]);
     const words = Array.from(new Set(allWords));
     const questions = [];
-    const usedKeywords = new Set(); // Track used keywords to avoid repeats
-    const usedQuestions = new Set(); // Track used question texts to prevent duplicates
+    const usedKeywords = new Set();
+    const usedQuestions = new Set();
+    const usedSentences = new Set();
 
     for (let i = 0; i < shuffledSentences.length && questions.length < count; i++) {
       const s = shuffledSentences[i];
+      const sNorm = s.toLowerCase().trim();
+      if (usedSentences.has(sNorm)) continue;
       const sentenceWords = s.split(/\s+/).filter(w => w.length > 3);
-      if (!sentenceWords.length || s.length < 30 || sentenceWords.length < 5) continue; // Skip short sentences or potential headings
-      // Select keyword based on difficulty, avoiding used ones
+      if (!sentenceWords.length || s.length < 30 || sentenceWords.length < 5) continue;
       let candidateWords = sentenceWords.filter(w => words.includes(w.toLowerCase()) && !usedKeywords.has(w.toLowerCase()));
       if (!candidateWords.length) candidateWords = sentenceWords.filter(w => !usedKeywords.has(w.toLowerCase()));
-      if (!candidateWords.length) continue; // Skip if no available words
+      if (!candidateWords.length) continue;
       let keyword;
       if (difficulty === 'easy') {
         // Prefer high frequency words
@@ -127,12 +126,12 @@
         // Medium: random
         keyword = candidateWords[Math.floor(Math.random() * candidateWords.length)] || sentenceWords[Math.floor(Math.random() * sentenceWords.length)];
       }
-      usedKeywords.add(keyword.toLowerCase());
-      // Better distractors: select from words with similar frequency, not used
-      const keywordFreq = wordFreq[keyword.toLowerCase()] || 1;
-      const similarFreqWords = words.filter(w => w !== keyword.toLowerCase() && !usedKeywords.has(w) && Math.abs((wordFreq[w] || 1) - keywordFreq) <= 2);
-      const distractors = shuffleArray(similarFreqWords.length ? similarFreqWords : words.filter(w => w !== keyword.toLowerCase() && !usedKeywords.has(w))).slice(0, 3);
-      while (distractors.length < 3) distractors.push("Option1", "Option2", "Option3");
+      const keywordLower = keyword.toLowerCase();
+      usedKeywords.add(keywordLower);
+      const keywordFreq = wordFreq[keywordLower] || 1;
+      const similarFreqWords = words.filter(w => w !== keywordLower && !usedKeywords.has(w) && Math.abs((wordFreq[w] || 1) - keywordFreq) <= 2);
+      const distractors = shuffleArray(similarFreqWords.length ? similarFreqWords : words.filter(w => w !== keywordLower && !usedKeywords.has(w))).slice(0, 3);
+      while (distractors.length < 3) distractors.push("Option" + (distractors.length + 1));
 
       let question, options, answer;
       if (type === 'fill-blank') {
@@ -188,18 +187,22 @@
         options = shuffleArray([keyword, ...distractors.slice(0, 3)]);
         answer = keyword;
       }
-      // Check for duplicate questions
-      if (!usedQuestions.has(question)) {
-        usedQuestions.add(question);
+      const qNorm = question.toLowerCase().replace(/\s+/g, ' ').trim();
+      if (!usedQuestions.has(qNorm)) {
+        usedQuestions.add(qNorm);
+        usedSentences.add(sNorm);
         questions.push({ question, options, answer });
       }
     }
 
     if (!questions.length && words.length) {
-      for (let i = 0; i < Math.min(count, words.length); i++) {
-        const keyword = words[i];
-        const distractors = shuffleArray(words.filter(w => w !== keyword)).slice(0, 3);
-        while (distractors.length < 3) distractors.push("Choice1", "Choice2", "Choice3");
+      const shuffledWords = shuffleArray(words);
+      for (let i = 0; i < Math.min(count, shuffledWords.length); i++) {
+        const keyword = shuffledWords[i];
+        if (usedKeywords.has(keyword)) continue;
+        usedKeywords.add(keyword);
+        const distractors = shuffleArray(words.filter(w => w !== keyword && !usedKeywords.has(w))).slice(0, 3);
+        while (distractors.length < 3) distractors.push("Choice" + (distractors.length + 1));
 
         let question, options, answer;
         if (type === 'fill-blank') {
@@ -598,11 +601,7 @@
     init();
   }
 
-  // Expose helpers for dev/debug
-  window._quizHelpers = {
-    generateLocalQuestions,
-    processFile
-  };
+
 
 
 

@@ -21,17 +21,18 @@ if ($session->isLoggedIn()) {
 
     if ($userId && $username) {
         $stmt = $conn->prepare("SELECT id FROM users WHERE id = ? AND username = ?");
-        $stmt->bind_param("is", $userId, $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        if ($stmt) {
+            $stmt->bind_param("is", $userId, $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows === 1) {
-            $isLoggedIn = true;
-        } else {
-            // User not found in database, destroy session
-            $session->logout();
+            if ($result->num_rows === 1) {
+                $isLoggedIn = true;
+            } else {
+                $session->logout();
+            }
+            $stmt->close();
         }
-        $stmt->close();
     }
 }
 

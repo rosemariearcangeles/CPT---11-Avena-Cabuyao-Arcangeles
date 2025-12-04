@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->bind_result($user_id, $db_username, $hashed);
     $stmt->fetch();
+    $stmt->close();
 
-    // Password verify
     if (!password_verify($password, $hashed)) {
         echo json_encode([
             'status' => 'error',
@@ -60,19 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Successful login → set session
     $session->login($user_id, $db_username);
 
-    // Prepare response
     $response = [
         'status' => 'success',
         'message' => 'Login successful',
-        'username' => $db_username
+        'username' => $db_username,
+        'redirect' => 'dashboard.html'
     ];
-
-    // Add redirect URL if needed
-    if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'login') === false) {
-        $response['redirect'] = $_SERVER['HTTP_REFERER'];
-    } else {
-        $response['redirect'] = 'dashboard.html';
-    }
 
     echo json_encode($response);
     exit;

@@ -84,9 +84,7 @@ function loadQuizProgress() {
         quizProgress = progress;
         userAnswers = [...progress.answers];
         currentQuestionIndex = progress.currentIndex || 0;
-        quizStartTime = progress.startTime;
-
-        return true; // Progress loaded successfully
+        return true;
       }
     }
     return false; // No progress found
@@ -293,11 +291,6 @@ function showCurrentQuestion() {
     slide.style.display = index === currentQuestionIndex ? 'block' : 'none';
   });
 
-  const headerQ = $id("question-text");
-  if (headerQ && currentQuiz[currentQuestionIndex]) {
-    headerQ.textContent = currentQuiz[currentQuestionIndex].question;
-  }
-
   updateNavigationButtons();
 }
 
@@ -473,40 +466,6 @@ if (prevBtn) {
 
 if (nextBtn) {
   nextBtn.addEventListener("click", nextQuestion);
-}
-
-// =====================
-// Parse Quiz from Text
-// =====================
-function parseQuizFromText(text) {
-  const questions = [];
-  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-
-  let currentQuestion = null;
-  let options = [];
-  let answer = null;
-
-  for (const line of lines) {
-    if (line.startsWith('Question:')) {
-      if (currentQuestion) {
-        questions.push({ question: currentQuestion, options, answer });
-      }
-      currentQuestion = line.substring(9).trim();
-      options = [];
-      answer = null;
-    } else if (line.match(/^[A-D]\)/)) {
-      const optionText = line.substring(2).trim();
-      options.push(optionText);
-    } else if (line.startsWith('Answer:')) {
-      answer = line.substring(7).trim();
-    }
-  }
-
-  if (currentQuestion) {
-    questions.push({ question: currentQuestion, options, answer });
-  }
-
-  return questions;
 }
 
 // =====================

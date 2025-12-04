@@ -23,6 +23,7 @@ $quizzes = [];
 while ($row = $result->fetch_assoc()) {
     $quizzes[] = $row;
 }
+$stmt->close();
 
 echo json_encode(['success' => true, 'quizzes' => $quizzes]);
 ?>

@@ -8,13 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!members.length || !infoImg) return;
 
-  // Helper to resolve path relative to About page
-  function resolvePath(p) {
-    // If path is already absolute or starts with ../ or ./, return as-is
-    if (!p) return p;
-    return p;
-  }
-
   // Preload images and inject avatar elements
   members.forEach((m, idx) => {
     const imgPath = m.dataset.img || null;
@@ -25,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create avatar element
     const avatar = document.createElement('div');
     avatar.className = 'member-avatar';
-    if (imgPath) avatar.style.backgroundImage = `url('${resolvePath(imgPath)}')`;
+    if (imgPath) avatar.style.backgroundImage = `url('${imgPath}')`;
 
     // Wrap existing text into member-content for alignment
     const content = document.createElement('div');

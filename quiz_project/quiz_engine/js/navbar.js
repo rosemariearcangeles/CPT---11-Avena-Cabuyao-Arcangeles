@@ -11,11 +11,8 @@ class UnifiedNavbar {
     this.dashboardLink = null;
     this.usernameSpan = null;
     this.dropdownUsername = null;
-    
     this.isMenuOpen = false;
     this.isUserMenuOpen = false;
-    this.authCheckInterval = null;
-    
     this.init();
   }
 
@@ -361,48 +358,20 @@ class UnifiedNavbar {
   }
 
   startAuthCheck() {
-    // Clear any existing interval
-    if (this.authCheckInterval) {
-      clearInterval(this.authCheckInterval);
-    }
-    
-    // Disable periodic checks - let auth.js handle it to prevent race conditions
-    // Only do initial check if no cached state
     if (!sessionStorage.getItem('authState')) {
       this.updateAuthUI();
     }
   }
 
-  stopAuthCheck() {
-    if (this.authCheckInterval) {
-      clearInterval(this.authCheckInterval);
-      this.authCheckInterval = null;
-    }
-  }
-
-  // Public API methods
   refresh() {
     this.updateAuthUI();
     this.setActiveNavLink();
-  }
-
-  destroy() {
-    this.stopAuthCheck();
-    // Remove event listeners if needed
   }
 }
 
 // Initialize navbar when script loads
 const unifiedNavbar = new UnifiedNavbar();
 
-// Export for use in other scripts
 window.UnifiedNavbar = UnifiedNavbar;
 window.navbarInstance = unifiedNavbar;
-
-// Legacy compatibility - expose key functions globally
-window.updateLoginUI = () => {
-  if (window.navbarInstance) {
-    window.navbarInstance.updateAuthUI();
-  }
-};
 

@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   faqItems.forEach(item => {
     const question = item.querySelector('.faq-question');
     const answer = item.querySelector('.faq-answer');
-    const icon = item.querySelector('.toggle-icon');
-
     if (!question || !answer) return;
 
     // Accessibility helpers
@@ -27,9 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    question.addEventListener('click', (e) => {
-      toggle();
-    });
+    question.addEventListener('click', toggle);
 
     question.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {

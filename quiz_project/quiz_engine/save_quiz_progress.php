@@ -49,18 +49,17 @@ if (!preg_match('/^quiz_\d+_[a-zA-Z0-9]+$/', $quiz_id)) {
 $answers_json = json_encode($answers);
 
 try {
-    // Check if progress already exists for this quiz
     $stmt = $conn->prepare("SELECT id FROM quiz_progress WHERE user_id = ? AND quiz_id = ?");
     $stmt->bind_param("is", $user_id, $quiz_id);
     $stmt->execute();
     $stmt->store_result();
+    $exists = $stmt->num_rows > 0;
+    $stmt->close();
 
-    if ($stmt->num_rows > 0) {
-        // Update existing progress
+    if ($exists) {
         $stmt = $conn->prepare("UPDATE quiz_progress SET answers = ?, current_index = ?, start_time = ?, last_saved = ? WHERE user_id = ? AND quiz_id = ?");
         $stmt->bind_param("siiiss", $answers_json, $current_index, $start_time, $last_saved, $user_id, $quiz_id);
     } else {
-        // Insert new progress
         $stmt = $conn->prepare("INSERT INTO quiz_progress (user_id, quiz_id, answers, current_index, start_time, last_saved) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("issiii", $user_id, $quiz_id, $answers_json, $current_index, $start_time, $last_saved);
     }

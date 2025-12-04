@@ -67,12 +67,14 @@ $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows > 0) {
+    $stmt->close();
     echo json_encode([
         'status' => 'error',
         'message' => 'Username or email already exists.'
     ]);
     exit;
 }
+$stmt->close();
 
 // HASH PASSWORD
 $hashed = password_hash($password, PASSWORD_DEFAULT);
