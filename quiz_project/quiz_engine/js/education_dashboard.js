@@ -118,7 +118,7 @@ async function loadTeacherClasses() {
     
     if (data.success && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
-        <div class="class-card">
+        <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor: pointer;">
           <h3>${cls.class_name}</h3>
           <p>${cls.description || 'No description'}</p>
           <div class="class-code">Code: ${cls.class_code}</div>
@@ -143,7 +143,7 @@ async function loadStudentClasses() {
     
     if (data.success && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
-        <div class="class-card">
+        <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor: pointer;">
           <h3>${cls.class_name}</h3>
           <p>${cls.description || 'No description'}</p>
           <div class="class-teacher">Teacher: ${cls.teacher_name}</div>
@@ -209,10 +209,10 @@ function attachNavListeners() {
   });
 }
 
-$id('logoutBtn').addEventListener('click', () => {
-  if (typeof handleLogout === 'function') {
-    handleLogout();
-  } else {
-    window.location.href = 'logout.php';
-  }
-});
+function openClass(classId, className) {
+  // Store class info in sessionStorage
+  sessionStorage.setItem('currentClassId', classId);
+  sessionStorage.setItem('currentClassName', className);
+  // Redirect to class dashboard
+  window.location.href = `class_dashboard.html?id=${classId}`;
+}

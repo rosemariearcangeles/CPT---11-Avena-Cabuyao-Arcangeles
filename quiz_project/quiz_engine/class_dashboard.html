@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Education Dashboard - Quiz Engine</title>
+    <title>Class Dashboard - Quiz Engine</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,7 @@
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Quiz Engine</h2>
+                <h2 id="className">Class</h2>
                 <span class="mode-badge">Education</span>
             </div>
             
@@ -24,14 +24,12 @@
                 <p id="userRole">Student</p>
             </div>
 
-
-
             <nav class="sidebar-nav" id="sidebarNav"></nav>
 
             <div class="sidebar-footer">
-                <a href="index.html" class="btn-logout">
-                    <i class="fas fa-home"></i>
-                    <span>Back to Home</span>
+                <a href="education_dashboard.html" class="btn-logout">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Classes</span>
                 </a>
             </div>
         </aside>
@@ -40,6 +38,6 @@
     </div>
 
     <script src="js/auth.js"></script>
-    <script src="js/education_dashboard.js"></script>
+    <script src="js/class_dashboard.js"></script>
 </body>
 </html>
