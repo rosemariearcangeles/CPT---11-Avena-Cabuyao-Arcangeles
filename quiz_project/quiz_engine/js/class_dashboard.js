@@ -131,6 +131,9 @@ function renderStudentClassDashboard() {
     <section id="quizzes" class="section active">
       <div class="section-header">
         <h1>Available Quizzes</h1>
+        <button class="btn btn-secondary" onclick="leaveCurrentClass()">
+          <i class="fas fa-door-open"></i> Leave Class
+        </button>
       </div>
       <div id="quizList" class="quiz-list"></div>
     </section>
@@ -315,5 +318,35 @@ function updateSidebarBadge(role) {
     } else {
       badgeElement.textContent = 'Personal';
     }
+  }
+}
+
+async function leaveCurrentClass() {
+  if (!confirm('Leave this class? You will no longer see its quizzes and grades.')) return;
+
+  try {
+    const csrfToken = await getCSRFToken();
+    const response = await fetch('api/leave_class.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ class_id: classId })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert('You left the class.');
+      sessionStorage.removeItem('currentClassId');
+      sessionStorage.removeItem('currentClassName');
+      window.location.href = 'education_dashboard.html';
+    } else {
+      alert('Failed to leave class: ' + (data.message || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error('Leave class error:', err);
+    alert('Error leaving class. Please try again.');
   }
 }

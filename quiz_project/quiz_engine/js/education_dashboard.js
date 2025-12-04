@@ -77,9 +77,11 @@ function renderTeacherDashboard() {
     <section id="classes" class="section active">
       <div class="section-header">
         <h1>My Classes</h1>
-        <button class="btn-primary" onclick="createClass()">
-          <i class="fas fa-plus"></i> Create Class
-        </button>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="createClass()">
+            <i class="fas fa-plus"></i> Create Class
+          </button>
+        </div>
       </div>
       <div id="classList" class="class-grid"></div>
     </section>
@@ -132,13 +134,19 @@ async function loadTeacherClasses() {
 
     if (data.success && data.classes && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
-        <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor: pointer;">
-          <h3>${cls.class_name}</h3>
-          <p>${cls.description || 'No description'}</p>
-          <div class="class-code">Code: ${cls.class_code}</div>
-          <div class="class-stats">
-            <span><i class="fas fa-users"></i> ${cls.student_count || 0} students</span>
+        <div class="class-card" style="cursor: pointer; position:relative;">
+          <div onclick="openClass(${cls.id}, '${cls.class_name}')">
+            <h3>${cls.class_name}</h3>
+            <p>${cls.description || 'No description'}</p>
+            <div class="class-code">Code: ${cls.class_code}</div>
+            <div class="class-stats">
+              <span><i class="fas fa-users"></i> ${cls.student_count || 0} students</span>
+            </div>
           </div>
+          <button class="btn btn-danger btn-sm" style="position:absolute;top:1rem;right:1rem;"
+            onclick="event.stopPropagation(); deleteClass(${cls.id}, '${cls.class_name}');">
+            <i class="fas fa-trash"></i>
+          </button>
         </div>
       `).join('');
       console.log('Classes rendered:', data.classes.length);
@@ -337,6 +345,36 @@ function openClass(classId, className) {
   sessionStorage.setItem('currentClassId', classId);
   sessionStorage.setItem('currentClassName', className);
   window.location.href = `class_dashboard.html?id=${classId}`;
+}
+
+async function deleteClass(classId, className) {
+  if (!confirm(`Delete class "${className}"? This will also remove its assignments and submissions.`)) {
+    return;
+  }
+
+  try {
+    const csrfToken = await getCSRFToken();
+    const response = await fetch('api/delete_class.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ class_id: classId })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert('Class deleted.');
+      loadTeacherClasses();
+    } else {
+      alert('Failed to delete class: ' + (data.message || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error('Delete class error:', err);
+    alert('Error deleting class. Please try again.');
+  }
 }
 
 function setupModalHandlers() {
