@@ -16,26 +16,29 @@ async function checkAuth() {
             }
         });
         const data = await response.json();
-        
+
         console.log('Auth check:', data);
-        
+
         if (!data.loggedIn) {
             console.warn('User not logged in, redirecting...');
             window.location.href = 'index.html';
             return;
         }
-        
+
         // Personal dashboard only for personal users (role is 'personal' or null)
         if (data.role === 'student' || data.role === 'teacher') {
             console.warn('Education user accessing personal dashboard, redirecting...');
             window.location.href = 'education_dashboard.html';
             return;
         }
-        
+
         if (document.getElementById('userName')) document.getElementById('userName').textContent = data.username;
         if (document.getElementById('userEmail')) document.getElementById('userEmail').textContent = data.email || '';
         if (document.getElementById('welcomeName')) document.getElementById('welcomeName').textContent = data.username;
         if (document.getElementById('userAvatar')) document.getElementById('userAvatar').textContent = data.username.charAt(0).toUpperCase();
+
+        // Update sidebar mode badge based on role
+        updateSidebarBadge(data.role);
     } catch (error) {
         console.error('Auth check failed:', error);
         window.location.href = 'index.html';
@@ -307,6 +310,15 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function updateSidebarBadge(role) {
+    const badgeElement = document.querySelector('.sidebar .mode-badge');
+    if (badgeElement) {
+        // Determine the correct badge text based on user role
+        const isEducationMode = role === 'student' || role === 'teacher';
+        badgeElement.textContent = isEducationMode ? 'Education' : 'Personal';
+    }
+}
+
 function showToast(message, success = true) {
     const toast = document.createElement('div');
     toast.textContent = message;
@@ -322,9 +334,9 @@ function showToast(message, success = true) {
         z-index: 9999;
         animation: slideIn 0.3s ease;
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);

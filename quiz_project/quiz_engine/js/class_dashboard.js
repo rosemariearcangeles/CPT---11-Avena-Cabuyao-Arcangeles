@@ -44,6 +44,9 @@ async function loadUserData() {
       $id('userName').textContent = data.username;
       $id('userRole').textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
       $id('userAvatar').textContent = data.username.charAt(0).toUpperCase();
+
+      // Update sidebar mode badge based on role
+      updateSidebarBadge(data.role);
     }
   } catch (error) {
     console.error('Failed to load user data:', error);
@@ -297,4 +300,13 @@ function takeQuiz(assignmentId, quizName) {
   sessionStorage.setItem('currentAssignmentId', assignmentId);
   sessionStorage.setItem('currentAssignmentName', quizName);
   window.location.href = 'take_quiz.html?assignment=' + assignmentId;
+}
+
+function updateSidebarBadge(role) {
+  const badgeElement = document.querySelector('.sidebar .mode-badge');
+  if (badgeElement) {
+    // Determine the correct badge text based on user role
+    const isEducationMode = role === 'student' || role === 'teacher';
+    badgeElement.textContent = isEducationMode ? 'Education' : 'Personal';
+  }
 }

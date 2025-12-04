@@ -1,4 +1,8 @@
 <?php
+// Suppress all error output to prevent JSON corruption
+error_reporting(0);
+ini_set('display_errors', 0);
+
 require_once '../session_utils.php';
 require_once '../config.php';
 

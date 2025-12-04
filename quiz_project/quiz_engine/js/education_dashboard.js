@@ -48,6 +48,9 @@ async function loadUserData() {
       $id('userName').textContent = data.username;
       $id('userRole').textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1);
       $id('userAvatar').textContent = data.username.charAt(0).toUpperCase();
+
+      // Update sidebar mode badge based on role
+      updateSidebarBadge(data.role);
     }
   } catch (error) {
     console.error('Failed to load user data:', error);
@@ -187,14 +190,22 @@ async function loadTeacherClasses() {
 
 async function loadStudentClasses() {
   try {
+    console.log('Loading student classes...');
     const response = await fetch('api/get_student_classes.php?t=' + Date.now(), {
       credentials: 'same-origin',
       headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
     });
+
+    if (!response.ok) {
+      console.error('API responded with error:', response.status, response.statusText);
+      return;
+    }
+
     const data = await response.json();
+    console.log('Student classes data received:', data);
     const classList = $id('classList');
-    
-    if (data.success && data.classes.length > 0) {
+
+    if (data.success && data.classes && data.classes.length > 0) {
       classList.innerHTML = data.classes.map(cls => `
         <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor: pointer;">
           <h3>${cls.class_name}</h3>
@@ -202,7 +213,9 @@ async function loadStudentClasses() {
           <div class="class-teacher">Teacher: ${cls.teacher_name}</div>
         </div>
       `).join('');
+      console.log('Student classes rendered:', data.classes.length);
     } else {
+      console.log('No student classes found, showing empty state');
       classList.innerHTML = `
         <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
           <div style="font-size:4rem;margin-bottom:1rem;">🎓</div>
@@ -215,7 +228,19 @@ async function loadStudentClasses() {
       `;
     }
   } catch (error) {
-    console.error('Failed to load classes:', error);
+    console.error('Failed to load student classes:', error);
+    // Show error state to user
+    const classList = $id('classList');
+    classList.innerHTML = `
+      <div class="empty-state" style="text-align:center;padding:3rem 1rem;grid-column:1/-1;">
+        <div style="font-size:4rem;margin-bottom:1rem;">⚠️</div>
+        <h3 style="margin-bottom:0.5rem;color:var(--text-primary);">Error Loading Classes</h3>
+        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Please refresh the page or try again.</p>
+        <button class="btn btn-primary" onclick="loadStudentClasses()">
+          <i class="fas fa-refresh"></i> Retry
+        </button>
+      </div>
+    `;
   }
 }
 
@@ -378,5 +403,14 @@ function closeOnBackdropClick(e) {
     this.classList.remove('show');
     this.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+  }
+}
+
+function updateSidebarBadge(role) {
+  const badgeElement = document.querySelector('.sidebar .mode-badge');
+  if (badgeElement) {
+    // Determine the correct badge text based on user role
+    const isEducationMode = role === 'student' || role === 'teacher';
+    badgeElement.textContent = isEducationMode ? 'Education' : 'Personal';
   }
 }

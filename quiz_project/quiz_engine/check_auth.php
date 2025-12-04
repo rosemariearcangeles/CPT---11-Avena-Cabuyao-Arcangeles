@@ -1,4 +1,8 @@
 <?php
+// Suppress all error output to prevent JSON corruption
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, must-revalidate');
