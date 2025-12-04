@@ -170,11 +170,12 @@ async function handleLogin(event) {
   const username = document.getElementById('login-username')?.value.trim();
   const password = document.getElementById('login-password')?.value;
   
-  // Basic validation
   if (!username || !password) {
     showToast('Please fill in all fields', false);
     return;
   }
+  
+  const currentMode = localStorage.getItem('quizMode') || 'personal';
   
   const submitBtn = form.querySelector('button[type="submit"]');
   const btnText = submitBtn?.querySelector('.btn-text');
@@ -210,6 +211,19 @@ async function handleLogin(event) {
     const data = await response.json();
 
     if (data.status === 'success') {
+      const userIsEducation = (data.role === 'student' || data.role === 'teacher');
+      const modeIsEducation = (currentMode === 'education');
+      
+      if (userIsEducation && !modeIsEducation) {
+        showToast('This is an Education account. Please switch to Education mode.', false);
+        return;
+      }
+      
+      if (!userIsEducation && modeIsEducation) {
+        showToast('This is a Personal account. Please switch to Personal mode.', false);
+        return;
+      }
+      
       showToast('Login successful!', true);
       closeLoginModal();
       form.reset();
@@ -453,16 +467,16 @@ function applyAuthState(data) {
       dashboardLink.style.display = 'block';
       dashboardLink.style.opacity = '1';
       
-      // Update dashboard link based on role
       const dashboardUrl = (data.role === 'student' || data.role === 'teacher') ? 'education_dashboard.html' : 'dashboard.html';
       const dashboardLinkElement = dashboardLink.querySelector('a');
       if (dashboardLinkElement) dashboardLinkElement.href = dashboardUrl;
       
-      // Update dropdown dashboard link
       const dropdownDashboard = document.querySelector('.user-dropdown a[href="dashboard.html"]');
       if (dropdownDashboard) dropdownDashboard.href = dashboardUrl;
     }
-    if (usernameSpan) usernameSpan.textContent = data.username;
+    
+    const modeBadge = (data.role === 'student' || data.role === 'teacher') ? ' <span style="display:inline-block;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;padding:0.15rem 0.5rem;border-radius:0.25rem;font-size:0.7rem;font-weight:600;margin-left:0.25rem;">EDU</span>' : '';
+    if (usernameSpan) usernameSpan.innerHTML = data.username + modeBadge;
     if (dropdownUsername) dropdownUsername.textContent = data.username;
     updateAuthenticatedUI(true);
   } else {
