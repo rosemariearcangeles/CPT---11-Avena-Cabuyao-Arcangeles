@@ -221,7 +221,6 @@ async function handleLogin(event) {
       setTimeout(() => {
         window.location.href = redirectUrl;
       }, 500);
-    }
     } else {
       showToast(data.message || 'Invalid username or password', false);
     }
@@ -266,11 +265,13 @@ async function handleRegister(event) {
   // Validation
   if (!username || !email || !password || !confirmPassword) {
     showToast('Please fill in all fields', false);
+    isSubmitting = false;
     return;
   }
   
   if (password !== confirmPassword) {
     showToast('Passwords do not match', false);
+    isSubmitting = false;
     return;
   }
   
