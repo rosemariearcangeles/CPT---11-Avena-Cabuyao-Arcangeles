@@ -296,23 +296,10 @@ class UnifiedNavbar {
     }
 
     // Update education badge
-    const isEducationMode = role === 'student' || role === 'teacher';
-    const dashboardItem = document.getElementById('nav-profile-dashboard');
-    if (dashboardItem) {
-      let badge = dashboardItem.querySelector('.mode-badge');
-      if (isEducationMode) {
-        if (!badge) {
-          badge = document.createElement('span');
-          badge.className = 'mode-badge';
-          badge.style.cssText = 'margin-left: 0.5rem; font-size: 0.75rem; padding: 0.25rem 0.5rem; background: #6366f1; color: white; border-radius: 4px; display: inline-block;';
-          badge.textContent = 'Education';
-          const link = dashboardItem.querySelector('.nav-link');
-          if (link) link.appendChild(badge);
-        }
-        badge.style.display = 'inline-block';
-      } else if (badge) {
-        badge.style.display = 'none';
-      }
+    const badge = document.getElementById('edu-mode-badge');
+    if (badge) {
+      const isEducationMode = role === 'student' || role === 'teacher';
+      badge.style.display = isEducationMode ? 'inline-block' : 'none';
     }
   }
 

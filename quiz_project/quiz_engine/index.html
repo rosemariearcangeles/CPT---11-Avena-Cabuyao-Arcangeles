@@ -765,11 +765,14 @@
             const data = await response.json();
             
             if (data.success) {
+              sessionStorage.removeItem('userClasses_student');
               alert('Successfully joined class!');
               codeInput.value = '';
               const roleResp = await fetch('api/get_user_role.php');
               const roleData = await roleResp.json();
-              if (roleData.success) await loadUserClasses(roleData.role);
+              if (roleData.success) {
+                setTimeout(() => loadUserClasses(roleData.role), 200);
+              }
             } else {
               alert(data.message || 'Failed to join class');
             }

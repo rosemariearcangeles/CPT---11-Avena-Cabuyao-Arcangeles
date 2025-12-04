@@ -277,6 +277,7 @@ function handleCreateClass(e) {
   .then(data => {
     console.log('Create class response:', data);
     if (data.success) {
+      sessionStorage.removeItem('userClasses_teacher');
       if (window.DataCache) window.DataCache.invalidateClasses();
       const modal = document.getElementById('createClassModal');
       if (modal) {
@@ -286,7 +287,7 @@ function handleCreateClass(e) {
       }
       document.getElementById('createClassForm').reset();
       alert(`Class created! Code: ${data.class_code}`);
-      loadTeacherClasses();
+      setTimeout(() => loadTeacherClasses(), 200);
     } else {
       alert('Failed to create class: ' + (data.message || 'Unknown error'));
     }
@@ -329,6 +330,7 @@ function handleJoinClass(e) {
   .then(data => {
     console.log('Join class response:', data);
     if (data.success) {
+      sessionStorage.removeItem('userClasses_student');
       if (window.DataCache) window.DataCache.invalidateClasses();
       const modal = document.getElementById('joinClassModal');
       if (modal) {
@@ -338,7 +340,7 @@ function handleJoinClass(e) {
       }
       document.getElementById('joinClassForm').reset();
       alert('Successfully joined class!');
-      loadStudentClasses();
+      setTimeout(() => loadStudentClasses(), 200);
     } else {
       alert('Failed to join class: ' + (data.message || 'Unknown error'));
     }
