@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Education Dashboard - Quiz Engine</title>
     <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +43,7 @@
 
     <!-- Create Class Modal -->
     <div id="createClassModal" class="modal" aria-hidden="true">
-        <div class="modal-content">
+        <div class="modal-content" style="position: relative;">
             <button class="close" aria-label="Close">&times;</button>
             <div class="modal-header">
                 <div class="modal-icon">📚</div>
@@ -51,11 +52,11 @@
             <form id="createClassForm">
                 <div class="form-group">
                     <label for="class-name">Class Name</label>
-                    <input type="text" id="class-name" required placeholder="e.g., Math 101">
+                    <input type="text" id="class-name" required placeholder="e.g., Math 101" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem;">
                 </div>
                 <div class="form-group">
                     <label for="class-description">Description (Optional)</label>
-                    <textarea id="class-description" rows="3" placeholder="Brief description of the class"></textarea>
+                    <textarea id="class-description" rows="3" placeholder="Brief description of the class" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem; font-family: inherit;"></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary btn-block">Create Class</button>
@@ -66,7 +67,7 @@
 
     <!-- Join Class Modal -->
     <div id="joinClassModal" class="modal" aria-hidden="true">
-        <div class="modal-content">
+        <div class="modal-content" style="position: relative;">
             <button class="close" aria-label="Close">&times;</button>
             <div class="modal-header">
                 <div class="modal-icon">🎓</div>
@@ -75,7 +76,7 @@
             <form id="joinClassForm">
                 <div class="form-group">
                     <label for="join-class-code">Class Code</label>
-                    <input type="text" id="join-class-code" required placeholder="Enter 6-digit code" maxlength="10" style="text-transform:uppercase;">
+                    <input type="text" id="join-class-code" required placeholder="Enter 6-digit code" maxlength="10" style="text-transform:uppercase; width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius); font-size: 1rem;">
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary btn-block">Join Class</button>
