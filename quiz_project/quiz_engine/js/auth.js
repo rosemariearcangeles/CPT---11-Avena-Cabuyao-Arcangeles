@@ -467,9 +467,13 @@ function applyAuthState(data) {
       dashboardLink.style.display = 'block';
       dashboardLink.style.opacity = '1';
       
-      const dashboardUrl = (data.role === 'student' || data.role === 'teacher') ? 'education_dashboard.html' : 'dashboard.html';
+      const basePath = BASE_PATH || '';
+      const dashboardUrl = (data.role === 'student' || data.role === 'teacher') ? `${basePath}education_dashboard.html` : `${basePath}dashboard.html`;
       const dashboardLinkElement = dashboardLink.querySelector('a');
-      if (dashboardLinkElement) dashboardLinkElement.href = dashboardUrl;
+      if (dashboardLinkElement) {
+        dashboardLinkElement.href = dashboardUrl;
+        dashboardLinkElement.onclick = null;
+      }
     }
     
     const modeBadge = (data.role === 'student' || data.role === 'teacher') ? ' <span style="display:inline-block;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:white;padding:0.15rem 0.5rem;border-radius:0.25rem;font-size:0.7rem;font-weight:600;margin-left:0.25rem;">EDU</span>' : '';
