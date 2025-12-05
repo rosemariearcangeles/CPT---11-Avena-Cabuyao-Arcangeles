@@ -5,38 +5,42 @@
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0);
+  background: rgba(0, 0, 0, 0);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity .25s ease, background .25s ease;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
+  padding: 1rem;
 }
 
 .modal.show {
   opacity: 1;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.6);
   pointer-events: auto;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  max-width: 420px;
-  width: 90%;
+  background: var(--surface, #ffffff);
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
   opacity: 0;
-  transform: scale(0.92);
-  transition: opacity .28s ease, transform .28s ease;
+  transform: scale(0.95) translateY(20px);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .modal.show .modal-content {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 
 .modal:not(.show) .modal-content {
@@ -45,28 +49,49 @@
 
 .close {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 1.5rem;
+  right: 1.5rem;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
   color: var(--text-secondary);
-  transition: color 0.2s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .close:hover {
+  background: var(--surface-secondary);
   color: var(--text-primary);
+  transform: rotate(90deg);
 }
 
 .modal-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .modal-icon {
   margin-bottom: 1rem;
   color: var(--primary-color);
+  font-size: 3rem;
+  animation: scaleInIcon 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scaleInIcon {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-header h2 {
@@ -80,6 +105,7 @@
   color: var(--text-secondary);
   font-size: 1rem;
   margin: 0;
+  line-height: 1.5;
 }
 
 .form-group {
@@ -113,14 +139,19 @@
   border: 2px solid var(--border);
   border-radius: var(--radius);
   font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: var(--surface);
 }
 
 .input-wrapper input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 0 1px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+}
+
+.input-wrapper input:valid {
+  border-color: var(--success-color);
 }
 
 .input-wrapper input:invalid:not(:placeholder-shown) {
@@ -133,15 +164,18 @@
   border: 2px solid var(--border);
   border-radius: var(--radius);
   font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: var(--surface);
   font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
 }
 
 .input-wrapper textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 0 1px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
 }
 
 #join-class-code { text-transform: uppercase }
@@ -270,22 +304,29 @@
 /* ============================
    TOAST NOTIFICATION STYLES
    ============================ */
+
 .toast {
   position: fixed;
   top: 20px;
   right: 20px;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
   color: white;
   font-weight: 500;
   font-size: 0.95rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   z-index: 10000;
   opacity: 0;
   transform: translateX(400px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  max-width: 350px;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 380px;
   word-wrap: break-word;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .toast.visible {
@@ -293,21 +334,81 @@
   transform: translateX(0);
 }
 
+.toast.hide {
+  opacity: 0;
+  transform: translateX(400px);
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.25rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
 .toast-success {
   background: linear-gradient(135deg, #10b981, #059669);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.toast-success .toast-icon {
+  content: '✓';
 }
 
 .toast-error {
   background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.toast-error .toast-icon {
+  content: '✕';
+}
+
+.toast-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.toast-info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 /* Stack multiple toasts */
 .toast:nth-child(2) {
-  top: 90px;
+  top: 100px;
 }
 
 .toast:nth-child(3) {
-  top: 160px;
+  top: 180px;
+}
+
+.toast:nth-child(4) {
+  top: 260px;
 }
 
 @media (max-width: 768px) {
@@ -315,5 +416,18 @@
     right: 10px;
     left: 10px;
     max-width: calc(100% - 20px);
+    padding: 1rem 1.25rem;
+  }
+  
+  .toast:nth-child(2) {
+    top: 90px;
+  }
+  
+  .toast:nth-child(3) {
+    top: 160px;
+  }
+  
+  .toast:nth-child(4) {
+    top: 230px;
   }
 }
