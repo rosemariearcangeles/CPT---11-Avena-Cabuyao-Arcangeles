@@ -517,6 +517,12 @@ function applyAuthState(data) {
       usernameSpan.textContent = data.username;
     }
     if (dropdownUsername) dropdownUsername.textContent = data.username;
+    
+    // Sync with navbar instance
+    if (window.navbarInstance && typeof window.navbarInstance.applyAuthState === 'function') {
+      window.navbarInstance.applyAuthState(data);
+    }
+    
     updateAuthenticatedUI(true);
   } else {
     if (userMenu) {
@@ -531,6 +537,12 @@ function applyAuthState(data) {
       authButtons.style.display = 'flex';
       authButtons.style.opacity = '1';
     }
+    
+    // Sync with navbar instance
+    if (window.navbarInstance && typeof window.navbarInstance.applyAuthState === 'function') {
+      window.navbarInstance.applyAuthState(data);
+    }
+    
     updateAuthenticatedUI(false);
   }
 }

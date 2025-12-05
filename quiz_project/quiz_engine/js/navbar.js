@@ -74,18 +74,9 @@ class UnifiedNavbar {
     // Handle window resize
     window.addEventListener('resize', () => this.handleResize());
 
-    // Login/Register buttons
-    const loginBtn = document.getElementById('nav-login-btn');
-    const registerBtn = document.getElementById('nav-register-btn');
+    // Login/Register buttons - handled by auth.js
+    // We only keep logout here as a fallback or for specific navbar behavior if needed
     const logoutBtn = document.getElementById('nav-logout-btn');
-
-    if (loginBtn) {
-      loginBtn.addEventListener('click', () => this.handleLoginClick());
-    }
-
-    if (registerBtn) {
-      registerBtn.addEventListener('click', () => this.handleRegisterClick());
-    }
 
     if (logoutBtn) {
       // Delegate logout handling to global auth.js handler if available to avoid duplicate toasts
@@ -342,12 +333,18 @@ class UnifiedNavbar {
       }
 
       // Update role badge if present
-      const roleBadge = document.querySelector('.mode-badge');
+      const roleBadge = document.querySelector('#nav-role-badge');
       if (roleBadge && (role === 'student' || role === 'teacher')) {
         roleBadge.style.display = 'inline-flex';
         roleBadge.textContent = role === 'teacher' ? 'Teacher' : 'Student';
       } else if (roleBadge) {
         roleBadge.style.display = 'none';
+      }
+      
+      // Update dropdown dashboard link
+      const dropdownDashboardLink = document.querySelector('#nav-dropdown-dashboard');
+      if (dropdownDashboardLink) {
+          dropdownDashboardLink.href = `${basePath}${dashboardUrl}`;
       }
     });
   }
@@ -372,7 +369,7 @@ class UnifiedNavbar {
       }
       
       // Hide role badge
-      const roleBadge = document.querySelector('.mode-badge');
+      const roleBadge = document.querySelector('#nav-role-badge');
       if (roleBadge) {
         roleBadge.style.display = 'none';
       }

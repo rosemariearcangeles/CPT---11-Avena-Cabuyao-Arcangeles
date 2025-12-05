@@ -15,18 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
-    (function() {
-      const cached = sessionStorage.getItem('authState');
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          const data = parsed.data || parsed;
-          if (data.loggedIn && data.username && data.role) {
-            document.write('<style>.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}#nav-dashboard-link,.dashboard-link{display:block!important;opacity:1!important}</style>');
-          }
-        } catch (e) {}
-      }
-    })();
+    (function(){const c=sessionStorage.getItem('authState');if(c){try{const p=JSON.parse(c);const d=p.data||p;document.write('<style>'+(d.loggedIn?'.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}.dashboard-link{display:block!important;opacity:1!important}':'.auth-buttons{display:flex!important;opacity:1!important}.user-menu{display:none!important;opacity:0!important}.dashboard-link{display:none!important;opacity:0!important}')+'</style>');}catch(e){}}})();
   </script>
 </head>
 <body>
@@ -127,6 +116,13 @@
                 <div class="user-status">Logged in</div>
               </div>
               <hr class="dropdown-divider">
+              <a href="dashboard.html" class="dropdown-item" id="nav-dropdown-dashboard">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                </svg>
+                Dashboard
+              </a>
               <button class="dropdown-item logout-btn" id="nav-logout-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
