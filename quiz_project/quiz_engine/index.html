@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="csrf-token" content="">
   <title>Online Quiz Engine</title>
-  <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/index.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/modal.css" />
@@ -13,9 +12,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
-    (function(){const c=sessionStorage.getItem('authState');if(c){try{const p=JSON.parse(c);const d=p.data||p;document.write('<style>'+(d.loggedIn?'.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}.dashboard-link{display:block!important;opacity:1!important}':'.auth-buttons{display:flex!important;opacity:1!important}.user-menu{display:none!important;opacity:0!important}.dashboard-link{display:none!important;opacity:0!important}')+'</style>');}catch(e){}}})();
+    // Apply cached auth state immediately to prevent navbar glitch
+    (function() {
+      const cached = sessionStorage.getItem('authState');
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          if (data.loggedIn) {
+            document.write('<style>.auth-buttons{display:none!important;opacity:0!important}.user-menu{display:block!important;opacity:1!important}#nav-dashboard-link,.dashboard-link{display:block!important;opacity:1!important}</style>');
+          } else {
+            document.write('<style>.auth-buttons{display:flex!important;opacity:1!important}.user-menu{display:none!important;opacity:0!important}#nav-dashboard-link,.dashboard-link{display:none!important;opacity:0!important}</style>');
+          }
+        } catch (e) {}
+      }
+    })();
   </script>
 </head>
 <body>
@@ -104,7 +115,6 @@
                 </svg>
               </div>
               <span class="username" id="nav-username">User</span>
-              <span id="nav-role-badge" class="role-badge" style="display:none;"></span>
               <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="6,9 12,15 18,9"></polyline>
               </svg>
@@ -116,7 +126,7 @@
                 <div class="user-status">Logged in</div>
               </div>
               <hr class="dropdown-divider">
-              <a href="dashboard.html" class="dropdown-item" id="nav-dropdown-dashboard">
+              <a href="dashboard.html" class="dropdown-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                   <polyline points="9,22 9,12 15,12 15,22"></polyline>
@@ -145,19 +155,8 @@
 
     <div class="page-wrapper hero-inner">
       <div class="hero-content">
-        <div class="mode-toggle-hero" id="mode-toggle-hero" style="display:none;">
-          <button class="mode-toggle-btn active" data-mode="personal">
-            <i class="fas fa-user"></i> Personal Mode
-          </button>
-          <button class="mode-toggle-btn" data-mode="education">
-            <i class="fas fa-graduation-cap"></i> Education Mode
-          </button>
-        </div>
-        <div class="education-mode-indicator" id="education-mode-indicator" style="display:none;">
-          <i class="fas fa-graduation-cap"></i> Education Mode
-        </div>
-        <h1 id="hero-title">Transform Your Learning Experience</h1>
-        <p id="hero-subtitle">Interactive online quizzes that are easy, comprehensive, and reliable.</p>
+        <h1>Transform Your Learning Experience</h1>
+        <p>Interactive online quizzes that are easy, comprehensive, and reliable.</p>
         <a href="#main" class="cta-button">Get Started</a>
       </div>
 
@@ -173,10 +172,22 @@
       <!-- Main Content Area -->
       <main class="main-content" id="main">
         <!-- Generation Settings -->
-        <section class="generation-settings" id="quiz-generation-section">
-          <h2 class="section-title">Quiz Settings</h2>
+        <section class="generation-settings">
+          <h2 class="section-title">Generation Settings</h2>
           
           <div class="settings-grid">
+            <div class="generation-cards">
+              <button class="generation-card selected" id="gen-local-btn" aria-pressed="true">
+                <h3>Local Generation</h3>
+                <p>Generate quizzes instantly using your browser</p>
+              </button>
+              
+              <button class="generation-card" id="gen-ai-btn" aria-pressed="false">
+                <h3>AI Generation</h3>
+                <p>Use AI for higher-quality quiz generation</p>
+              </button>
+            </div>
+            
             <div class="preset-section">
               <h3 class="section-subtitle">Quick Presets</h3>
               <div class="preset-buttons">
@@ -188,7 +199,7 @@
           </div>
         </section>
         <!-- File Upload Section -->
-        <section class="upload-section" id="quiz-upload-section">
+        <section class="upload-section">
           <h1>Generate Quiz from Learning Material</h1>
           <p class="upload-description">Upload your study materials and get a customized quiz in seconds.</p>
           
@@ -230,26 +241,6 @@
                 <span class="btn-icon" aria-hidden="true">→</span>
               </button>
             </div>
-          </div>
-        </section>
-        
-        <!-- Student Join Class Section -->
-        <section class="join-class-section" id="student-join-section" style="display:none;">
-          <h1 id="classes-heading">Join Your Class</h1>
-          <p class="join-description" id="classes-description">Enter the class code provided by your teacher to join.</p>
-          
-          <div class="join-class-card">
-            <div class="class-code-input-wrapper">
-              <input type="text" id="class-code-input" placeholder="Enter Class Code" maxlength="10">
-              <button id="join-class-btn" class="btn btn-primary">
-                <i class="fas fa-sign-in-alt"></i> Join Class
-              </button>
-            </div>
-          </div>
-          
-          <div id="student-classes-list" class="student-classes">
-            <h2>My Classes</h2>
-            <div id="student-classes-grid" class="class-grid"></div>
           </div>
         </section>
         
@@ -372,19 +363,6 @@
 
       <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)" novalidate>
         <input type="hidden" id="register-csrf" name="csrf_token">
-        <input type="hidden" id="register-role" name="role" value="student">
-
-        <div class="form-group" id="role-selection" style="display:none;">
-          <label>I am a:</label>
-          <div class="role-buttons">
-            <button type="button" class="role-btn active" data-role="student">
-              <i class="fas fa-user-graduate"></i> Student
-            </button>
-            <button type="button" class="role-btn" data-role="teacher">
-              <i class="fas fa-chalkboard-teacher"></i> Teacher
-            </button>
-          </div>
-        </div>
 
         <div class="form-group">
           <label for="register-username">Username</label>
@@ -465,317 +443,43 @@
         <h4>Contact</h4>
         <p>Email: support@quizengine.com</p>
         <p>Phone: +1 (123) 456-7890</p>
+        <p>&copy; Adaptive Quiz Engine 2025</p>
       </div>
     </div>
-
-    <div class="footer-bottom">© Adaptive Quiz Engine 2025</div>
   </footer>
 
   <!-- Toast Container -->
   <div id="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
   <!-- Scripts -->
-  <script src="js/cache.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/navbar.js"></script>
   <script src="script.js"></script>
   <script>
-    // Force buttons to work
-    setTimeout(function() {
-      const loginBtn = document.getElementById('nav-login-btn');
-      const registerBtn = document.getElementById('nav-register-btn');
-      const loginModal = document.getElementById('loginModal');
-      const registerModal = document.getElementById('registerModal');
-      
-      function closeModal(modal) {
-        if (modal) {
-          modal.classList.remove('show');
-          modal.setAttribute('aria-hidden', 'true');
-          document.body.style.overflow = '';
-        }
-      }
-      
-      if (loginBtn) {
-        loginBtn.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (loginModal) {
-            loginModal.classList.add('show');
-            loginModal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-          }
-        };
-      }
-      
-      if (registerBtn) {
-        registerBtn.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (registerModal) {
-            registerModal.classList.add('show');
-            registerModal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-          }
-        };
-      }
-      
-      // Close buttons
-      document.querySelectorAll('.close').forEach(btn => {
-        btn.onclick = function() {
-          closeModal(this.closest('.modal'));
-        };
-      });
-      
-      // Click outside to close
-      if (loginModal) {
-        loginModal.onclick = function(e) {
-          if (e.target === loginModal) closeModal(loginModal);
-        };
-      }
-      if (registerModal) {
-        registerModal.onclick = function(e) {
-          if (e.target === registerModal) closeModal(registerModal);
-        };
-      }
-    }, 100);
-    
     // Page-specific initialization
-    document.addEventListener('DOMContentLoaded', async function() {
-      // ===== SHOW CLASSES FOR TEACHERS/STUDENTS =====
-      try {
-        const authResponse = await fetch('check_auth.php');
-        const authData = await authResponse.json();
-        
-        if (authData.loggedIn) {
-          const roleResponse = await fetch('api/get_user_role.php');
-          const roleData = await roleResponse.json();
-          
-          if (roleData.success && (roleData.role === 'teacher' || roleData.role === 'student')) {
-            // Hide quiz creation, show classes
-            const quizGenSection = document.getElementById('quiz-generation-section');
-            const quizUploadSection = document.getElementById('quiz-upload-section');
-            const studentJoinSection = document.getElementById('student-join-section');
-            
-            if (quizGenSection) quizGenSection.style.display = 'none';
-            if (quizUploadSection) quizUploadSection.style.display = 'none';
-            if (studentJoinSection) {
-              studentJoinSection.style.display = 'block';
-              
-              // Update UI based on role
-              const heading = document.getElementById('classes-heading');
-              const description = document.getElementById('classes-description');
-              const joinCard = studentJoinSection.querySelector('.join-class-card');
-              
-              if (roleData.role === 'teacher') {
-                if (heading) heading.textContent = 'My Classes';
-                if (description) description.textContent = 'Manage your classes and create assignments.';
-                if (joinCard) joinCard.style.display = 'none';
-              } else {
-                if (heading) heading.textContent = 'My Classes';
-                if (description) description.textContent = 'Join classes and complete assignments.';
-              }
-              
-              // Load classes
-              await loadUserClasses(roleData.role);
-            }
-            return;
-          }
-        }
-      } catch (e) {
-        console.error('Error checking role:', e);
-      }
-      
-      // ===== SHOW/HIDE MODE TOGGLE =====
-      const toggle = document.getElementById('mode-toggle-hero');
-      const indicator = document.getElementById('education-mode-indicator');
-      
-      const authData = window.AuthCache ? await window.AuthCache.getAuthState() : null;
-      
-      if (authData && authData.loggedIn && authData.role) {
-        if (toggle) toggle.style.display = 'none';
-        if (authData.role === 'student' || authData.role === 'teacher') {
-          if (indicator) indicator.style.display = 'flex';
-        }
-      } else {
-        if (toggle) toggle.style.display = 'flex';
-        if (indicator) indicator.style.display = 'none';
-      }
-      
-      // ===== EDUCATION MODE TOGGLE =====
-      let currentMode = localStorage.getItem('quizMode') || 'personal';
-      
-      const modeButtons = document.querySelectorAll('.mode-toggle-btn');
-      const roleSelection = document.getElementById('role-selection');
-      const heroTitle = document.getElementById('hero-title');
-      const heroSubtitle = document.getElementById('hero-subtitle');
-      
-      function updateMode(mode) {
-        currentMode = mode;
-        localStorage.setItem('quizMode', mode);
-        
-        modeButtons.forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.mode === mode);
-        });
-        
-        // Fade out content
-        if (heroTitle) heroTitle.style.opacity = '0';
-        if (heroSubtitle) heroSubtitle.style.opacity = '0';
-        
-        setTimeout(() => {
-          if (mode === 'education') {
-            if (heroTitle) heroTitle.textContent = 'Transform Your Classroom';
-            if (heroSubtitle) heroSubtitle.textContent = 'Create, assign, and track quizzes for your students.';
-            if (roleSelection) {
-              roleSelection.style.display = 'block';
-              roleSelection.style.opacity = '0';
-              setTimeout(() => roleSelection.style.opacity = '1', 50);
-            }
-          } else {
-            if (heroTitle) heroTitle.textContent = 'Transform Your Learning Experience';
-            if (heroSubtitle) heroSubtitle.textContent = 'Interactive online quizzes that are easy, comprehensive, and reliable.';
-            if (roleSelection) roleSelection.style.display = 'none';
-          }
-          
-          // Fade in content
-          if (heroTitle) heroTitle.style.opacity = '1';
-          if (heroSubtitle) heroSubtitle.style.opacity = '1';
-        }, 200);
-      }
-      
-      modeButtons.forEach(btn => {
-        btn.addEventListener('click', () => updateMode(btn.dataset.mode));
-      });
-      
-      // Role selection buttons
-      const roleButtons = document.querySelectorAll('.role-btn');
-      const roleInput = document.getElementById('register-role');
-      
-      roleButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          roleButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          if (roleInput) roleInput.value = btn.dataset.role;
-        });
-      });
-      
-      updateMode(currentMode);
-      
-      // ===== CHECK USER ROLE AND UPDATE UI =====
-      async function updateUIBasedOnRole() {
-        try {
-          const authResponse = await fetch('check_auth.php');
-          const authData = await authResponse.json();
-          
-          if (authData.loggedIn) {
-            const roleResponse = await fetch('api/get_user_role.php');
-            const roleData = await roleResponse.json();
-            
-            if (roleData.success) {
-              const userRole = roleData.role;
-              const mode = localStorage.getItem('quizMode') || 'personal';
-              
-              const quizGenSection = document.getElementById('quiz-generation-section');
-              const quizUploadSection = document.getElementById('quiz-upload-section');
-              const studentJoinSection = document.getElementById('student-join-section');
-              
-              if (mode === 'education' && userRole === 'student') {
-                // Student in education mode: hide quiz generation, show join class
-                if (quizGenSection) quizGenSection.style.display = 'none';
-                if (quizUploadSection) quizUploadSection.style.display = 'none';
-                if (studentJoinSection) {
-                  studentJoinSection.style.display = 'block';
-                  loadStudentClasses();
-                }
-              } else {
-                // Teacher or personal mode: show quiz generation
-                if (quizGenSection) quizGenSection.style.display = 'block';
-                if (quizUploadSection) quizUploadSection.style.display = 'block';
-                if (studentJoinSection) studentJoinSection.style.display = 'none';
-              }
-            }
-          }
-        } catch (error) {
-          console.log('Not logged in or error checking role');
-        }
-      }
-      
-      // Load classes based on role
-      async function loadUserClasses(role) {
-        try {
-          const endpoint = role === 'teacher' ? 'api/get_teacher_classes.php' : 'api/get_student_classes.php';
-          const response = await fetch(endpoint + '?t=' + Date.now(), {
-            credentials: 'same-origin',
-            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-          });
-          const data = await response.json();
-          const grid = document.getElementById('student-classes-grid');
-          
-          if (data.success && data.classes.length > 0) {
-            grid.innerHTML = data.classes.map(cls => `
-              <div class="class-card" onclick="openClass(${cls.id}, '${cls.class_name}')" style="cursor:pointer;background:white;border:1px solid #e2e8f0;border-radius:12px;padding:1.5rem;transition:all 0.2s;">
-                <h3 style="margin-bottom:0.5rem;color:#1e293b;">${cls.class_name}</h3>
-                <p style="color:#64748b;margin-bottom:1rem;">${cls.description || 'No description'}</p>
-                ${role === 'student' ? `<div style="font-size:0.875rem;color:#6366f1;"><i class="fas fa-chalkboard-teacher"></i> ${cls.teacher_name}</div>` : `<div style="font-size:0.875rem;color:#10b981;"><i class="fas fa-users"></i> ${cls.student_count || 0} students</div>`}
-              </div>
-            `).join('');
-          } else {
-            const emptyIcon = role === 'teacher' ? '📚' : '🎓';
-            const emptyTitle = role === 'teacher' ? 'No Classes Created Yet' : 'No Classes Joined Yet';
-            const emptyMsg = role === 'teacher' ? 'Go to your dashboard to create your first class!' : 'Use the class code above to join your first class.';
-            const emptyAction = role === 'teacher' ? '<a href="education_dashboard.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:#6366f1;color:white;text-decoration:none;border-radius:8px;margin-top:1rem;"><i class="fas fa-plus"></i> Go to Dashboard</a>' : '';
-            grid.innerHTML = `<div class="empty-state" style="text-align:center;padding:3rem 1rem;">
-              <div style="font-size:4rem;margin-bottom:1rem;">${emptyIcon}</div>
-              <h3 style="margin-bottom:0.5rem;color:#1e293b;">${emptyTitle}</h3>
-              <p style="color:#64748b;margin-bottom:1rem;">${emptyMsg}</p>
-              ${emptyAction}
-            </div>`;
-          }
-        } catch (error) {
-          console.error('Failed to load classes:', error);
-        }
-      }
-      
-      // Open class function
-      window.openClass = function(classId, className) {
-        sessionStorage.setItem('currentClassId', classId);
-        sessionStorage.setItem('currentClassName', className);
-        window.location.href = `class_dashboard.html?id=${classId}`;
-      };
-      
-      // Join class button
-      const joinClassBtn = document.getElementById('join-class-btn');
-      if (joinClassBtn) {
-        joinClassBtn.addEventListener('click', async () => {
-          const codeInput = document.getElementById('class-code-input');
-          const classCode = codeInput.value.trim().toUpperCase();
-          
-          if (!classCode) {
-            alert('Please enter a class code');
-            return;
-          }
-          
-          try {
-            const response = await fetch('api/join_class.php', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ class_code: classCode })
-            });
-            const data = await response.json();
-            
-            if (data.success) {
-              alert('Successfully joined class!');
-              window.location.reload();
-            } else {
-              alert(data.message || 'Failed to join class');
-            }
-          } catch (error) {
-            alert('Error joining class. Please try again.');
-          }
+    document.addEventListener('DOMContentLoaded', function() {
+      // ===== GENERATION MODE BUTTONS =====
+      const genLocalBtn = document.getElementById('gen-local-btn');
+      const genAiBtn = document.getElementById('gen-ai-btn');
+      const generationModeSelect = document.getElementById('generation-mode');
+
+      if (genLocalBtn) {
+        genLocalBtn.addEventListener('click', () => {
+          genLocalBtn.classList.add('selected');
+          genAiBtn.classList.remove('selected');
+          if (generationModeSelect) generationModeSelect.value = 'local';
         });
       }
-      
-      updateUIBasedOnRole();
-      
+
+      if (genAiBtn) {
+        genAiBtn.addEventListener('click', () => {
+          alert('AI Generation is not available yet. Please use Local Generation.');
+          genLocalBtn.classList.add('selected');
+          genAiBtn.classList.remove('selected');
+          if (generationModeSelect) generationModeSelect.value = 'local';
+        });
+      }
+
       // ===== PRESET BUTTONS WITH INDICATOR =====
       const presetFast = document.getElementById('preset-fast');
       const presetFull = document.getElementById('preset-full');

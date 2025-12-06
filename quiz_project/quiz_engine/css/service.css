@@ -308,7 +308,7 @@ background-clip: text;
 .foot {
   background: linear-gradient(135deg, var(--text-primary) 0%, #374151 100%);
   color: #fff;
-  padding: 4rem 2rem 2rem;
+  padding: 1.5rem 2rem;
   position: relative;
   overflow: hidden;
 }
@@ -535,4 +535,32 @@ background-clip: text;
 
 .toast-error {
   background-color: var(--error-color) !important;    /* RED */
+}
+
+.adobe-impact {
+  text-align: center;
+  padding: 100px 10%;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.adobe-impact h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #111;
+}
+
+.adobe-impact p {
+  font-size: 1.2rem;
+  color: #444;
+  max-width: 700px;
+  margin: 0 auto 50px;
+  line-height: 1.7;
+}
+
+.adobe-impact .impact-image img {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
 }
