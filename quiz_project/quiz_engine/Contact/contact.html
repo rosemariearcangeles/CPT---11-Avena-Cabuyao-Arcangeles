@@ -369,6 +369,54 @@
   <div id="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
   <!-- Scripts -->
+  <script>
+    (function(){
+      const form = document.getElementById('contact-form');
+      const toastContainer = document.getElementById('toast-container');
+
+      function showToast(message, success = true) {
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.textContent = message;
+        el.style.padding = '10px 14px';
+        el.style.borderRadius = '6px';
+        el.style.marginBottom = '8px';
+        el.style.color = '#fff';
+        el.style.background = success ? '#2a9d8f' : '#e76f51';
+        toastContainer.appendChild(el);
+        setTimeout(() => { el.remove(); }, 4000);
+      }
+
+      if (form) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          const name = document.getElementById('name').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const subject = document.getElementById('subject').value.trim();
+          const message = document.getElementById('message').value.trim();
+
+          try {
+            const res = await fetch('../api/send_contact.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email, subject, message })
+            });
+
+            const json = await res.json();
+            if (res.ok && json.success) {
+              showToast('Message sent — thank you!', true);
+              form.reset();
+            } else {
+              showToast(json.message || 'Failed to send message', false);
+            }
+          } catch (err) {
+            showToast('Network error. Please try again later.', false);
+          }
+        });
+      }
+    })();
+  </script>
+
   <script src="../js/auth.js"></script>
   <script src="../js/navbar.js"></script>
   <script src="../js/modal-fix.js"></script>
